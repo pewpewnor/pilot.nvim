@@ -1,0 +1,520 @@
+local last_execution_task = nil
+
+local function get_pilot_dirpath()
+    local pilot_dir_path = DATA_PATH .. "/pilot"
+    file_utils.mkdir(pilot_dir_path)
+    return pilot_dir_path
+end
+
+local function get_project_config_filepath()
+    local dirpath, filepath
+    if type(config.use_local_project_config_dir) == "string" then
+        dirpath = editor_facade.get_current_working_dir_path()
+            .. "/"
+            .. config.use_local_project_config_dir
+        filepath = dirpath .. "/pilot.json"
+    elseif
+        config.use_local_project_config_dir == nil
+        or config.use_local_project_config_dir == false
+    then
+        dirpath = get_pilot_dirpath() .. "/projects"
+        filepath = dirpath
+            .. "/"
+            .. vim.fn.sha256(editor_facade.get_current_working_dir_path())
+            .. ".json"
+    else
+        error(
+            "[pilot] option 'use_local_project_config' in config must either be nil, false, or a string to specify relative dir path"
+        )
+    end
+
+    return filepath
+end
+
+local function get_filetype_config_filepath()
+    local filetypes_path = get_pilot_dirpath() .. "/filetypes"
+    return filetypes_path
+        .. "/"
+        .. editor_facade.get_current_file_type()
+        .. ".json"
+end
+
+local function execute_command_in_tmux_bottom_pane(options)
+    local number_of_panes = tonumber(vim.fn.system([[tmux list-panes | wc -l]]))
+    if number_of_panes < 2 then
+        vim.fn.system(
+            [[tmux split-window -d -v -c "#{pane_current_path}" -l 10]]
+        )
+        if options.init_command == nil then
+            vim.fn.system(
+                [[tmux send-keys -t .2 "]]
+                .. options.init_command
+                .. [[" Enter]]
+            )
+        end
+    else
+        vim.fn.system([[tmux send-keys -t .2 C-c C-c]])
+    end
+    vim.fn.system([[tmux send-keys -t .2 "]] .. options.command .. [[" Enter]])
+end
+
+local function execute_command_in_tmux_window(window_number, options)
+    local number_of_windows =
+        tonumber(vim.fn.system([[tmux list-windows | wc -l]]))
+    if number_of_windows < window_number then
+        for _ = number_of_windows, window_number - 1 do
+            vim.fn.system([[tmux new-window -d]])
+        end
+        if options.init_command == nil then
+            vim.fn.system(
+                [[tmux send-keys -t ]]
+                .. window_number
+                .. [[ "]]
+                .. options.init_command
+                .. [[" Enter]]
+            )
+        end
+    else
+        vim.fn.system([[tmux send-keys -t ]] .. window_number .. [[ C-c C-c]])
+    end
+    vim.fn.system(
+        [[tmux send-keys -t ]]
+        .. window_number
+        .. [[ "]]
+        .. options.command
+        .. [[" Enter]]
+    )
+end
+
+local function execute_command_in_tmux_second_window(options)
+    execute_command_in_tmux_window(2, options)
+end
+
+local function execute_command_in_tmux_new_next_window(options)
+    vim.fn.system([[tmux new-window -d]])
+    local current_window =
+        tonumber(vim.fn.system([[tmux display-message -p '#I']]))
+    local number_of_windows =
+        tonumber(vim.fn.system([[tmux list-windows | wc -l]]))
+    if current_window < number_of_windows - 1 then
+        for i = 1, number_of_windows do
+            vim.fn.system(
+                [[tmux swap-window -s ]]
+                .. current_window + i
+                .. [[ -t ]]
+                .. number_of_windows
+            )
+        end
+    else
+        vim.fn.system([[tmux send-keys -t +. C-c C-c]])
+    end
+    if options.init_command == nil then
+        vim.fn.system(
+            [[tmux send-keys -t +. "]] .. options.init_command .. [[" Enter]]
+        )
+    end
+    vim.fn.system([[tmux send-keys -t +. "]] .. options.command .. [[" Enter]])
+end
+
+local function execute_command_in_tmux_next_window(options)
+    local current_window =
+        tonumber(vim.fn.system([[tmux display-message -p '#I']]))
+    local number_of_windows =
+        tonumber(vim.fn.system([[tmux list-windows | wc -l]]))
+    if current_window == number_of_windows then
+        vim.fn.system([[tmux new-window -d]])
+    else
+        vim.fn.system([[tmux send-keys -t +. C-c C-c]])
+    end
+    if options.init_command == nil then
+        vim.fn.system(
+            [[tmux send-keys -t +. "]] .. options.init_command .. [[" Enter]]
+        )
+    end
+    vim.fn.system([[tmux send-keys -t +. "]] .. options.command .. [[" Enter]])
+end
+
+local preset_enumerated_locations = {
+    {
+        index = 1,
+        location = "tmux next-window",
+        executor = execute_command_in_tmux_next_window,
+    },
+    {
+        index = 2,
+        location = "tmux bottom-pane",
+        executor = execute_command_in_tmux_bottom_pane,
+    },
+    {
+        index = 3,
+        location = "tmux second-window",
+        executor = execute_command_in_tmux_second_window,
+    },
+    {
+        index = 4,
+        location = "tmux new-next-window",
+        executor = execute_command_in_tmux_new_next_window,
+    },
+}
+
+local function get_executor_from_preset(location)
+    for _, enumerated_location in ipairs(preset_enumerated_locations) do
+        if enumerated_location.location == location then
+            return enumerated_location.executor
+        end
+    end
+end
+
+local function get_executor_from_pattern_matching(location)
+    local tokens = string_utils.tokenize_cli_args(location)
+    if tokens[1] == "tmux" and tokens[2] == "window" then
+        local window_number = tonumber(tokens[3])
+        if window_number ~= nil then
+            return function(options)
+                execute_command_in_tmux_window(window_number, options)
+            end
+        end
+    end
+end
+
+local function get_executor_from_config(location)
+    if config.custom_executor == nil then
+        error(
+            "[pilot] trying to use an unrecognized location that's assumed to be a custom location, but the custom location function is not defined by the user"
+        )
+    end
+    if type(config.custom_executor) ~= "function" then
+        error("[pilot] the custom location function must be set to a function")
+    end
+    local executor = config.custom_executor(location)
+    if type(executor) ~= "function" then
+        error(
+            "[pilot] the custom location function must be set to return a function"
+        )
+    end
+    return executor
+end
+
+local function map_text_between_mustache_to_command(text_between_mustache)
+    if text_between_mustache == "cword" then
+        return editor_facade.get_current_word()
+    elseif text_between_mustache == "filename" then
+        return editor_facade.get_current_file_name()
+    elseif text_between_mustache == "filename_without_extension" then
+        return editor_facade.get_current_file_name_without_extension()
+    elseif text_between_mustache == "filetype" then
+        return editor_facade.get_current_file_type()
+    elseif text_between_mustache == "filepath" then
+        return editor_facade.get_current_file_path()
+    elseif text_between_mustache == "filepath_relative" then
+        return editor_facade.get_current_file_path_relative()
+    elseif text_between_mustache == "dirname" then
+        return editor_facade.get_current_dir_name()
+    elseif text_between_mustache == "dirpath" then
+        return editor_facade.get_current_dir_path()
+    elseif text_between_mustache == "cwdname" then
+        return editor_facade.get_current_working_dir_name()
+    elseif text_between_mustache == "cwdpath" then
+        return editor_facade.get_current_working_dir_path()
+    end
+    return text_between_mustache
+end
+
+local function interpolate_command(command)
+    local number_of_braces_needed = 2
+    local pattern = "({+)([^}]+)(}+)" -- this regex matches <text>, <<text>>, <<<text>>> and so on
+
+    return command:gsub(
+        pattern,
+        function(open_braces, text_between_braces, closing_braces)
+            local number_of_open_braces = #open_braces
+            local number_of_closing_braces = #closing_braces
+            if
+                number_of_open_braces > number_of_braces_needed
+                and number_of_closing_braces > number_of_braces_needed
+            then
+                return open_braces:sub(1, number_of_open_braces - 1)
+                    .. text_between_braces
+                    .. closing_braces:sub(1, number_of_closing_braces - 1)
+            elseif
+                number_of_open_braces < number_of_braces_needed
+                or number_of_closing_braces < number_of_braces_needed
+            then
+                return open_braces .. text_between_braces .. closing_braces
+            end
+
+            local interpolated =
+                map_text_between_mustache_to_command(text_between_braces)
+            if number_of_open_braces > number_of_braces_needed then
+                interpolated = open_braces:sub(
+                    1,
+                    number_of_open_braces - number_of_braces_needed
+                ) .. interpolated
+            end
+            if number_of_closing_braces > number_of_braces_needed then
+                interpolated = interpolated
+                    .. closing_braces:sub(
+                        1,
+                        number_of_closing_braces - number_of_braces_needed
+                    )
+            end
+            return interpolated
+        end
+    )
+end
+
+local function execute_task(entry, init_commands, given_executor)
+    local options = {
+        name = entry.name,
+        command = interpolate_command(entry.command),
+        init_command = interpolate_command(table.concat(init_commands, " && ")),
+    }
+
+    if given_executor ~= nil then
+        given_executor(options)
+    elseif entry.location == nil then
+        coroutine.wrap(function()
+            local co = coroutine.running()
+            assert(
+                co,
+                "[pilot] there is something wrong, this function must be called within a coroutine"
+            )
+
+            vim.ui.select(preset_enumerated_locations, {
+                prompt = "Select an execution method",
+                format_item = function(enumerated_location)
+                    return enumerated_location.index
+                        .. ". "
+                        .. enumerated_location.location
+                end,
+            }, function(enumerated_location)
+                coroutine.resume(co, enumerated_location)
+            end)
+
+            local enumerated_location = coroutine.yield()
+            if enumerated_location ~= nil then
+                local executor = enumerated_location.executor
+                executor(options)
+                last_execution_task = {
+                    entry = entry,
+                    init_commands = init_commands,
+                    executor = executor,
+                }
+            end
+        end)()
+    else
+        local executor = get_executor_from_preset(entry.location)
+        if executor == nil then
+            executor = get_executor_from_pattern_matching(entry.location)
+        end
+        if executor == nil then
+            executor = get_executor_from_config(entry.location)
+        end
+        executor(options)
+        last_execution_task = {
+            entry = entry,
+            init_commands = init_commands,
+            executor = executor,
+        }
+    end
+end
+
+local function parse_config_file(config_file_path, config_file_type)
+    local file_content = file_utils.read_file_to_string(config_file_path)
+    if file_content == nil then
+        if
+            config_file_type == "project"
+            and config.fallback_project_config_file ~= nil
+        then
+            if type(config.fallback_project_config_file) ~= "function" then
+                error(
+                    "[pilot] the fallback project config file configuration must be set to a function"
+                )
+            end
+            local fallback_config_file = config.fallback_project_config_file()
+            if fallback_config_file == nil then
+                print("[pilot] no project and fallback config file given")
+                return
+            elseif type(fallback_config_file) ~= "string" then
+                error(
+                    "[pilot] the fallback project config file configuration must return a string or nil"
+                )
+            end
+
+            file_content = file_utils.read_file_to_string(
+                get_pilot_dirpath() .. "/" .. fallback_config_file
+            )
+            if file_content == nil then
+                error(
+                    "[pilot] error while reading the fallback project config file at '"
+                    .. get_pilot_dirpath()
+                    .. "/"
+                    .. fallback_config_file
+                    .. "', does it exist? no read permission?"
+                )
+            end
+        else
+            print("[pilot] no config file detected, please create one first")
+            return
+        end
+    end
+
+    local entries = vim.fn.json_decode(file_content)
+    if type(entries) ~= "table" then
+        error(
+            "[pilot] "
+            .. config_file_type
+            .. " config file must be a valid JSON list/array"
+        )
+    end
+
+    local enumerated_entries = {}
+    local init_commands = {}
+
+    for _, entry in ipairs(entries) do
+        if type(entry) ~= "table" then
+            error(
+                "[pilot] each entry in the "
+                .. config_file_type
+                .. " config file's list must be a JSON map/object/table"
+            )
+        end
+        if
+            type(entry.command) ~= "string"
+            and type(entry.import) ~= "string"
+        then
+            error(
+                "[pilot] missing/invalid attribute 'command' or 'import' for one of the entries in the "
+                .. config_file_type
+                .. " config file's list"
+            )
+        end
+        if
+            type(entry.command) == "string"
+            and type(entry.import) == "string"
+        then
+            error(
+                "[pilot] attribute 'command' and 'import' cannot coexist for one of the entries in the "
+                .. config_file_type
+                .. " config file's list"
+            )
+        end
+
+        if type(entry.command) == "string" then
+            if entry.name == "__init__" then
+                table.insert(init_commands, entry.command)
+            else
+                if entry.name == nil then
+                    entry.name = entry.command
+                end
+                table.insert(
+                    enumerated_entries,
+                    { index = #enumerated_entries + 1, entry = entry }
+                )
+            end
+        else
+            local imported_enumerated_entries, imported_init_commands =
+                parse_config_file(
+                    get_pilot_dirpath() .. "/" .. entry.import,
+                    false
+                )
+            if
+                imported_enumerated_entries == nil
+                or imported_init_commands == nil
+            then
+                return
+            end
+
+            for _, imported_enumerated_entry in
+            ipairs(imported_enumerated_entries)
+            do
+                local unique = true
+                for _, enumerated_entry in ipairs(enumerated_entries) do
+                    if
+                        enumerated_entry.entry.name
+                        == imported_enumerated_entry.entry.name
+                    then
+                        unique = false
+                        break
+                    end
+                end
+                if unique then
+                    table.insert(enumerated_entries, {
+                        index = #enumerated_entries + 1,
+                        entry = imported_enumerated_entry.entry,
+                    })
+                end
+            end
+
+            -- TODO: add type validation
+            if entry.include_init_command ~= false then
+                table_utils.add_all(init_commands, imported_init_commands)
+            end
+        end
+    end
+
+    return enumerated_entries, init_commands
+end
+
+-- TODO: add a "project" or a "filetype" for the prompt + error messages
+local function parse_select_and_execute(config_file_path, config_file_type)
+    local enumerated_entries, init_commands =
+        parse_config_file(config_file_path, config_file_type)
+    if enumerated_entries == nil then
+        return
+    end
+
+    if
+        config.run_immediately_when_only_one_command_is_available == true
+        and #enumerated_entries == 1
+    then
+        execute_task(enumerated_entries[1].entry, init_commands)
+    else
+        vim.ui.select(enumerated_entries, {
+            prompt = "Select a " .. config_file_type .. " run command",
+            format_item = function(enumerated_entry)
+                return enumerated_entry.index
+                    .. ". "
+                    .. enumerated_entry.entry.name
+            end,
+        }, function(enumerated_entry)
+            if enumerated_entry ~= nil then
+                execute_task(enumerated_entry.entry, init_commands)
+            end
+        end)
+    end
+end
+
+local pilot = {
+    run_project = function()
+        parse_select_and_execute(get_project_config_filepath(), "project")
+    end,
+    run_filetype = function()
+        parse_select_and_execute(get_filetype_config_filepath(), "filetype")
+    end,
+    run_last_execution_task = function()
+        if last_execution_task == nil then
+            print(
+                "[pilot] there are no previously executed task to be executed again"
+            )
+            return
+        end
+        execute_task(
+            last_execution_task.entry,
+            last_execution_task.init_commands,
+            last_execution_task.executor
+        )
+    end,
+    edit_project_config_file = function()
+        vim.cmd("tabedit " .. get_project_config_filepath())
+    end,
+    edit_filetype_config_file = function()
+        vim.cmd("tabedit " .. get_filetype_config_filepath())
+    end,
+}
+
+-- TODO:
+-- use neovim's integrated terminal instead like keymap("n", "<Leader>t", "<Cmd>tabnew | terminal<CR>")
+-- change the name 'location' to 'location' instead
+-- check if file is readable and writeable using vim.fn
+-- validate all configs options from user before moving on with the rest of the code
