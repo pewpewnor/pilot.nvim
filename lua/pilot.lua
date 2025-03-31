@@ -23,8 +23,8 @@ local M = {}
 M.config = {
     local_project_config_dir = nil,
     automatically_run_single_command = {
-        project = false,
-        file_type = false,
+        project = true,
+        file_type = true,
     },
     fallback_project_run_config = nil,
     custom_locations = nil,
