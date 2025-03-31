@@ -1,4 +1,4 @@
----@alias LocationExecutor fun(params: ExecutorParams)
+---@alias Executor fun(command: string)
 
 ---@class AutomaticallyRunSingleCommand
 ---@field project boolean
@@ -7,7 +7,7 @@
 ---@alias FallbackProjectRunFile fun(): string
 
 ---@class CustomLocations
----@field [string] LocationExecutor
+---@field [string] Executor
 
 ---@class Config
 ---@field local_project_config_dir string?

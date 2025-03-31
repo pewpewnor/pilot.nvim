@@ -11,9 +11,9 @@ M.init = function(config)
     runner.init(config, M.neovim_integrated_terminal_executor)
 end
 
----@type LocationExecutor
-M.neovim_integrated_terminal_executor = function(params)
-    vim.cmd("tabnew | terminal " .. params.command)
+---@type Executor
+M.neovim_integrated_terminal_executor = function(command)
+    vim.cmd("tabnew | terminal " .. command)
 end
 
 M.run_project = function()

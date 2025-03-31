@@ -1,3 +1,4 @@
+local pathfinder = require("pilot.pathfinder")
 local string_utils = require("pilot.string_utils")
 
 ---@return string
@@ -46,6 +47,8 @@ local function resolve_command_placeholder(placeholder)
         return vim.fn.expand("<cword>")
     elseif placeholder == "cWORD" then
         return vim.fn.expand("<cWORD>")
+    elseif placeholder == "pilot_data_path" then
+        return pathfinder.get_pilot_data_path()
     end
     error(
         string.format(

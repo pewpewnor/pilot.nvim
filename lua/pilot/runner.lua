@@ -4,38 +4,28 @@ local pathfinder = require("pilot.pathfinder")
 
 ---@alias RunClassification "project"|"file type"
 
----@class TaskEntry
+---@class Entry
 ---@field name string?
 ---@field command string?
 ---@field import string?
 ---@field location string?
 
----@class ExecutorParams
----@field name string
+---@alias Entries Entries
+
+---@class Task
 ---@field command string
+---@field executor Executor
 
----@class LastExecutedTask
----@field entry TaskEntry
----@field executor fun(params: ExecutorParams)
+local M = {}
 
-local M = {
-    last_executed_task = nil,
-}
+---@type Task|nil
+M.last_executed_task = nil
 
----@param entry TaskEntry
----@param known_executor fun(params: ExecutorParams)?
-local function execute_task(entry, known_executor)
-    local executor_params = {
-        name = entry.name or "",
-        command = interpolate_command(entry.command or ""),
-    }
-
-    if known_executor then
-        known_executor(executor_params)
-        return
-    end
-
+---@param entry Entry
+local function execute_entry(entry)
+    local command = interpolate_command(entry.command)
     local executor
+
     if entry.location == nil then
         executor = M.neovim_integrated_terminal_executor
     else
@@ -45,21 +35,21 @@ local function execute_task(entry, known_executor)
             )
         end
         executor = M.config.custom_locations[entry.location]
-    end
-    if executor == nil then
-        error(
-            string.format(
-                "[Pilot] Error: Attempted to retrieve custom location '%s' from 'custom_locations' in your configuration, but got nil instead.",
-                entry.location
+        if not executor then
+            error(
+                string.format(
+                    "[Pilot] Error: Attempted to retrieve custom location '%s' from 'custom_locations' in your configuration, but got nil instead.",
+                    entry.location
+                )
             )
-        )
+        end
     end
 
     M.last_executed_task = {
-        entry = entry,
+        command = command,
         executor = executor,
     }
-    executor(executor_params)
+    executor(command)
 end
 
 ---@return string?
@@ -86,83 +76,99 @@ local function read_fallback_project_run_config()
     return file_content
 end
 
----@param entries table
----@param run_classification string
----@return table?
-local function parse_entries(entries, run_classification)
-    local enumerated_entries = {}
+---@param entries Entries
+---@param command string
+local function add_string_entry(entries, command)
+    table.insert(entries, { name = command, command = command })
+end
 
-    for _, entry in ipairs(entries) do
-        if type(entry) ~= "table" then
+---@param entries Entries
+---@param entry Entry
+local function add_command_entry(entries, entry)
+    entry.name = entry.name or entry.command
+    table.insert(entries, entry)
+end
+
+---@param entries Entries
+---@param imported_entries Entries
+local function add_imported_entries(entries, imported_entries)
+    for _, imported_entry in ipairs(imported_entries) do
+        table.insert(entries, imported_entry)
+    end
+end
+
+---@param list table<number, table>
+---@param run_config_path string
+---@return Entries
+local function parse_list_to_entries(list, run_config_path)
+    if type(list) ~= "table" then
+        error(
+            string.format(
+                "[Pilot] run config must be a valid JSON array in '%s'.",
+                run_config_path
+            )
+        )
+    end
+
+    local entries = {}
+
+    for _, item in ipairs(list) do
+        local item_type = type(item)
+        if item_type ~= "table" and item_type ~= "string" then
             error(
                 string.format(
-                    "[Pilot] Error: Each entry in the '%s' run config must be a valid JSON object.",
-                    run_classification
+                    "[Pilot] Error: Each entry must be a valid JSON object or string in '%s'.",
+                    run_config_path
                 )
             )
         end
-        if not entry.command and not entry.import then
-            error(
-                "[Pilot] Error: Each entry must have either a 'command' or 'import' attribute, but not both."
-            )
-        end
 
-        if entry.command and entry.import then
-            error(
-                "[Pilot] Error: Entries cannot have both 'command' and 'import' attributes simultaneously."
-            )
-        end
-
-        if entry.command then
-            entry.name = entry.name or entry.command
-            table.insert(
-                enumerated_entries,
-                { index = #enumerated_entries + 1, entry = entry }
-            )
+        if item_type == "string" then
+            add_string_entry(entries, item)
         else
-            local file_content = fs_utils.read_file_to_string(
-                pathfinder.get_pilot_dirpath() .. "/" .. entry.import
-            )
-            if not file_content then
-                return
-            end
-            local imported_entries = vim.fn.json_decode(file_content)
-            if type(imported_entries) ~= "table" then
+            if not item.command and not item.import then
                 error(
-                    "[Pilot] Error: Imported run config must be a valid JSON list."
+                    string.format(
+                        "[Pilot] Error: Each entry must either have a 'command' or an 'import' attribute in '%s'.",
+                        run_config_path
+                    )
                 )
             end
-            local imported_enumerated_entries =
-                parse_entries(imported_entries, run_classification)
-            if not imported_enumerated_entries then
-                return
+            if item.command and item.import then
+                error(
+                    string.format(
+                        "[Pilot] Error: Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
+                        run_config_path
+                    )
+                )
             end
 
-            for _, imported_entry in ipairs(imported_enumerated_entries) do
-                local unique = true
-                for _, existing_entry in ipairs(enumerated_entries) do
-                    if
-                        existing_entry.entry.name == imported_entry.entry.name
-                    then
-                        unique = false
-                        break
-                    end
+            if item.command then
+                add_command_entry(entries, item)
+            else
+                local import_path = interpolate_command(item.import)
+                local file_content = fs_utils.read_file_to_string(import_path)
+                if not file_content then
+                    error(
+                        string.format(
+                            "[Pilot] Error: imported file '%s' doesn't exist",
+                            run_config_path
+                        )
+                    )
                 end
-                if unique then
-                    table.insert(enumerated_entries, {
-                        index = #enumerated_entries + 1,
-                        entry = imported_entry.entry,
-                    })
-                end
+                local imported_list = vim.fn.json_decode(file_content)
+                local imported_entries =
+                    parse_list_to_entries(imported_list, import_path)
+                add_imported_entries(entries, imported_entries)
             end
         end
     end
-    return enumerated_entries
+    return entries
 end
 
 ---@param run_config_path string
 ---@param run_classification RunClassification
----@return table?
+---@return Entries?
 local function parse_run_config(run_config_path, run_classification)
     local file_content = fs_utils.read_file_to_string(run_config_path)
     if not file_content then
@@ -188,15 +194,12 @@ local function parse_run_config(run_config_path, run_classification)
         end
     end
 
-    local entries = vim.fn.json_decode(file_content)
-    if type(entries) ~= "table" then
-        error("[Pilot] must be a valid JSON list/array.")
-    end
-    return parse_entries(entries, run_classification)
+    local list = vim.fn.json_decode(file_content)
+    return parse_list_to_entries(list, run_config_path)
 end
 
 ---@param config Config
----@param neovim_integrated_terminal_executor LocationExecutor
+---@param neovim_integrated_terminal_executor Executor
 M.init = function(config, neovim_integrated_terminal_executor)
     M.config = config
     M.neovim_integrated_terminal_executor = neovim_integrated_terminal_executor
@@ -205,9 +208,8 @@ end
 ---@param run_config_path string
 ---@param run_classification RunClassification
 M.select_command_and_execute = function(run_config_path, run_classification)
-    local enumerated_entries =
-        parse_run_config(run_config_path, run_classification)
-    if not enumerated_entries then
+    local entries = parse_run_config(run_config_path, run_classification)
+    if not entries then
         print(
             string.format(
                 "[Pilot] no command is specified for the %s run config.",
@@ -218,7 +220,7 @@ M.select_command_and_execute = function(run_config_path, run_classification)
     end
 
     if
-        #enumerated_entries == 1
+        #entries == 1
         and (
             run_classification == "project"
             and M.config.automatically_run_single_command.project
@@ -226,24 +228,25 @@ M.select_command_and_execute = function(run_config_path, run_classification)
             and M.config.automatically_run_single_command.file_type
         )
     then
-        execute_task(enumerated_entries[1].entry)
+        execute_entry(entries[1])
     else
-        vim.ui.select(enumerated_entries, {
-            prompt = string.format(
-                "Select a run command for this %s"
+        for i, entry in ipairs(entries) do
+            entries[i].name = i .. ". " .. entry.name
+        end
+        vim.ui.select(entries, {
+            prompt = "Select a run command for this "
+                .. run_classification
                 .. (
                     run_classification == "file type"
                     and " (" .. vim.bo.filetype .. ")"
                     or ""
                 ),
-                run_classification
-            ),
             format_item = function(entry)
-                return string.format("%d. %s", entry.index, entry.entry.name)
+                return entry.name
             end,
-        }, function(selected)
-            if selected then
-                execute_task(selected.entry)
+        }, function(chosen_entry)
+            if chosen_entry then
+                execute_entry(chosen_entry)
             end
         end)
     end
@@ -254,7 +257,7 @@ M.run_last_executed_task = function()
         print("[Pilot] no previously executed task.")
         return
     end
-    execute_task(M.last_executed_task.entry, M.last_executed_task.executor)
+    M.last_executed_task.executor(M.last_executed_task.command)
 end
 
 return M
