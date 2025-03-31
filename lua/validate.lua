@@ -36,7 +36,7 @@ local function validate_config(options)
         and type(options.fallback_project_run_config) ~= "function"
     then
         error(
-            "[Pilot] option 'fallback_project_run_file' must be a function or nil."
+            "[Pilot] option 'fallback_project_run_config' must be a function or nil."
         )
     end
 

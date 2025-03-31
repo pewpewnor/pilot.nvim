@@ -184,6 +184,7 @@ local function parse_run_config(run_config_path, run_classification)
                     run_classification
                 )
             )
+            return
         end
     end
 
