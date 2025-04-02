@@ -3,7 +3,7 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-Run your project or file with a single keybinding.
+A Neovim plugin that allows you to execute your project or file based on the custom run configuration that you wrote yourself.
 
 ## Features
 
