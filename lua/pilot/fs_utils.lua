@@ -2,7 +2,7 @@ local M = {}
 
 ---@param path string
 M.rm = function(path)
-    vim.fn.system("rm -r " .. path)
+    vim.fn.system("rm " .. path)
 end
 
 ---@param path string
