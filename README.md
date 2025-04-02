@@ -7,9 +7,9 @@ Run your project or file with a single keybinding.
 
 ## Features
 
-- Run/execute a file or a project
-- Location of execution can be picked and customized as you wish
-- Edit or remove your current project and file type run config file
+- Run/execute a file or a project.
+- Location of execution can be picked and customized as you wish.
+- Edit or remove your current project and file type run config file.
 
 ## Installation
 
@@ -58,7 +58,7 @@ require("pilot").setup({
 ```
 ### Got questions or have any ideas on how to improve this plugin?
 
-Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
+Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)!
 
 ### Contributing
 
