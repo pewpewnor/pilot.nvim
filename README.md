@@ -58,7 +58,7 @@ require("pilot").setup({
 ```
 ### Got questions or have any ideas on how to improve this plugin?
 
-Check out our [github discussion page](https://github.com/pewpewnor/pilot.nvim/discussions)
+Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
 
 ### Contributing
 
