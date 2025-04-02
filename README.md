@@ -56,6 +56,14 @@ require("pilot").setup({
     custom_locations = nil, -- must be a (table with the values in the key/value pair being strings) | nil
 })
 ```
+
+## Usage
+
+| Module                        | Description                                                       | Details               |
+|-------------------------------|-------------------------------------------------------------------|-----------------------|
+| PilotRemoveProjectRunConfig   | Remove the current project run config file from the file system   | Uses the `rm` command |
+| PilotRemoveFileTypeRunConfig  | Remove the current file type run config file from the file system | Uses the `rm` command |
+
 ### Got questions or have any ideas on how to improve this plugin?
 
 Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)!
