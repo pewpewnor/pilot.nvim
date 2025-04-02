@@ -42,6 +42,7 @@ use { "catppuccin/nvim", as = "catppuccin" }
 ## Configuration
 
 These are the default configuration options.
+
 > [!NOTE]
 > There is no need to pass anything to the `setup` function if you don't want to change any of the options.
 
@@ -59,22 +60,11 @@ require("pilot").setup({
 
 ## Usage
 
-| Module                        | Description                                                       | Details               |
-|-------------------------------|-------------------------------------------------------------------|-----------------------|
-| PilotRemoveProjectRunConfig   | Remove the current project run config file from the file system   | Uses the `rm` command |
-| PilotRemoveFileTypeRunConfig  | Remove the current file type run config file from the file system | Uses the `rm` command |
+| Module                       | Description                                                       | Details               |
+| ---------------------------- | ----------------------------------------------------------------- | --------------------- |
+| PilotRemoveProjectRunConfig  | Remove the current project run config file from the file system   | Uses the `rm` command |
+| PilotRemoveFileTypeRunConfig | Remove the current file type run config file from the file system | Uses the `rm` command |
 
 ### Got questions or have any ideas on how to improve this plugin?
 
 Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)!
-
-### Contributing
-
-- You can also create a github issue or start a github discussion in order to propose a feature.
-- You can create pull requests immediately to fix a bug or add new a feature.
-- Please reference the issue in the PR if the PR is related to an issue.
-- Try to use the following commit message format if you can:
-  - `fix: commit message` for fixes.
-  - `feat: commit message` for new features.
-  - `docs: commit message` for adding or updating the documentation.
-  - `chore: commit message` for anything else.
