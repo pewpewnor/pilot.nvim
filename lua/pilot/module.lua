@@ -8,12 +8,7 @@ local M = {}
 M.init = function(config)
     M.config = config
     pathfinder.init(config)
-    runner.init(config, M.neovim_integrated_terminal_executor)
-end
-
----@type Executor
-M.neovim_integrated_terminal_executor = function(command)
-    vim.cmd("tabnew | terminal " .. command)
+    runner.init(config)
 end
 
 M.run_project = function()

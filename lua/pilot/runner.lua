@@ -27,7 +27,7 @@ local function execute_entry(entry)
     local executor
 
     if entry.location == nil then
-        executor = M.neovim_integrated_terminal_executor
+        executor = M.config.default_executor
     else
         if not M.config or not M.config.custom_locations then
             error(
@@ -199,10 +199,8 @@ local function parse_run_config(run_config_path, run_classification)
 end
 
 ---@param config Config
----@param neovim_integrated_terminal_executor Executor
-M.init = function(config, neovim_integrated_terminal_executor)
+M.init = function(config)
     M.config = config
-    M.neovim_integrated_terminal_executor = neovim_integrated_terminal_executor
 end
 
 ---@param run_config_path string

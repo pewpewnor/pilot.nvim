@@ -4,14 +4,17 @@
 ---@field project boolean
 ---@field file_type boolean
 
+---@alias FallbackProjectRunConfig fun(): string
+
 ---@class CustomLocations
 ---@field [string] Executor
 
 ---@class Config
 ---@field local_project_config_dir string?
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
----@field fallback_project_run_config fun(): string
+---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field custom_locations CustomLocations?
+---@field default_executor Executor
 
 local module = require("pilot.module")
 
@@ -26,6 +29,7 @@ M.config = {
     },
     fallback_project_run_config = nil,
     custom_locations = nil,
+    default_executor = M.neovim_integrated_terminal_new_tab_executor,
 }
 
 ---@param options Config
@@ -76,6 +80,10 @@ local function validate_config(options)
     then
         error("[Pilot] option 'custom_locations' must be a table or nil.")
     end
+
+    if type(options.default_executor) ~= "function" then
+        error("[Pilot] option 'default_executor' must be a function.")
+    end
 end
 
 ---@param options table?
@@ -98,5 +106,15 @@ M.edit_file_type_run_config = module.edit_file_type_run_config
 M.remove_project_run_config = module.remove_project_run_config
 
 M.remove_file_type_run_config = module.remove_file_type_run_config
+
+---@type Executor
+M.neovim_integrated_terminal_current_buffer_executor = function(command)
+    vim.cmd("terminal " .. command)
+end
+
+---@type Executor
+M.neovim_integrated_terminal_new_tab_executor = function(command)
+    vim.cmd("tabnew | terminal " .. command)
+end
 
 return M
