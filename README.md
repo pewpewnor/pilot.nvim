@@ -1,47 +1,72 @@
-# A Neovim Plugin Template
+# pilot.nvim
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge)
+![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A template repository for Neovim plugins.
+Run your project or file with a single keybinding.
 
-## Using it
+## Features
 
-Via `gh`:
+- Run/execute a file or a project
+- Location of execution can be picked and customized as you wish
+- Edit or remove your current project and file type run config file
 
+## Installation
+
+Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+```lua
+-- init.lua:
+{ "pewpewnor/pilot.nvim", opts = {} }
+
+-- plugins/pilot.lua:
+return {
+    "pewpewnor/pilot.nvim",
+    opts = {}
+}
+--or
+return {
+    "pewpewnor/pilot.nvim",
+    config = function()
+        require("pilot").setup()
+    end
+}
 ```
-$ gh repo create my-plugin -p ellisonleao/nvim-plugin-template
+
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use { "catppuccin/nvim", as = "catppuccin" }
 ```
 
-Via github web page:
+## Configuration
 
-Click on `Use this template`
+These are the default configuration options.
+> [!NOTE]
+> There is no need to pass anything to the `setup` function if you don't want to change any of the options.
 
-![](https://docs.github.com/assets/cb-36544/images/help/repository/use-this-template-button.png)
-
-## Features and structure
-
-- 100% Lua
-- Github actions for:
-  - running tests using [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) and [busted](https://olivinelabs.com/busted/)
-  - check for formatting errors (Stylua)
-  - vimdocs autogeneration from README.md file
-  - luarocks release (LUAROCKS_API_KEY secret configuration required)
-
-### Plugin structure
-
+```lua
+require("pilot").setup({
+    local_project_config_dir = nil, -- must be a string | nil
+    automatically_run_single_command = {
+        project = true, -- must be a boolean
+        file_type = true, -- must be a boolean
+    },
+    fallback_project_run_config = nil, -- must be a (function that returns a string) | nil
+    custom_locations = nil, -- must be a (table with the values in the key/value pair being strings) | nil
+})
 ```
-.
-├── lua
-│   ├── plugin_name
-│   │   └── module.lua
-│   └── plugin_name.lua
-├── Makefile
-├── plugin
-│   └── plugin_name.lua
-├── README.md
-├── tests
-│   ├── minimal_init.lua
-│   └── plugin_name
-│       └── plugin_name_spec.lua
-```
+### Got questions or have any ideas on how to improve this plugin?
+
+Check out our [github discussion page](https://github.com/pewpewnor/pilot.nvim/discussions)
+
+### Contributing
+
+- You can also create a github issue or start a github discussion in order to propose a feature.
+- You can create pull requests immediately to fix a bug or add new a feature.
+- Please reference the issue in the PR if the PR is related to an issue.
+- Try to use the following commit message format if you can:
+  - `fix: commit message` for fixes.
+  - `feat: commit message` for new features.
+  - `docs: commit message` for adding or updating the documentation.
+  - `chore: commit message` for anything else.
