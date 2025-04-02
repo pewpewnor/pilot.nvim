@@ -80,7 +80,7 @@ local function validate_config(options)
     end
 end
 
----@param options Config
+---@param options table?
 M.setup = function(options)
     M.config = vim.tbl_deep_extend("force", M.config, options or {})
     validate_config(M.config)
