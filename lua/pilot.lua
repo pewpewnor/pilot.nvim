@@ -4,15 +4,13 @@
 ---@field project boolean
 ---@field file_type boolean
 
----@alias FallbackProjectRunFile fun(): string
-
 ---@class CustomLocations
 ---@field [string] Executor
 
 ---@class Config
 ---@field local_project_config_dir string?
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
----@field fallback_project_run_config FallbackProjectRunFile?
+---@field fallback_project_run_config fun(): string
 ---@field custom_locations CustomLocations?
 
 local module = require("pilot.module")
