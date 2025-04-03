@@ -69,7 +69,7 @@ change any of the options.
 
 > [!NOTE]
 > Check out the [configurations documentation section](docs/pilot.md#configurations)
-> which describes every possible configuration options for the setup function.
+> to see every possible configuration options for the setup function.
 
 ## Usage
 
@@ -118,8 +118,8 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig", pilot.delete_fi
 ```
 
 > [!NOTE]
-> The [functions documentation section](docs/pilot.md#functions) describes
-> all available pilot functions.
+> Check out the [functions documentation section](docs/pilot.md#functions) to see
+> the details of every pilot functions.
 
 ### Example project run config
 
@@ -131,7 +131,7 @@ As an example, if you set your `project_run_config_path` as
 "{{cwd_path}}/pilot.json", then here is what the _pilot.json_'s file content may
 look like.
 
-> [!TIPS]
+> [!TIP]
 > For each entry, you don't have to specify a display name. You can also instead
 > use astring for defining an entry/command.
 
@@ -153,7 +153,7 @@ look like.
 Let's say you want to write a file type run config for compiling and running any
 file that has "c" as the vim file type (the c programming language).
 
-> [!TIPS]
+> [!TIP]
 > Use the mustache syntax to define placeholders that will be automatically
 > replaced by pilot.nvim on the fly!
 
@@ -167,8 +167,8 @@ file that has "c" as the vim file type (the c programming language).
 ```
 
 > [!NOTE]
-> The [run config documentation section](docs/pilot.md#run-config) describes
-> the project and file type run config JSON format even further.
+> Check out the [run config documentation section](docs/pilot.md#run-config) to
+> see the JSON format for project and file type run configs even further.
 
 ### Got questions or have any ideas on how to improve this plugin?
 
