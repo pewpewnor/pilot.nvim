@@ -151,13 +151,21 @@ local function parse_list_to_entries(list, run_config_path)
                 if not file_content then
                     error(
                         string.format(
-                            "[Pilot] Error: imported file '%s' doesn't exist",
+                            "[Pilot] Error: Imported file '%s' doesn't exist",
                             import_path
                         )
                     )
                 end
-                local imported_list = vim.fn.json_decode(file_content)
-                -- TODO: pcall json_decode
+                local success, imported_list =
+                    pcall(vim.fn.json_decode, file_content)
+                if not success then
+                    error(
+                        string.format(
+                            "[Pilot] Error: Imported file '%s' has invalid JSON format.",
+                            import_path
+                        )
+                    )
+                end
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)
                 add_imported_entries(entries, imported_entries)
@@ -198,8 +206,10 @@ local function parse_run_config(run_config_path, run_classification)
         end
     end
 
-    local list = vim.fn.json_decode(file_content)
-    -- TODO: pcall json_decode
+    local success, list = pcall(vim.fn.json_decode, file_content)
+    if not success then
+        error("[Pilot] Error: Your run config has invalid JSON format.")
+    end
     return parse_list_to_entries(list, run_config_path)
 end
 
