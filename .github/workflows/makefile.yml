@@ -1,18 +1,19 @@
 name: Makefile CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/checkout@v2
+            - uses: MunifTanjim/setup-neovim-action@v1
 
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Run tests
-      run: make test
+            - name: Run tests
+              run: make test
