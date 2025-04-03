@@ -44,9 +44,9 @@ use { "catppuccin/nvim", as = "catppuccin" }
 
 ### General terms
 
-- project run config -> the customizable JSON file containing your commands to
+- Project run config -> the customizable JSON file containing your commands to
   run the current project.
-- file type run config -> the customizable JSON file containing your commands to
+- File type run config -> the customizable JSON file containing your commands to
   run the current file based on the file type.
 
 ## Default configuration
