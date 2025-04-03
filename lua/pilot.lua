@@ -20,6 +20,16 @@ local module = require("pilot.module")
 
 local M = {}
 
+---@type Executor
+M.neovim_integrated_terminal_current_buffer_executor = function(command)
+    vim.cmd("terminal " .. command)
+end
+
+---@type Executor
+M.neovim_integrated_terminal_new_tab_executor = function(command)
+    vim.cmd("tabnew | terminal " .. command)
+end
+
 ---@type Config
 M.config = {
     local_project_config_dir = nil,
@@ -103,18 +113,8 @@ M.edit_project_run_config = module.edit_project_run_config
 
 M.edit_file_type_run_config = module.edit_file_type_run_config
 
-M.remove_project_run_config = module.remove_project_run_config
+M.delete_project_run_config = module.delete_project_run_config
 
-M.remove_file_type_run_config = module.remove_file_type_run_config
-
----@type Executor
-M.neovim_integrated_terminal_current_buffer_executor = function(command)
-    vim.cmd("terminal " .. command)
-end
-
----@type Executor
-M.neovim_integrated_terminal_new_tab_executor = function(command)
-    vim.cmd("tabnew | terminal " .. command)
-end
+M.delete_file_type_run_config = module.delete_file_type_run_config
 
 return M

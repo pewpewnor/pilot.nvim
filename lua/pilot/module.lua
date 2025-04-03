@@ -35,11 +35,11 @@ M.edit_file_type_run_config = function()
     vim.cmd("tabedit " .. pathfinder.get_file_type_run_config_path())
 end
 
-M.remove_project_run_config = function()
+M.delete_project_run_config = function()
     fs_utils.rm(pathfinder.get_project_run_config_path())
 end
 
-M.remove_file_type_run_config = function()
+M.delete_file_type_run_config = function()
     fs_utils.rm(pathfinder.get_file_type_run_config_path())
 end
 
