@@ -1,3 +1,4 @@
-vendor/plenary.nvim
+.idea/       # jetbrains IDEs
+.vscode/     # vscode
 
-.idea/
+vendor/
