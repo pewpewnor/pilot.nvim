@@ -93,7 +93,7 @@ pilot.setup({
         -- e.g. if the project has CMakeLists.txt, then we will use our
         -- 'cmake_project.json' as our project run config
         elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
-            return "{{pilot_data_path}}/cmake_project.json"
+            return "/home/user/templates/cmake_project.json"
         end
     end,
     -- define custom locations that can be used in any pilot run config
@@ -124,27 +124,27 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig", pilot.delete_fi
 
 ## Example project run config
 
-> [!NOTE]
-> The project run config and the file type run config use the exact same JSON
-> format.
-
 As an example, if you set your `project_run_config_path` as
 "{{cwd_path}}/pilot.json", then here is what the _pilot.json_'s file content may
 look like.
 
 > [!TIP]
-> For each entry, you don't have to specify a display name. You can also instead
-> use astring for defining an entry/command.
+> Use the mustache syntax such as `{{cword}}` to insert a placeholder that
+> will automatically be replaced by pilot.nvim on the fly!
 
 ```json
 [
     {
-        "name": "build & run project with Makefile",
+        "name": "run specific test, simply hover over the function name",
+        "command": "go test -v --run {{cword}}"
+    },
+    {
+        "name": "build & run project",
         "command": "make build && make run"
     },
     {
-        "name": "run script for unit testing",
-        "command": "./test.sh"
+        "name": "list current directory"
+        "command": "ls {{dir_path}}"
     }
 ]
 ```
@@ -155,8 +155,9 @@ Let's say you want to write a file type run config for compiling and running any
 file that has "c" as the vim file type (the c programming language).
 
 > [!TIP]
-> Use the mustache syntax to define placeholders that will be automatically
-> replaced by pilot.nvim on the fly!
+> For each entry, you don't have to specify a display name if you want it to be
+> the same as the literal command. You can also instead use a string for
+> defining an entry/command.
 
 ```json
 [
@@ -170,6 +171,20 @@ file that has "c" as the vim file type (the c programming language).
 > [!NOTE]
 > Check out the [run config documentation section](docs/pilot.md#run-config) to
 > see the JSON format for project and file type run configs even further.
+
+> [!NOTE]
+> The project run config and the file type run config use the exact same JSON
+> format.
+
+## Placeholders (mustache syntax)
+
+table here
+
+## Preset executors
+
+example of setting default_executor
+
+table here
 
 ### Got questions or have any ideas on how to improve this plugin?
 
