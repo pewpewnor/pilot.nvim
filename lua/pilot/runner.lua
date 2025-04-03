@@ -1,6 +1,5 @@
 local fs_utils = require("pilot.fs_utils")
 local interpolate_command = require("pilot.interpolation")
-local pathfinder = require("pilot.pathfinder")
 
 ---@alias RunClassification "project"|"file type"
 
@@ -55,15 +54,16 @@ end
 ---@return string?
 local function read_fallback_project_run_config()
     local fallback_project_run_config = M.config.fallback_project_run_config()
+    if not fallback_project_run_config then
+        return nil
+    end
     if type(fallback_project_run_config) ~= "string" then
         error(
             "[Pilot] Error: 'fallback_project_run_config' must return a string or nil."
         )
     end
 
-    local fallback_path = pathfinder.get_pilot_data_path()
-        .. "/"
-        .. fallback_project_run_config
+    local fallback_path = interpolate_command(fallback_project_run_config)
     local file_content = fs_utils.read_file_to_string(fallback_path)
     if file_content == nil then
         error(
@@ -152,11 +152,12 @@ local function parse_list_to_entries(list, run_config_path)
                     error(
                         string.format(
                             "[Pilot] Error: imported file '%s' doesn't exist",
-                            run_config_path
+                            import_path
                         )
                     )
                 end
                 local imported_list = vim.fn.json_decode(file_content)
+                -- TODO: pcall json_decode
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)
                 add_imported_entries(entries, imported_entries)
@@ -172,10 +173,7 @@ end
 local function parse_run_config(run_config_path, run_classification)
     local file_content = fs_utils.read_file_to_string(run_config_path)
     if not file_content then
-        if
-            run_classification == "project"
-            and M.config.fallback_project_run_config
-        then
+        if run_classification == "project" then
             if M.config.fallback_project_run_config == nil then
                 print(
                     "[Pilot] Error: No project run config detected and no fallback configuration."
@@ -183,11 +181,17 @@ local function parse_run_config(run_config_path, run_classification)
                 return
             end
             file_content = read_fallback_project_run_config()
+            if not file_content then
+                print(
+                    "[Pilot] Error: No project run config detected and fallback returns nil."
+                )
+                return
+            end
         else
             print(
                 string.format(
-                    "[Pilot] no detected run config for this %s.",
-                    run_classification
+                    "[Pilot] No detected run config for file type %s.",
+                    vim.bo.filetype
                 )
             )
             return
@@ -195,6 +199,7 @@ local function parse_run_config(run_config_path, run_classification)
     end
 
     local list = vim.fn.json_decode(file_content)
+    -- TODO: pcall json_decode
     return parse_list_to_entries(list, run_config_path)
 end
 
@@ -208,12 +213,6 @@ end
 M.select_command_and_execute = function(run_config_path, run_classification)
     local entries = parse_run_config(run_config_path, run_classification)
     if not entries then
-        print(
-            string.format(
-                "[Pilot] no command is specified for the %s run config.",
-                run_classification
-            )
-        )
         return
     end
 
@@ -221,9 +220,9 @@ M.select_command_and_execute = function(run_config_path, run_classification)
         #entries == 1
         and (
             run_classification == "project"
-            and M.config.automatically_run_single_command.project
+                and M.config.automatically_run_single_command.project
             or run_classification == "file type"
-            and M.config.automatically_run_single_command.file_type
+                and M.config.automatically_run_single_command.file_type
         )
     then
         execute_entry(entries[1])
@@ -236,7 +235,7 @@ M.select_command_and_execute = function(run_config_path, run_classification)
                 .. run_classification
                 .. (
                     run_classification == "file type"
-                    and " (" .. vim.bo.filetype .. ")"
+                        and " (" .. vim.bo.filetype .. ")"
                     or ""
                 ),
             format_item = function(entry)

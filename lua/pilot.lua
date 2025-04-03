@@ -1,20 +1,20 @@
----@alias Executor fun(command: string)
+---@alias FallbackProjectRunConfig fun(): string
 
 ---@class AutomaticallyRunSingleCommand
 ---@field project boolean
 ---@field file_type boolean
 
----@alias FallbackProjectRunConfig fun(): string
+---@alias Executor fun(command: string)
 
 ---@class CustomLocations
 ---@field [string] Executor
 
 ---@class Config
 ---@field local_project_config_dir string?
----@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field fallback_project_run_config FallbackProjectRunConfig?
----@field custom_locations CustomLocations?
+---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor Executor
+---@field custom_locations CustomLocations?
 
 local module = require("pilot.module")
 
@@ -33,13 +33,14 @@ end
 ---@type Config
 M.config = {
     local_project_config_dir = nil,
+    -- TODO: add path to search for filetypes run config, use vim.stdpath() for the default value
+    fallback_project_run_config = nil,
     automatically_run_single_command = {
         project = true,
         file_type = true,
     },
-    fallback_project_run_config = nil,
-    custom_locations = nil,
     default_executor = M.neovim_integrated_terminal_new_tab_executor,
+    custom_locations = nil,
 }
 
 ---@param options Config
