@@ -3,13 +3,16 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A Neovim plugin that allows you to **execute** your **project or file** based on the **custom run configuration file** (JSON) that you wrote yourself.
+A Neovim plugin that allows you to **execute** your **project or file** based
+on the **custom run configuration file** (JSON) that you wrote yourself.
 
 ## Features
 
 - Run/execute a file or a project.
-- Location of execution can be picked and customized as you wish.
+- Location of command execution can be picked and customized to your heart's
+  content (not just Neovim's integrated terminal).
 - Edit or remove your current project and file type run config file.
+- Highly customizable project and file run config path/location.
 
 ## Installation
 

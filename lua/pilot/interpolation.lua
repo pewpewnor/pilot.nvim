@@ -1,4 +1,3 @@
-local pathfinder = require("pilot.pathfinder")
 local string_utils = require("pilot.string_utils")
 
 ---@return string
@@ -13,7 +12,7 @@ end
 
 ---@param placeholder string
 ---@return string
-local function resolve_command_placeholder(placeholder)
+local function resolve_placeholder(placeholder)
     if placeholder == "file_path" then
         return vim.fn.fnameescape(vim.fn.expand("%:p"))
     elseif placeholder == "file_path_relative" then
@@ -43,12 +42,18 @@ local function resolve_command_placeholder(placeholder)
             get_current_working_dir_path(),
             "/"
         )
+    elseif placeholder == "pilot_data_path" then
+        local pilot_data_path = vim.fn.stdpath("data") .. "/pilot"
+        if vim.fn.isdirectory(pilot_data_path) == 0 then
+            vim.fn.mkdir(pilot_data_path)
+        end
+        return pilot_data_path
     elseif placeholder == "cword" then
         return vim.fn.expand("<cword>")
     elseif placeholder == "cWORD" then
         return vim.fn.expand("<cWORD>")
-    elseif placeholder == "pilot_data_path" then
-        return pathfinder.get_pilot_data_path()
+    elseif placeholder == "hash:cwd_path" then
+        return vim.fn.sha256(vim.fn.getcwd())
     end
     error(
         string.format(
@@ -60,7 +65,7 @@ end
 
 ---@param command string
 ---@return string
-local function interpolate_command(command)
+local function interpolate_mustaches(command)
     local required_braces = 2
     local pattern = "({+)([^}]+)(}+)"
 
@@ -84,7 +89,7 @@ local function interpolate_command(command)
                 return open_braces .. placeholder .. closing_braces
             end
 
-            local interpolated = resolve_command_placeholder(placeholder)
+            local interpolated = resolve_placeholder(placeholder)
             if open_count > required_braces then
                 interpolated = open_braces:sub(1, open_count - required_braces)
                     .. interpolated
@@ -99,4 +104,4 @@ local function interpolate_command(command)
     return result
 end
 
-return interpolate_command
+return interpolate_mustaches

@@ -10,7 +10,8 @@
 ---@field [string] Executor
 
 ---@class Config
----@field local_project_config_dir string?
+---@field project_run_config_path string?
+---@field file_type_run_config_path string?
 ---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor Executor
@@ -32,8 +33,8 @@ end
 
 ---@type Config
 M.config = {
-    local_project_config_dir = nil,
-    -- TODO: add path to search for filetypes run config, use vim.stdpath() for the default value
+    project_run_config_dir_path = nil,
+    file_types_run_config_dir_path = nil,
     fallback_project_run_config = nil,
     automatically_run_single_command = {
         project = true,
@@ -45,54 +46,51 @@ M.config = {
 
 ---@param options Config
 local function validate_config(options)
-    if options ~= nil and type(options) ~= "table" then
+    if type(options) ~= "table" and options ~= nil then
         error("[Pilot] given configuration must be a table or nil")
-    end
-
-    if
-        options.local_project_config_dir ~= nil
-        and type(options.local_project_config_dir) ~= "string"
+    elseif
+        type(options.project_run_config_path) ~= "string"
+        and options.project_run_config_path ~= nil
     then
         error(
-            "[Pilot] option 'local_project_config_dir' must either be a string or nil."
+            "[Pilot] option 'project_run_config_path' must either be a string or nil."
         )
-    end
-
-    if type(options.automatically_run_single_command) ~= "table" then
+    elseif
+        type(options.file_type_run_config_path) ~= "string"
+        and options.file_type_run_config_path ~= nil
+    then
+        error(
+            "[Pilot] option 'file_type_run_config_path' must either be a string or nil."
+        )
+    elseif type(options.automatically_run_single_command) ~= "table" then
         error(
             "[Pilot] option 'automatically_run_single_command' must be a table."
         )
-    end
-    if type(options.automatically_run_single_command.project) ~= "boolean" then
+    elseif
+        type(options.automatically_run_single_command.project) ~= "boolean"
+    then
         error(
             "[Pilot] option 'automatically_run_single_command.project' must be a boolean."
         )
-    end
-    if
+    elseif
         type(options.automatically_run_single_command.file_type) ~= "boolean"
     then
         error(
             "[Pilot] option 'automatically_run_single_command.file_type' must be a boolean."
         )
-    end
-
-    if
-        options.fallback_project_run_config ~= nil
-        and type(options.fallback_project_run_config) ~= "function"
+    elseif
+        type(options.fallback_project_run_config) ~= "function"
+        and options.fallback_project_run_config ~= nil
     then
         error(
             "[Pilot] option 'fallback_project_run_config' must be a function or nil."
         )
-    end
-
-    if
-        options.custom_locations ~= nil
-        and type(options.custom_locations) ~= "table"
+    elseif
+        type(options.custom_locations) ~= "table"
+        and options.custom_locations ~= nil
     then
         error("[Pilot] option 'custom_locations' must be a table or nil.")
-    end
-
-    if type(options.default_executor) ~= "function" then
+    elseif type(options.default_executor) ~= "function" then
         error("[Pilot] option 'default_executor' must be a function.")
     end
 end

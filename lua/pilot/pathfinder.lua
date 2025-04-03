@@ -1,3 +1,5 @@
+local interpolate_mustaches = require("pilot.interpolation")
+
 local M = {}
 
 ---@param dir_path string
@@ -30,45 +32,38 @@ end
 
 ---@return string
 function M.get_file_type_run_config_path()
-    local project_run_config_dir_path = M.get_pilot_data_path() .. "/projects"
-    if not create_dir_path(project_run_config_dir_path) then
+    if M.config.file_type_run_config_path then
+        return interpolate_mustaches(M.config.file_type_run_config_path)
+    end
+
+    local dir_path = M.get_pilot_data_path() .. "/filetypes"
+    if not create_dir_path(dir_path) then
         error(
             string.format(
-                "[Pilot] Failed to create project run config directory at '%s'.",
-                project_run_config_dir_path
+                "[Pilot] Failed to create file type run config directory at '%s'.",
+                dir_path
             )
         )
     end
-    return string.format(
-        "%s/filetypes/%s.json",
-        M.get_pilot_data_path(),
-        vim.bo.filetype
-    )
+    return string.format("%s/%s.json", dir_path, vim.bo.filetype)
 end
 
 ---@return string
 function M.get_project_run_config_path()
-    if M.config.local_project_config_dir then
-        return string.format(
-            "%s/%s/pilot.json",
-            vim.fn.getcwd(),
-            M.config.local_project_config_dir
-        )
+    if M.config.project_run_config_path then
+        return interpolate_mustaches(M.config.project_run_config_path)
     end
-    local project_run_config_dir_path = M.get_pilot_data_path() .. "/projects"
-    if not create_dir_path(project_run_config_dir_path) then
+
+    local dir_path = M.get_pilot_data_path() .. "/projects"
+    if not create_dir_path(dir_path) then
         error(
             string.format(
                 "[Pilot] Failed to create project run config directory at '%s'.",
-                project_run_config_dir_path
+                dir_path
             )
         )
     end
-    return string.format(
-        "%s/%s.json",
-        project_run_config_dir_path,
-        vim.fn.sha256(vim.fn.getcwd())
-    )
+    return string.format("%s/%s.json", dir_path, vim.fn.sha256(vim.fn.getcwd()))
 end
 
 return M

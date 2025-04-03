@@ -1,5 +1,5 @@
 local fs_utils = require("pilot.fs_utils")
-local interpolate_command = require("pilot.interpolation")
+local interpolate_mustaches = require("pilot.interpolation")
 
 ---@alias RunClassification "project"|"file type"
 
@@ -22,7 +22,7 @@ M.last_executed_task = nil
 
 ---@param entry Entry
 local function execute_entry(entry)
-    local command = interpolate_command(entry.command)
+    local command = interpolate_mustaches(entry.command)
     local executor
 
     if entry.location == nil then
@@ -63,7 +63,7 @@ local function read_fallback_project_run_config()
         )
     end
 
-    local fallback_path = interpolate_command(fallback_project_run_config)
+    local fallback_path = interpolate_mustaches(fallback_project_run_config)
     local file_content = fs_utils.read_file_to_string(fallback_path)
     if file_content == nil then
         error(
@@ -146,7 +146,7 @@ local function parse_list_to_entries(list, run_config_path)
             if item.command then
                 add_command_entry(entries, item)
             else
-                local import_path = interpolate_command(item.import)
+                local import_path = interpolate_mustaches(item.import)
                 local file_content = fs_utils.read_file_to_string(import_path)
                 if not file_content then
                     error(
