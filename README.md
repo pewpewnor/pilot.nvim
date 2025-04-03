@@ -71,9 +71,7 @@ change any of the options.
 > Check out the [configurations documentation section](docs/pilot.md#configurations)
 > to see every possible configuration options for the setup function.
 
-## Usage
-
-### Example configuration
+## Example configuration
 
 ```lua
 local pilot = require("pilot")
@@ -121,7 +119,7 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig", pilot.delete_fi
 > Check out the [functions documentation section](docs/pilot.md#functions) to see
 > the details of every pilot functions.
 
-### Example project run config
+## Example project run config
 
 > [!NOTE]
 > The project run config and the file type run config use the exact same JSON
@@ -148,7 +146,7 @@ look like.
 ]
 ```
 
-### Example file type run config
+## Example file type run config
 
 Let's say you want to write a file type run config for compiling and running any
 file that has "c" as the vim file type (the c programming language).
