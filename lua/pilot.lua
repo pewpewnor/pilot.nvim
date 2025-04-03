@@ -33,8 +33,8 @@ end
 
 ---@type Config
 M.config = {
-    project_run_config_dir_path = nil,
-    file_types_run_config_dir_path = nil,
+    project_run_config_path = nil,
+    file_types_run_config_path = nil,
     fallback_project_run_config = nil,
     automatically_run_single_command = {
         project = true,
