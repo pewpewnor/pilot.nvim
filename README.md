@@ -8,11 +8,14 @@ on the **custom run configuration file** (JSON) that you wrote yourself.
 
 ## Features
 
-- Run/execute a file or a project.
-- Location of command execution can be picked and customized to your heart's
-  content (not just Neovim's integrated terminal).
-- Edit or remove your current project and file type run config file.
+- Run, test, and debug any file or project.
+- Unlike many other code runner plugins, you can customize pilot.nvim to compile
+  and run a program
+- Location of command execution can be customized to your heart's content
+  (pilot.nvim provide presets as well).
 - Highly customizable path/location for your project and file type run configs.
+- Edit or remove your current project and file type run config file with
+  keybindings.
 
 ## Installation
 
