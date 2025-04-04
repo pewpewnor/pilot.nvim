@@ -4,7 +4,8 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **execute** your **project or file** based
-on the **custom run configuration file** (JSON) that you wrote.
+on the **custom JSON run configuration file** that you wrote. One JSON file for
+each file type and one JSON file for each project.
 
 ## Features
 
@@ -114,8 +115,10 @@ vim.keymap.set("n", "<Leader>ep", pilot.edit_project_run_config)
 vim.keymap.set("n", "<Leader>ef", pilot.edit_file_type_run_config)
 
 -- example of creating vim user commands for pilot functions
-vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig", pilot.delete_project_run_config, { nargs = 0, bar = false })
-vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig", pilot.delete_file_type_run_config, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
+    pilot.delete_project_run_config, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
+    pilot.delete_file_type_run_config, { nargs = 0, bar = false })
 ```
 
 > [!NOTE]
@@ -129,8 +132,8 @@ As an example, if you set your `project_run_config_path` as
 look like.
 
 > [!TIP]
-> Use the mustache syntax such as `{{cword}}` to insert a placeholder that
-> will automatically be replaced by pilot.nvim on the fly!
+> Use the mustache syntax like `{{cword}}` to insert a placeholder that will
+> automatically be replaced by pilot.nvim on the fly!
 
 ```json
 [
