@@ -46,7 +46,12 @@ return {
 Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use { "catppuccin/nvim", as = "catppuccin" }
+use {
+    "pewpewnor/pilot.nvim",
+    config = function()
+        require("pilot").setup()
+    end
+}
 ```
 
 ### General terms
