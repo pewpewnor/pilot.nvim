@@ -22,12 +22,17 @@ local module = require("pilot.module")
 local M = {}
 
 ---@type Executor
-M.neovim_integrated_terminal_current_buffer_executor = function(command)
+M.nvim_print = function(command)
+    print(vim.fn.system(command))
+end
+
+---@type Executor
+M.nvim_terminal_current_buffer_executor = function(command)
     vim.cmd("terminal " .. command)
 end
 
 ---@type Executor
-M.neovim_integrated_terminal_new_tab_executor = function(command)
+M.nvim_terminal_new_tab_executor = function(command)
     vim.cmd("tabnew | terminal " .. command)
 end
 
@@ -40,7 +45,7 @@ M.config = {
         project = true,
         file_type = true,
     },
-    default_executor = M.neovim_integrated_terminal_new_tab_executor,
+    default_executor = M.nvim_terminal_new_tab_executor,
     custom_locations = nil,
 }
 
