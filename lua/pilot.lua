@@ -22,8 +22,8 @@ local module = require("pilot.module")
 local M = {}
 
 ---@type Executor
-M.nvim_print = function(command)
-    print(vim.fn.system(command))
+M.nvim_terminal_new_tab_executor = function(command)
+    vim.cmd("tabnew | terminal " .. command)
 end
 
 ---@type Executor
@@ -32,8 +32,13 @@ M.nvim_terminal_current_buffer_executor = function(command)
 end
 
 ---@type Executor
-M.nvim_terminal_new_tab_executor = function(command)
-    vim.cmd("tabnew | terminal " .. command)
+M.print_executor = function(command)
+    print(vim.fn.system(command))
+end
+
+---@type Executor
+M.background_executor = function(command)
+    vim.fn.system(command)
 end
 
 ---@type Config
