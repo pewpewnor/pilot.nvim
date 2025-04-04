@@ -4,14 +4,16 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **execute** your **project or file** based
-on the **custom JSON run configuration file** that you wrote. One JSON file for
-each file type and one JSON file for each project.
+on the **custom JSON run configuration file** that you wrote. You can have one
+JSON file for each project and one JSON file for each file type.
 
 ## Features
 
 - Run arbritrary command to run, test, and debug any file or project.
 - Since we use JSON file for run configurations, you can adjust it on the fly
   without needing to reload Neovim everytime.
+- Supports fallback project run configuration so you don't have to create the
+  same JSON file for each project
 - Unlike many other code runner plugins, it is possible to compile code and run
   the program afterwards.
 - Customizable path/location for your project and file run configurations.
