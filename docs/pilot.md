@@ -282,9 +282,7 @@ automatically_run_single_command
     Whether to automatically run a command if only one is defined in the project or file-type config.
 
     Use cases:
-
         project = true: Automatically run the single project command without prompting.
-
         file_type = false: Show a selection menu even if there’s only one file-type command.
 
 fallback_project_run_config
@@ -317,13 +315,12 @@ custom_locations
     Default locations or execution methods will be used.
 
     Example:
-
-```lua
-custom_locations = {
-    floating = "lua require('pilot.location').float_term()",
-    split = "vsplit | terminal",
-}
-```
+    ```lua
+    custom_locations = {
+        floating = "lua require('pilot.location').float_term()",
+        split = "vsplit | terminal",
+    }
+    ```
 
 ## Functions
 

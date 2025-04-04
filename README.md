@@ -80,7 +80,7 @@ change any of the options.
 ```
 
 > [!NOTE]
-> Check out the [configurations documentation section](docs/pilot.md#configurations)
+> Check out the [configurations documentation section](docs/pilot.md#configuration-options)
 > to see every possible configuration options for the setup function.
 
 ## Example configuration
