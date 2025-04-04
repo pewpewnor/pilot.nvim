@@ -9,14 +9,15 @@ each file type and one JSON file for each project.
 
 ## Features
 
-- Run, test, and debug any file or project.
-- Unlike many other code runner plugins, you can customize pilot.nvim to compile
-  and run a program
-- Location of command execution can be customized to your heart's content
-  (pilot.nvim provide presets as well).
-- Highly customizable path/location for your project and file type run configs.
-- Edit or remove your current project and file type run config file with
-  keybindings.
+- Run arbritrary command to run, test, and debug any file or project.
+- Since we use JSON file for run configurations, you can adjust it on the fly
+  without needing to reload Neovim everytime.
+- Unlike many other code runner plugins, it is possible to compile code and run
+  the program afterwards.
+- Customizable path/location for your project and file run configurations.
+- Customizable location of command execution (presets are also provided).
+- Bindable functions to run, edit, and remove your project and file type
+  run configuration.
 
 ## Installation
 
