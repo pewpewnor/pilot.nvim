@@ -1,0 +1,330 @@
+# ✈️ pilot.nvim
+
+![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
+![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
+
+A Neovim plugin that allows you to **execute** your **project or file** based
+on the **custom JSON run configuration file** that you wrote. You can have one
+JSON file for each project and one JSON file for each file type.
+
+## Features
+
+- Run arbritrary command to run, test, and debug any file or project.
+- Since we use JSON file for run configurations, you can adjust it on the fly
+  without needing to reload Neovim everytime.
+- Supports fallback project run configuration so you don't have to create the
+  same JSON file for each project
+- Unlike many other code runner plugins, it is possible to compile code and run
+  the program afterwards.
+- Customizable path/location for your project and file run configurations.
+- Customizable location of command execution (presets are also provided).
+- Bindable functions to run, edit, and remove your project and file type
+  run configuration.
+
+## Installation
+
+Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+```lua
+-- init.lua:
+{ "pewpewnor/pilot.nvim", opts = {} }
+
+-- plugins/pilot.lua:
+return {
+    "pewpewnor/pilot.nvim",
+    opts = {}
+}
+--or
+return {
+    "pewpewnor/pilot.nvim",
+    config = function()
+        require("pilot").setup()
+    end
+}
+```
+
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use {
+    "pewpewnor/pilot.nvim",
+    config = function()
+        require("pilot").setup()
+    end
+}
+```
+
+### General terms
+
+- Project run config -> the customizable JSON file containing your commands to
+  run the current project.
+- File type run config -> the customizable JSON file containing your commands to
+  run the current file based on the file type.
+
+## Default configuration
+
+There is no need to pass anything to the `setup` function if you don't want to
+change any of the options.
+
+```lua
+{
+    project_run_config_path = nil, -- must be a string | nil
+    file_type_run_config_path = nil, -- must be a string | nil
+    automatically_run_single_command = {
+        project = true, -- must be a boolean
+        file_type = true, -- must be a boolean
+    },
+    fallback_project_run_config = nil, -- must be a (function that returns a string) | nil
+    custom_locations = nil, -- must be a (key/value table with the values being strings) | nil
+}
+```
+
+> [!NOTE]
+> Check out the [configurations documentation section](docs/pilot.md#configurations)
+> to see every possible configuration options for the setup function.
+
+## Example configuration
+
+```lua
+local pilot = require("pilot")
+pilot.setup({
+    -- grab the pilot configuration from the current working directory instead
+    -- of automatically generating one
+    project_run_config_path = "{{cwd_path}}/pilot.json",
+    -- will be used instead if there is no project run config file
+    -- at the path specified in the 'project_run_config_path' option
+    fallback_project_run_config = function()
+        -- you can customize this logic
+        -- e.g. if the project has 'package-lock.json', then use our
+        -- 'npm_project.json' as the project run config
+        if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+            return  "{{pilot_data_path}}/npm_project.json"
+        -- e.g. if the project has CMakeLists.txt, then we will use our
+        -- 'cmake_project.json' as our project run config
+        elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
+            return "/home/user/templates/cmake_project.json"
+        end
+    end,
+    -- define custom locations that can be used in any pilot run config
+    custom_locations = {
+        -- custom location that executes the command in a new tmux window
+        tmux_new_window = function(command)
+            vim.fn.system("tmux new-window -d")
+            vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
+        end,
+    },
+})
+
+-- customize these keybindings to your liking
+vim.keymap.set("n", "<Leader>xp", pilot.run_project)
+vim.keymap.set("n", "<Leader>xf", pilot.run_file_type)
+vim.keymap.set("n", "<Leader>xl", pilot.run_last_executed_task)
+vim.keymap.set("n", "<Leader>ep", pilot.edit_project_run_config)
+vim.keymap.set("n", "<Leader>ef", pilot.edit_file_type_run_config)
+
+-- example of creating vim user commands for pilot functions
+vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
+    pilot.delete_project_run_config, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
+    pilot.delete_file_type_run_config, { nargs = 0, bar = false })
+```
+
+> [!NOTE]
+> Check out the [functions documentation section](docs/pilot.md#functions) to
+> see the details of every pilot functions.
+
+## Example project run config
+
+As an example, if you set your `project_run_config_path` as
+"{{cwd_path}}/pilot.json", then here is what the _pilot.json_'s file content may
+look like.
+
+> [!TIP]
+> Use the mustache syntax like `{{cword}}` to insert a placeholder that will
+> automatically be replaced by pilot.nvim on the fly!
+
+```json
+[
+    {
+        "name": "run specific test (cursor hover over the function name)",
+        "command": "go test -v --run {{cword}}"
+    },
+    {
+        "name": "build & run project",
+        "command": "make build && make run"
+    },
+    {
+        "command": "ls {{dir_path}}",
+        "location": "tmux_new_window"
+    }
+]
+```
+
+## Example file type run config
+
+Let's say you want to write a file type run config for compiling and running any
+file that has "c" as the vim file type (the c programming language).
+
+> [!TIP]
+> For each entry, you don't have to specify a display name if you want it to be
+> the same as the literal command. You can also instead use a string for
+> defining an entry/command.
+
+```json
+[
+    {
+        "name": "clang",
+        "command": "clang {{file_path_relative}} && ./a.out"
+    },
+    "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}"
+]
+```
+
+> [!NOTE]
+> Check out the [run config documentation section](docs/pilot.md#run-config) to
+> see the JSON format for project and file type run configs even further.
+
+> [!NOTE]
+> The project run config and the file type run config use the exact same JSON
+> format.
+
+## Placeholders
+
+| Placeholder                  | Resolved value                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `{{file_path}}`              | Absolute file path of the current buffer                                     |
+| `{{file_path_relative}}`     | Current buffer's file path that is relative to the current working directory |
+| `{{file_name}}`              | Current buffer's file name (file extension included)                         |
+| `{{file_name_no_extension}}` | Current buffer's file name without the file extension                        |
+| `{{file_type}}`              | The filetype of the current buffer according to Neovim (`vim.bo.filetype`)   |
+| `{{file_extension}}`         | Extension of the current file                                                |
+| `{{dir_path}}`               | Absolute path of the directory that contains the current buffer              |
+| `{{dir_name}}`               | Name of the directory that contains the current buffer                       |
+| `{{cwd_path}}`               | Absolute path of the current working directory (`vim.fn.getcwd()`)           |
+| `{{cwd_name}}`               | The directory name of the current working directory                          |
+| `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
+| `{{cword}}`                  | Current word of which your cursor is hovering over                           |
+| `{{cWORD}}`                  | Current complete word (between spaces) of which your cursor is hovering over |
+| `{{hash:cwd_path}}`          | Hash of the current working directory absolute path using sha256             |
+| `{{hash:file_path}}`         | Hash of the current buffer's absolute path using sha256                      |
+
+## Preset executors
+
+| Executor                                         | Description                                                             |
+| ------------------------------------------------ | ----------------------------------------------------------------------- |
+| `pilot.nvim_terminal_new_tab_executor` (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
+| `pilot.nvim_terminal_current_buffer_executor`    | Run the command in the current buffer with Neovim's integrated terminal |
+| `pilot.print_executor`                           | Run the command with the output shown using the print function          |
+| `pilot.background_executor`                      | Run the command with no output displayed                                |
+
+Simply set the `default_executor` option in your configuration to use one of the
+above.
+You can also create your own default executor like this:
+
+```lua
+{
+    default_executor = function(command)
+        vim.fn.system(command)
+    end
+}
+```
+
+The example code above is actually the implementation of
+`pilot.background_executor`.
+
+> [!NOTE]
+> There is no need to escape the command, pilot.nvim already does it for you 😉
+
+### Got questions or have any ideas on how to improve this plugin?
+
+Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
+or simply create a new pull request!
+
+## Configuration options
+
+project_run_config_path
+
+    Type: string | nil
+
+    Default: nil
+
+    Description:
+    Path (relative to the project root) to the Lua file that defines the run configuration for the whole project.
+
+    When set to a string:
+    pilot.nvim will attempt to load and execute the Lua config file at that path when running a project-level command.
+
+    When set to nil:
+    The plugin will skip trying to load a project-level config unless a fallback is provided.
+
+file_type_run_config_path
+
+    Type: string | nil
+
+    Default: nil
+
+    Description:
+    Path (relative to the current file) to a Lua file containing run configurations based on file type.
+
+    When set to a string:
+    If the current file matches the filetype, pilot.nvim will use this config to run the file.
+
+    When set to nil:
+    No file type-specific run config will be used.
+
+automatically_run_single_command
+
+    Type: { project: boolean, file_type: boolean }
+
+    Default: { project = true, file_type = true }
+
+    Description:
+    Whether to automatically run a command if only one is defined in the project or file-type config.
+
+    Use cases:
+
+        project = true: Automatically run the single project command without prompting.
+
+        file_type = false: Show a selection menu even if there’s only one file-type command.
+
+fallback_project_run_config
+
+    Type: function | nil (must return a string)
+
+    Default: nil
+
+    Description:
+    A fallback command string returned by a Lua function when no valid project run config is found.
+
+    When set:
+    This function will be called, and the returned command string will be run if the project config file doesn’t exist or fails to load.
+
+    When nil:
+    No fallback behavior will be used.
+
+custom_locations
+
+    Type: table<string, string> | nil
+
+    Default: nil
+
+    Description:
+    Custom key/value mapping for where to execute the commands (e.g., terminal, vsplit, tab).
+
+    Use the key name in your config to decide how a command gets launched.
+
+    When nil:
+    Default locations or execution methods will be used.
+
+    Example:
+
+```lua
+custom_locations = {
+    floating = "lua require('pilot.location').float_term()",
+    split = "vsplit | terminal",
+}
+```
+
+## Functions
+
+## Run config format
