@@ -1,45 +1,35 @@
 local string_utils = require("pilot.string_utils")
 
----@return string
-local function get_current_file_name()
-    return vim.fn.fnameescape(vim.fn.expand("%:t"))
-end
-
----@return string
-local function get_current_working_dir_path()
-    return vim.fn.fnameescape(vim.fn.getcwd())
-end
-
 ---@param placeholder string
 ---@return string
 local function resolve_placeholder(placeholder)
     if placeholder == "file_path" then
-        return vim.fn.fnameescape(vim.fn.expand("%:p"))
+        return vim.fn.expand("%:p")
     elseif placeholder == "file_path_relative" then
-        return vim.fn.fnameescape(vim.fn.expand("%"))
+        return vim.fn.expand("%")
     elseif placeholder == "file_name" then
-        return get_current_file_name()
+        return vim.fn.expand("%:t")
     elseif placeholder == "file_name_no_extension" then
         return string_utils.slice_from_start_up_to_last_occur_char(
-            get_current_file_name(),
+            vim.fn.expand("%:t"),
             "."
         )
     elseif placeholder == "file_type" then
         return vim.bo.filetype
     elseif placeholder == "file_extension" then
         return string_utils.slice_from_last_occur_char_to_end(
-            get_current_file_name(),
+            vim.fn.expand("%:t"),
             "."
         )
     elseif placeholder == "dir_path" then
-        return vim.fn.fnameescape(vim.fn.expand("%:p:h"))
+        return vim.fn.expand("%:p:h")
     elseif placeholder == "dir_name" then
-        return vim.fn.fnameescape(vim.fn.expand("%:p:h:t"))
+        return vim.fn.expand("%:p:h:t")
     elseif placeholder == "cwd_path" then
-        return get_current_working_dir_path()
+        return vim.fn.getcwd()
     elseif placeholder == "cwd_name" then
         return string_utils.slice_from_last_occur_char_to_end(
-            get_current_working_dir_path(),
+            vim.fn.getcwd(),
             "/"
         )
     elseif placeholder == "pilot_data_path" then
@@ -65,7 +55,18 @@ end
 
 ---@param command string
 ---@return string
-local function interpolate_mustaches(command)
+local function escape_non_interpolated(command)
+    -- example of how this works:
+    -- interpolation will convert "ls {{dir_name}} {{file_name}}" to "ls a\ b %"
+    -- fnameescape will produce "ls\ a\\\ b \%"
+    -- gsub escaped space once to produce "ls a\\ b \%"
+    -- gsub escaped space again to produce ls a\ b \%"
+    return vim.fn.fnameescape(command):gsub("\\ ", " "):gsub("\\ ", " ")
+end
+
+---@param command string
+---@return string
+local function interpolate(command)
     local required_braces = 2
     local pattern = "({+)([^}]+)(}+)"
 
@@ -89,7 +90,11 @@ local function interpolate_mustaches(command)
                 return open_braces .. placeholder .. closing_braces
             end
 
-            local interpolated = resolve_placeholder(placeholder)
+            -- we don't use fnameescape here since it will be done later
+            -- but space should be escaped so that later it can be
+            -- differentiated from literal command argument spaces
+            local interpolated =
+                resolve_placeholder(placeholder):gsub(" ", "\\ ")
             if open_count > required_braces then
                 interpolated = open_braces:sub(1, open_count - required_braces)
                     .. interpolated
@@ -101,7 +106,7 @@ local function interpolate_mustaches(command)
             return interpolated
         end
     )
-    return result
+    return escape_non_interpolated(result)
 end
 
-return interpolate_mustaches
+return interpolate

@@ -1,4 +1,4 @@
-local interpolate_mustaches = require("pilot.interpolation")
+local interpolate = require("pilot.interpolation")
 
 local M = {}
 
@@ -33,7 +33,7 @@ end
 ---@return string
 function M.get_file_type_run_config_path()
     if M.config.file_type_run_config_path then
-        return interpolate_mustaches(M.config.file_type_run_config_path)
+        return interpolate(M.config.file_type_run_config_path)
     end
 
     local dir_path = M.get_pilot_data_path() .. "/filetypes"
@@ -51,7 +51,7 @@ end
 ---@return string
 function M.get_project_run_config_path()
     if M.config.project_run_config_path then
-        return interpolate_mustaches(M.config.project_run_config_path)
+        return interpolate(M.config.project_run_config_path)
     end
 
     local dir_path = M.get_pilot_data_path() .. "/projects"

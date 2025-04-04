@@ -1,5 +1,5 @@
 local fs_utils = require("pilot.fs_utils")
-local interpolate_mustaches = require("pilot.interpolation")
+local interpolate = require("pilot.interpolation")
 
 ---@alias RunClassification "project"|"file type"
 
@@ -22,7 +22,7 @@ M.last_executed_task = nil
 
 ---@param entry Entry
 local function execute_entry(entry)
-    local command = interpolate_mustaches(entry.command)
+    local command = interpolate(entry.command)
     local executor
 
     if entry.location == nil then
@@ -63,7 +63,7 @@ local function read_fallback_project_run_config()
         )
     end
 
-    local fallback_path = interpolate_mustaches(fallback_project_run_config)
+    local fallback_path = interpolate(fallback_project_run_config)
     local file_content = fs_utils.read_file_to_string(fallback_path)
     if file_content == nil then
         error(
@@ -146,7 +146,7 @@ local function parse_list_to_entries(list, run_config_path)
             if item.command then
                 add_command_entry(entries, item)
             else
-                local import_path = interpolate_mustaches(item.import)
+                local import_path = interpolate(item.import)
                 local file_content = fs_utils.read_file_to_string(import_path)
                 if not file_content then
                     error(
@@ -230,9 +230,9 @@ M.select_command_and_execute = function(run_config_path, run_classification)
         #entries == 1
         and (
             run_classification == "project"
-                and M.config.automatically_run_single_command.project
+            and M.config.automatically_run_single_command.project
             or run_classification == "file type"
-                and M.config.automatically_run_single_command.file_type
+            and M.config.automatically_run_single_command.file_type
         )
     then
         execute_entry(entries[1])
@@ -245,7 +245,7 @@ M.select_command_and_execute = function(run_config_path, run_classification)
                 .. run_classification
                 .. (
                     run_classification == "file type"
-                        and " (" .. vim.bo.filetype .. ")"
+                    and " (" .. vim.bo.filetype .. ")"
                     or ""
                 ),
             format_item = function(entry)
