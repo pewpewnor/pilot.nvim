@@ -238,4 +238,4 @@ The example code above is actually the implementation of
 ### Got questions or have any ideas on how to improve this plugin?
 
 Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
-or simply create a new pull request!
+or simply create a new issue!
