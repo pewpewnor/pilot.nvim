@@ -135,17 +135,16 @@ look like.
 ```json
 [
     {
-        "name": "run specific test, simply hover over the function name",
+        "name": "run specific test (cursor hover over the function name)",
         "command": "go test -v --run {{cword}}"
     },
     {
         "name": "build & run project",
-        "command": "make build && make run",
-        "location": "tmux_new_window"
+        "command": "make build && make run"
     },
     {
-        "name": "list current directory"
-        "command": "ls {{dir_path}}"
+        "command": "ls {{dir_path}}",
+        "location": "tmux_new_window"
     }
 ]
 ```
@@ -162,10 +161,11 @@ file that has "c" as the vim file type (the c programming language).
 
 ```json
 [
-    "gcc {{file_path}} -o {{file_name_no_extension}} && ./{{file_name_no_extension}}",
     {
-        "command": "clang {{file_path_relative}} ; ./a.out"
-    }
+        "name": "clang",
+        "command": "clang {{file_path_relative}} && ./a.out"
+    },
+    "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}"
 ]
 ```
 
