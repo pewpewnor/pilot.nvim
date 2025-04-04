@@ -4,7 +4,7 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **execute** your **project or file** based
-on the **custom run configuration file** (JSON) that you wrote yourself.
+on the **custom run configuration file** (JSON) that you wrote.
 
 ## Features
 
@@ -119,8 +119,8 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig", pilot.delete_fi
 ```
 
 > [!NOTE]
-> Check out the [functions documentation section](docs/pilot.md#functions) to see
-> the details of every pilot functions.
+> Check out the [functions documentation section](docs/pilot.md#functions) to
+> see the details of every pilot functions.
 
 ## Example project run config
 
@@ -140,7 +140,8 @@ look like.
     },
     {
         "name": "build & run project",
-        "command": "make build && make run"
+        "command": "make build && make run",
+        "location": "tmux_new_window"
     },
     {
         "name": "list current directory"
@@ -178,13 +179,50 @@ file that has "c" as the vim file type (the c programming language).
 
 ## Placeholders (mustache syntax)
 
-table here
+| Placeholder            | Resolved value                                                               |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| file_path              | Absolute file path of the current buffer                                     |
+| file_path_relative     | Current buffer's file path that is relative to the current working directory |
+| file_name              | Current buffer's file name (file extension included)                         |
+| file_name_no_extension | Current buffer's file name without the file extension                        |
+| file_type              | The filetype of the current buffer according to Neovim (`vim.bo.filetype`)   |
+| file_extension         | Extension of the current file                                                |
+| dir_path               | Absolute path of the directory that contains the current buffer              |
+| dir_name               | Name of the directory that contains the current buffer                       |
+| cwd_path               | Absolute path of the current working directory (`vim.fn.getcwd()`)           |
+| cwd_name               | The directory name of the current working directory                          |
+| pilot_data_path        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
+| cword                  | Current word of which your cursor is hovering over                           |
+| cWORD                  | Current complete word (between spaces) of which your cursor is hovering over |
+| hash:cwd_path          | Hash of the current working directory absolute path using sha256             |
+| hash:file_path         | Hash of the current buffer's absolute path using sha256                      |
 
 ## Preset executors
 
-example of setting default_executor
+| Executor                                       | Description                                                             |
+| ---------------------------------------------- | ----------------------------------------------------------------------- |
+| pilot.nvim_terminal_new_tab_executor (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
+| pilot.nvim_terminal_current_buffer_executor    | Run the command in the current buffer with Neovim's integrated terminal |
+| pilot.print_executor                           | Run the command with the output shown using the print function          |
+| pilot.background_executor                      | Run the command with no output displayed                                |
 
-table here
+Simply set the `default_executor` option in your configuration to use one of the
+above.
+You can also create your own default executor like this:
+
+```lua
+{
+    default_executor = function(command)
+        vim.fn.system(command)
+    end
+}
+```
+
+The example code above is actually the implementation of
+`pilot.background_executor`.
+
+> [!NOTE]
+> There is no need to escape the command, pilot.nvim already does it for you 😉
 
 ### Got questions or have any ideas on how to improve this plugin?
 
