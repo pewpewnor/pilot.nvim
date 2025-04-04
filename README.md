@@ -177,34 +177,34 @@ file that has "c" as the vim file type (the c programming language).
 > The project run config and the file type run config use the exact same JSON
 > format.
 
-## Placeholders (mustache syntax)
+## Placeholders
 
-| Placeholder            | Resolved value                                                               |
-| ---------------------- | ---------------------------------------------------------------------------- |
-| file_path              | Absolute file path of the current buffer                                     |
-| file_path_relative     | Current buffer's file path that is relative to the current working directory |
-| file_name              | Current buffer's file name (file extension included)                         |
-| file_name_no_extension | Current buffer's file name without the file extension                        |
-| file_type              | The filetype of the current buffer according to Neovim (`vim.bo.filetype`)   |
-| file_extension         | Extension of the current file                                                |
-| dir_path               | Absolute path of the directory that contains the current buffer              |
-| dir_name               | Name of the directory that contains the current buffer                       |
-| cwd_path               | Absolute path of the current working directory (`vim.fn.getcwd()`)           |
-| cwd_name               | The directory name of the current working directory                          |
-| pilot_data_path        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
-| cword                  | Current word of which your cursor is hovering over                           |
-| cWORD                  | Current complete word (between spaces) of which your cursor is hovering over |
-| hash:cwd_path          | Hash of the current working directory absolute path using sha256             |
-| hash:file_path         | Hash of the current buffer's absolute path using sha256                      |
+| Placeholder                  | Resolved value                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `{{file_path}}`              | Absolute file path of the current buffer                                     |
+| `{{file_path_relative}}`     | Current buffer's file path that is relative to the current working directory |
+| `{{file_name}}`              | Current buffer's file name (file extension included)                         |
+| `{{file_name_no_extension}}` | Current buffer's file name without the file extension                        |
+| `{{file_type}}`              | The filetype of the current buffer according to Neovim (`vim.bo.filetype`)   |
+| `{{file_extension}}`         | Extension of the current file                                                |
+| `{{dir_path}}`               | Absolute path of the directory that contains the current buffer              |
+| `{{dir_name}}`               | Name of the directory that contains the current buffer                       |
+| `{{cwd_path}}`               | Absolute path of the current working directory (`vim.fn.getcwd()`)           |
+| `{{cwd_name}}`               | The directory name of the current working directory                          |
+| `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
+| `{{cword}}`                  | Current word of which your cursor is hovering over                           |
+| `{{cWORD}}`                  | Current complete word (between spaces) of which your cursor is hovering over |
+| `{{hash:cwd_path}}`          | Hash of the current working directory absolute path using sha256             |
+| `{{hash:file_path}}`         | Hash of the current buffer's absolute path using sha256                      |
 
 ## Preset executors
 
-| Executor                                       | Description                                                             |
-| ---------------------------------------------- | ----------------------------------------------------------------------- |
-| pilot.nvim_terminal_new_tab_executor (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
-| pilot.nvim_terminal_current_buffer_executor    | Run the command in the current buffer with Neovim's integrated terminal |
-| pilot.print_executor                           | Run the command with the output shown using the print function          |
-| pilot.background_executor                      | Run the command with no output displayed                                |
+| Executor                                         | Description                                                             |
+| ------------------------------------------------ | ----------------------------------------------------------------------- |
+| `pilot.nvim_terminal_new_tab_executor` (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
+| `pilot.nvim_terminal_current_buffer_executor`    | Run the command in the current buffer with Neovim's integrated terminal |
+| `pilot.print_executor`                           | Run the command with the output shown using the print function          |
+| `pilot.background_executor`                      | Run the command with no output displayed                                |
 
 Simply set the `default_executor` option in your configuration to use one of the
 above.
