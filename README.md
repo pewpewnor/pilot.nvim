@@ -7,6 +7,8 @@ A Neovim plugin that allows you to **execute** your **project or file** based
 on the **custom JSON run configuration file** that you wrote. You can have one
 JSON file for each project and one JSON file for each file type.
 
+_Requirements: Neovim v0.11.0_
+
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
 ## Features
