@@ -3,9 +3,10 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A Neovim plugin that allows you to **execute** your **project or file** based
-on the **custom JSON run configuration file** that you wrote. You can have one
-JSON file for each project and one JSON file for each file type.
+A Neovim plugin that allows you to **run** your **project or file** based
+on the **custom JSON run configuration file** that you wrote on the go. You can
+have one JSON file for each file type and one (or instead use fallback) JSON
+file for each project.
 
 _Requirements: Neovim v0.11.0_
 
