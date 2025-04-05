@@ -70,14 +70,15 @@ change any of the options.
 
 ```lua
 {
-    project_run_config_path = nil, -- must be a string | nil
-    file_type_run_config_path = nil, -- must be a string | nil
+    project_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/projects/{{hash:cwd_path}}.json"
+    file_type_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json"
+    -- if there is only one command listed, should we immediately run the command?
     automatically_run_single_command = {
-        project = true, -- must be a boolean
-        file_type = true, -- must be a boolean
+        project = true, -- boolean
+        file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- must be a (function that returns a string) | nil
-    custom_locations = nil, -- must be a (key/value table with the values being strings) | nil
+    fallback_project_run_config = nil, -- (function that returns a string) | nil
+    custom_locations = nil, -- (key/value table with the values being strings) | nil
 }
 ```
 
