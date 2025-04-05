@@ -24,9 +24,6 @@ M.last_executed_task = nil
 ---@param command string
 local function execute_command(executor, command)
     executor(interpolate(command))
-    require("neo-tree.sources.filesystem.commands").refresh(
-        require("neo-tree.sources.manager").get_state("filesystem")
-    )
 end
 
 ---@param entry Entry
