@@ -11,15 +11,19 @@ _Requirements: Neovim v0.11.0_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
+## Motivation
+
+I wanted a code runner plugin with placeholder interpolation so that I can hit a
+single key to compile/build and run my code with full control over the commands.
+
 ## Features
 
 - Run arbritrary command to run, test, and debug any file or project.
-- Since we use JSON file for run configurations, you can adjust it on the fly
-  without needing to reload Neovim everytime.
+- Placeholders for current file path, file name, directory name, cwd name, etc.
+- You can adjust it on the fly without needing to reload Neovim everytime.
 - Supports fallback project run configuration so you don't have to create the
-  same JSON file for each project
-- Unlike many other code runner plugins, it is possible to compile code and run
-  the program afterwards.
+  same JSON run configuration for each project
+- It is possible to compile code and run the program afterwards.
 - Customizable path/location for your project and file run configurations.
 - Customizable location of command execution (presets are also provided).
 - Bindable functions to run, edit, and remove your project and file type
