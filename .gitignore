@@ -1,4 +1,4 @@
-.idea/       # jetbrains IDEs
-.vscode/     # vscode
+.idea/
+.vscode/
 
 vendor/
