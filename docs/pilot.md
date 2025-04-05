@@ -7,6 +7,8 @@ A Neovim plugin that allows you to **execute** your **project or file** based
 on the **custom JSON run configuration file** that you wrote. You can have one
 JSON file for each project and one JSON file for each file type.
 
+![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
+
 ## Features
 
 - Run arbritrary command to run, test, and debug any file or project.
@@ -80,7 +82,7 @@ change any of the options.
 ```
 
 > [!NOTE]
-> Check out the [configurations documentation section](docs/pilot.md#configurations)
+> Check out the [configurations documentation section](docs/pilot.md#configuration-options)
 > to see every possible configuration options for the setup function.
 
 ## Example configuration
@@ -238,90 +240,4 @@ The example code above is actually the implementation of
 ### Got questions or have any ideas on how to improve this plugin?
 
 Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
-or simply create a new pull request!
-
-## Configuration options
-
-project_run_config_path
-
-    Type: string | nil
-
-    Default: nil
-
-    Description:
-    Path (relative to the project root) to the Lua file that defines the run configuration for the whole project.
-
-    When set to a string:
-    pilot.nvim will attempt to load and execute the Lua config file at that path when running a project-level command.
-
-    When set to nil:
-    The plugin will skip trying to load a project-level config unless a fallback is provided.
-
-file_type_run_config_path
-
-    Type: string | nil
-
-    Default: nil
-
-    Description:
-    Path (relative to the current file) to a Lua file containing run configurations based on file type.
-
-    When set to a string:
-    If the current file matches the filetype, pilot.nvim will use this config to run the file.
-
-    When set to nil:
-    No file type-specific run config will be used.
-
-automatically_run_single_command
-
-    Type: { project: boolean, file_type: boolean }
-
-    Default: { project = true, file_type = true }
-
-    Description:
-    Whether to automatically run a command if only one is defined in the project or file-type config.
-
-    Use cases:
-        project = true: Automatically run the single project command without prompting.
-        file_type = false: Show a selection menu even if there’s only one file-type command.
-
-fallback_project_run_config
-
-    Type: function | nil (must return a string)
-
-    Default: nil
-
-    Description:
-    A fallback command string returned by a Lua function when no valid project run config is found.
-
-    When set:
-    This function will be called, and the returned command string will be run if the project config file doesn’t exist or fails to load.
-
-    When nil:
-    No fallback behavior will be used.
-
-custom_locations
-
-    Type: table<string, string> | nil
-
-    Default: nil
-
-    Description:
-    Custom key/value mapping for where to execute the commands (e.g., terminal, vsplit, tab).
-
-    Use the key name in your config to decide how a command gets launched.
-
-    When nil:
-    Default locations or execution methods will be used.
-
-    Example:
-    ```lua
-    custom_locations = {
-        floating = "lua require('pilot.location').float_term()",
-        split = "vsplit | terminal",
-    }
-    ```
-
-## Functions
-
-## Run config format
+or simply create a new issue!
