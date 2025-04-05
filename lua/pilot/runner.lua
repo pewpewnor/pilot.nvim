@@ -104,6 +104,39 @@ local function add_imported_entries(entries, imported_entries)
     end
 end
 
+---@param import_path string
+---@return table
+local function read_and_decode_imported_path(import_path)
+    local file_content = fs_utils.read_file(import_path)
+    if not file_content then
+        error(
+            string.format(
+                "[Pilot] Error: Imported file '%s' doesn't exist",
+                import_path
+            )
+        )
+    end
+    -- TODO: validate JSON return must be a table (list)
+    local imported_list = fs_utils.decode_json(file_content)
+    if not imported_list then
+        error(
+            string.format(
+                "[Pilot] Error: Imported file '%s' has invalid JSON format or is empty.",
+                import_path
+            )
+        )
+    end
+    if type(imported_list) ~= "table" then
+        error(
+            string.format(
+                "[Pilot] Error: Imported file '%s' should contain JSON array, refer to the documentation for proper run config format.",
+                import_path
+            )
+        )
+    end
+    return imported_list
+end
+
 ---@param list table<number, table>
 ---@param run_config_path string
 ---@return Entries
@@ -154,25 +187,7 @@ local function parse_list_to_entries(list, run_config_path)
                 add_command_entry(entries, item)
             else
                 local import_path = interpolate(item.import)
-                local file_content = fs_utils.read_file(import_path)
-                if not file_content then
-                    error(
-                        string.format(
-                            "[Pilot] Error: Imported file '%s' doesn't exist",
-                            import_path
-                        )
-                    )
-                end
-                -- TODO: validate JSON return must be a table (list)
-                local imported_list = fs_utils.decode_json(file_content)
-                if not imported_list then
-                    error(
-                        string.format(
-                            "[Pilot] Error: Imported file '%s' has invalid JSON format.",
-                            import_path
-                        )
-                    )
-                end
+                local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)
                 add_imported_entries(entries, imported_entries)
@@ -215,7 +230,20 @@ local function parse_run_config(run_config_path, run_classification)
 
     local list = fs_utils.decode_json(file_content)
     if not list then
-        error("[Pilot] Error: Your run config has invalid JSON format.")
+        error(
+            string.format(
+                "[Pilot] Error: Your %s run config has invalid JSON format or is empty.",
+                run_classification
+            )
+        )
+    end
+    if type(list) ~= "table" then
+        error(
+            string.format(
+                "[Pilot] Error: Your %s run config should contain JSON array, refer to the documentation for proper run config format.",
+                run_classification
+            )
+        )
     end
     return parse_list_to_entries(list, run_config_path)
 end
