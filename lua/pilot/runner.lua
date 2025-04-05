@@ -20,12 +20,19 @@ local M = {}
 ---@type Task|nil
 M.last_executed_task = nil
 
+---@param executor Executor
+---@param command string
+local function execute_command(executor, command)
+    executor(interpolate(command))
+    require("neo-tree.sources.filesystem.commands").refresh(
+        require("neo-tree.sources.manager").get_state("filesystem")
+    )
+end
+
 ---@param entry Entry
 local function execute_entry(entry)
-    local command = interpolate(entry.command)
     local executor
-
-    if entry.location == nil then
+    if not entry.location then
         executor = M.config.default_executor
     else
         if not M.config or not M.config.custom_locations then
@@ -45,10 +52,10 @@ local function execute_entry(entry)
     end
 
     M.last_executed_task = {
-        command = command,
+        command = entry.command,
         executor = executor,
     }
-    executor(command)
+    execute_command(executor, entry.command)
 end
 
 ---@return string?
@@ -64,11 +71,11 @@ local function read_fallback_project_run_config()
     end
 
     local fallback_path = interpolate(fallback_project_run_config)
-    local file_content = fs_utils.read_file_to_string(fallback_path)
-    if file_content == nil then
+    local file_content = fs_utils.read_file(fallback_path)
+    if not file_content then
         error(
             string.format(
-                "[Pilot] Error: Failed to read fallback project run config at '%s', please ensure that the file exists and readable",
+                "[Pilot] Error: Failed to read fallback project run config at '%s'.",
                 fallback_path
             )
         )
@@ -147,7 +154,7 @@ local function parse_list_to_entries(list, run_config_path)
                 add_command_entry(entries, item)
             else
                 local import_path = interpolate(item.import)
-                local file_content = fs_utils.read_file_to_string(import_path)
+                local file_content = fs_utils.read_file(import_path)
                 if not file_content then
                     error(
                         string.format(
@@ -156,9 +163,9 @@ local function parse_list_to_entries(list, run_config_path)
                         )
                     )
                 end
-                local success, imported_list =
-                    pcall(vim.fn.json_decode, file_content)
-                if not success then
+                -- TODO: validate JSON return must be a table (list)
+                local imported_list = fs_utils.decode_json(file_content)
+                if not imported_list then
                     error(
                         string.format(
                             "[Pilot] Error: Imported file '%s' has invalid JSON format.",
@@ -179,10 +186,10 @@ end
 ---@param run_classification RunClassification
 ---@return Entries?
 local function parse_run_config(run_config_path, run_classification)
-    local file_content = fs_utils.read_file_to_string(run_config_path)
+    local file_content = fs_utils.read_file(run_config_path)
     if not file_content then
         if run_classification == "project" then
-            if M.config.fallback_project_run_config == nil then
+            if not M.config.fallback_project_run_config then
                 print(
                     "[Pilot] Error: No project run config detected and no fallback configuration."
                 )
@@ -206,8 +213,8 @@ local function parse_run_config(run_config_path, run_classification)
         end
     end
 
-    local success, list = pcall(vim.fn.json_decode, file_content)
-    if not success then
+    local list = fs_utils.decode_json(file_content)
+    if not list then
         error("[Pilot] Error: Your run config has invalid JSON format.")
     end
     return parse_list_to_entries(list, run_config_path)
@@ -230,9 +237,9 @@ M.select_command_and_execute = function(run_config_path, run_classification)
         #entries == 1
         and (
             run_classification == "project"
-            and M.config.automatically_run_single_command.project
+                and M.config.automatically_run_single_command.project
             or run_classification == "file type"
-            and M.config.automatically_run_single_command.file_type
+                and M.config.automatically_run_single_command.file_type
         )
     then
         execute_entry(entries[1])
@@ -245,7 +252,7 @@ M.select_command_and_execute = function(run_config_path, run_classification)
                 .. run_classification
                 .. (
                     run_classification == "file type"
-                    and " (" .. vim.bo.filetype .. ")"
+                        and " (" .. vim.bo.filetype .. ")"
                     or ""
                 ),
             format_item = function(entry)
@@ -264,7 +271,7 @@ M.run_last_executed_task = function()
         print("[Pilot] no previously executed task.")
         return
     end
-    M.last_executed_task.executor(M.last_executed_task.command)
+    execute_command(M.last_executed_task.executor, M.last_executed_task.command)
 end
 
 return M

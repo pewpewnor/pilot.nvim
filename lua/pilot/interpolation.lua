@@ -1,5 +1,3 @@
-local string_utils = require("pilot.string_utils")
-
 ---@param placeholder string
 ---@return string
 local function resolve_placeholder(placeholder)
@@ -10,17 +8,11 @@ local function resolve_placeholder(placeholder)
     elseif placeholder == "file_name" then
         return vim.fn.expand("%:t")
     elseif placeholder == "file_name_no_extension" then
-        return string_utils.slice_from_start_up_to_last_occur_char(
-            vim.fn.expand("%:t"),
-            "."
-        )
+        return vim.fn.expand("%:t:r")
     elseif placeholder == "file_type" then
         return vim.bo.filetype
     elseif placeholder == "file_extension" then
-        return string_utils.slice_from_last_occur_char_to_end(
-            vim.fn.expand("%:t"),
-            "."
-        )
+        return vim.fn.expand("%:e")
     elseif placeholder == "dir_path" then
         return vim.fn.expand("%:p:h")
     elseif placeholder == "dir_name" then
@@ -28,14 +20,11 @@ local function resolve_placeholder(placeholder)
     elseif placeholder == "cwd_path" then
         return vim.fn.getcwd()
     elseif placeholder == "cwd_name" then
-        return string_utils.slice_from_last_occur_char_to_end(
-            vim.fn.getcwd(),
-            "/"
-        )
+        return vim.fn.fnamemodify(placeholder, ":h:t")
     elseif placeholder == "pilot_data_path" then
-        local pilot_data_path = vim.fn.stdpath("data") .. "/pilot"
+        local pilot_data_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
         if vim.fn.isdirectory(pilot_data_path) == 0 then
-            vim.fn.mkdir(pilot_data_path)
+            vim.fn.mkdir(pilot_data_path, "p")
         end
         return pilot_data_path
     elseif placeholder == "cword" then

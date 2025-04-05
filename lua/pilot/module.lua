@@ -28,19 +28,25 @@ end
 M.run_last_executed_task = runner.run_last_executed_task
 
 M.edit_project_run_config = function()
-    vim.cmd("tabedit " .. pathfinder.get_project_run_config_path())
+    vim.cmd(
+        "tabedit "
+            .. vim.fn.fnameescape(pathfinder.get_project_run_config_path())
+    )
 end
 
 M.edit_file_type_run_config = function()
-    vim.cmd("tabedit " .. pathfinder.get_file_type_run_config_path())
+    vim.cmd(
+        "tabedit "
+            .. vim.fn.fnameescape(pathfinder.get_file_type_run_config_path())
+    )
 end
 
 M.delete_project_run_config = function()
-    fs_utils.rm(pathfinder.get_project_run_config_path())
+    vim.fs.rm(pathfinder.get_project_run_config_path(), { force = true })
 end
 
 M.delete_file_type_run_config = function()
-    fs_utils.rm(pathfinder.get_file_type_run_config_path())
+    vim.fs.rm(pathfinder.get_file_type_run_config_path(), { force = true })
 end
 
 return M
