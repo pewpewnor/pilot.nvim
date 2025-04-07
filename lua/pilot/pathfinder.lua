@@ -29,13 +29,8 @@ local function custom_run_config_path(path)
     return path
 end
 
----@param config Config
-function M.init(config)
-    M.config = config
-end
-
 ---@return string
-function M.get_pilot_data_path()
+local function get_pilot_data_path()
     local pilot_data_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
     if not create_dir_path(pilot_data_path) then
         error(
@@ -48,15 +43,16 @@ function M.get_pilot_data_path()
     return pilot_data_path
 end
 
----@return string
-function M.get_file_type_run_config_path()
-    if M.config.file_type_run_config_path then
-        return custom_run_config_path(M.config.file_type_run_config_path)
-    end
+---@param config Config
+function M.init(config)
+    M.config = config
+end
 
-    local default_dir_path =
-        vim.fs.joinpath(M.get_pilot_data_path(), "filetypes")
-    if not create_dir_path(default_dir_path) then
+---@param create_missing_dirs boolean?
+---@return string
+function M.get_default_project_run_config_dir_path(create_missing_dirs)
+    local default_dir_path = vim.fs.joinpath(get_pilot_data_path(), "projects")
+    if create_missing_dirs and not create_dir_path(default_dir_path) then
         error(
             string.format(
                 "[Pilot] Failed to create file type run config directory at '%s'.",
@@ -64,7 +60,22 @@ function M.get_file_type_run_config_path()
             )
         )
     end
-    return vim.fs.joinpath(default_dir_path, vim.bo.filetype) .. ".json"
+    return default_dir_path
+end
+
+---@param create_missing_dirs boolean?
+---@return string
+function M.get_default_file_type_run_config_dir_path(create_missing_dirs)
+    local default_dir_path = vim.fs.joinpath(get_pilot_data_path(), "filetypes")
+    if create_missing_dirs and not create_dir_path(default_dir_path) then
+        error(
+            string.format(
+                "[Pilot] Failed to create file type run config directory at '%s'.",
+                default_dir_path
+            )
+        )
+    end
+    return default_dir_path
 end
 
 ---@return string
@@ -73,18 +84,22 @@ function M.get_project_run_config_path()
         return custom_run_config_path(M.config.project_run_config_path)
     end
 
-    local default_dir_path =
-        vim.fs.joinpath(M.get_pilot_data_path(), "projects")
-    if not create_dir_path(default_dir_path) then
-        error(
-            string.format(
-                "[Pilot] Failed to create project run config directory at '%s'.",
-                default_dir_path
-            )
-        )
+    return vim.fs.joinpath(
+        M.get_default_project_run_config_dir_path(true),
+        vim.fn.sha256(vim.fn.getcwd())
+    ) .. ".json"
+end
+
+---@return string
+function M.get_file_type_run_config_path()
+    if M.config.file_type_run_config_path then
+        return custom_run_config_path(M.config.file_type_run_config_path)
     end
-    return vim.fs.joinpath(default_dir_path, vim.fn.sha256(vim.fn.getcwd()))
-        .. ".json"
+
+    return vim.fs.joinpath(
+        M.get_default_file_type_run_config_dir_path(true),
+        vim.bo.filetype
+    ) .. ".json"
 end
 
 return M

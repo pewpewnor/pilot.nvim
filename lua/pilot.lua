@@ -21,39 +21,6 @@ local module = require("pilot.module")
 
 local M = {}
 
----@type Executor
-M.nvim_terminal_new_tab_executor = function(command)
-    vim.cmd("tabnew | terminal " .. command)
-end
-
----@type Executor
-M.nvim_terminal_current_buffer_executor = function(command)
-    vim.cmd("terminal " .. command)
-end
-
----@type Executor
-M.print_executor = function(command)
-    print(vim.fn.system(command))
-end
-
----@type Executor
-M.background_executor = function(command)
-    vim.fn.system(command)
-end
-
----@type Config
-M.config = {
-    project_run_config_path = nil,
-    file_types_run_config_path = nil,
-    fallback_project_run_config = nil,
-    automatically_run_single_command = {
-        project = true,
-        file_type = true,
-    },
-    default_executor = M.nvim_terminal_new_tab_executor,
-    custom_locations = nil,
-}
-
 ---@param options Config
 local function validate_config(options)
     if type(options) ~= "table" and options ~= nil then
@@ -105,8 +72,41 @@ local function validate_config(options)
     end
 end
 
+---@type Executor
+function M.nvim_terminal_new_tab_executor(command)
+    vim.cmd("tabnew | terminal " .. command)
+end
+
+---@type Executor
+function M.nvim_terminal_current_buffer_executor(command)
+    vim.cmd("terminal " .. command)
+end
+
+---@type Executor
+function M.print_executor(command)
+    print(vim.fn.system(command))
+end
+
+---@type Executor
+function M.background_executor(command)
+    vim.fn.system(command)
+end
+
+---@type Config
+M.config = {
+    project_run_config_path = nil,
+    file_types_run_config_path = nil,
+    fallback_project_run_config = nil,
+    automatically_run_single_command = {
+        project = true,
+        file_type = true,
+    },
+    default_executor = M.nvim_terminal_new_tab_executor,
+    custom_locations = nil,
+}
+
 ---@param options table?
-M.setup = function(options)
+function M.setup(options)
     M.config = vim.tbl_deep_extend("force", M.config, options or {})
     validate_config(M.config)
     module.init(M.config)
@@ -125,5 +125,11 @@ M.edit_file_type_run_config = module.edit_file_type_run_config
 M.delete_project_run_config = module.delete_project_run_config
 
 M.delete_file_type_run_config = module.delete_file_type_run_config
+
+M.rmdir_default_project_run_config_dir =
+    module.rmdir_default_project_run_config_dir
+
+M.rmdir_default_file_type_run_config_dir =
+    module.rmdir_default_file_type_run_config_dir
 
 return M

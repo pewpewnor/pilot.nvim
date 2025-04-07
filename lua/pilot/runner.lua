@@ -246,13 +246,13 @@ local function parse_run_config(run_config_path, run_classification)
 end
 
 ---@param config Config
-M.init = function(config)
+function M.init(config)
     M.config = config
 end
 
 ---@param run_config_path string
 ---@param run_classification RunClassification
-M.select_command_and_execute = function(run_config_path, run_classification)
+function M.select_command_and_execute(run_config_path, run_classification)
     local entries = parse_run_config(run_config_path, run_classification)
     if not entries then
         return
@@ -291,7 +291,7 @@ M.select_command_and_execute = function(run_config_path, run_classification)
     end
 end
 
-M.run_last_executed_task = function()
+function M.run_last_executed_task()
     if not M.last_executed_task then
         print("[Pilot] no previously executed task.")
         return
