@@ -31,9 +31,9 @@ local function resolve_placeholder(placeholder)
         return vim.fn.expand("<cword>")
     elseif placeholder == "cWORD" then
         return vim.fn.expand("<cWORD>")
-    elseif placeholder == "hash:cwd_path" then
+    elseif placeholder == "hash(cwd_path)" then
         return vim.fn.sha256(vim.fn.getcwd())
-    elseif placeholder == "hash:file_path" then
+    elseif placeholder == "hash(file_path)" then
         return vim.fn.sha256(vim.fn.expand("%:p"))
     end
     error(

@@ -77,7 +77,7 @@ change any of the options.
 
 ```lua
 {
-    project_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/projects/{{hash:cwd_path}}.json"
+    project_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json"
     file_type_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json"
     -- if there is only one command listed, should we immediately run the command?
     automatically_run_single_command = {
@@ -215,8 +215,8 @@ file that has "c" as the vim file type (the c programming language).
 | `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
 | `{{cword}}`                  | Current word of which your cursor is hovering over                           |
 | `{{cWORD}}`                  | Current complete word (between spaces) of which your cursor is hovering over |
-| `{{hash:cwd_path}}`          | Hash of the current working directory absolute path using sha256             |
-| `{{hash:file_path}}`         | Hash of the current buffer's absolute path using sha256                      |
+| `{{hash(cwd_path)}}`         | Hash of the current working directory absolute path using sha256             |
+| `{{hash(file_path)}}`        | Hash of the current buffer's absolute path using sha256                      |
 
 ## Preset executors
 
