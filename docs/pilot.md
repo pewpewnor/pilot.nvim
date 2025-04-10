@@ -3,21 +3,28 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A Neovim plugin that allows you to **execute** your **project or file** based
-on the **custom JSON run configuration file** that you wrote. You can have one
-JSON file for each project and one JSON file for each file type.
+A Neovim plugin that allows you to **run** your **project or file** based
+on the **custom JSON run configuration file** that you wrote on the go. You can
+have one JSON file for each file type and one (or instead use fallback) JSON
+file for each project.
+
+_Requirements: Neovim v0.11.0_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
+
+## Motivation
+
+I wanted a code runner plugin with placeholder interpolation so that I can hit a
+single key to compile/build and run my code with full control over the commands.
 
 ## Features
 
 - Run arbritrary command to run, test, and debug any file or project.
-- Since we use JSON file for run configurations, you can adjust it on the fly
-  without needing to reload Neovim everytime.
+- Placeholders for current file path, file name, directory name, cwd name, etc.
+- You can adjust it on the fly without needing to reload Neovim everytime.
 - Supports fallback project run configuration so you don't have to create the
-  same JSON file for each project
-- Unlike many other code runner plugins, it is possible to compile code and run
-  the program afterwards.
+  same JSON run configuration for each project
+- It is possible to compile code and run the program afterwards.
 - Customizable path/location for your project and file run configurations.
 - Customizable location of command execution (presets are also provided).
 - Bindable functions to run, edit, and remove your project and file type
@@ -28,20 +35,16 @@ JSON file for each project and one JSON file for each file type.
 Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
--- init.lua:
-{ "pewpewnor/pilot.nvim", opts = {} }
-
--- plugins/pilot.lua:
 return {
     "pewpewnor/pilot.nvim",
-    opts = {}
+    opts = {},
 }
 --or
 return {
     "pewpewnor/pilot.nvim",
     config = function()
         require("pilot").setup()
-    end
+    end,
 }
 ```
 
@@ -70,14 +73,15 @@ change any of the options.
 
 ```lua
 {
-    project_run_config_path = nil, -- must be a string | nil
-    file_type_run_config_path = nil, -- must be a string | nil
+    project_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json"
+    file_type_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json"
+    -- if there is only one command listed, should we immediately run the command?
     automatically_run_single_command = {
-        project = true, -- must be a boolean
-        file_type = true, -- must be a boolean
+        project = true, -- boolean
+        file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- must be a (function that returns a string) | nil
-    custom_locations = nil, -- must be a (key/value table with the values being strings) | nil
+    fallback_project_run_config = nil, -- (function that returns a string) | nil
+    custom_locations = nil, -- (key/value table with the values being strings) | nil
 }
 ```
 
@@ -207,8 +211,8 @@ file that has "c" as the vim file type (the c programming language).
 | `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
 | `{{cword}}`                  | Current word of which your cursor is hovering over                           |
 | `{{cWORD}}`                  | Current complete word (between spaces) of which your cursor is hovering over |
-| `{{hash:cwd_path}}`          | Hash of the current working directory absolute path using sha256             |
-| `{{hash:file_path}}`         | Hash of the current buffer's absolute path using sha256                      |
+| `{{hash(cwd_path)}}`         | Hash of the current working directory absolute path using sha256             |
+| `{{hash(file_path)}}`        | Hash of the current buffer's absolute path using sha256                      |
 
 ## Preset executors
 
@@ -236,6 +240,13 @@ The example code above is actually the implementation of
 
 > [!NOTE]
 > There is no need to escape the command, pilot.nvim already does it for you 😉
+
+## Recommendation
+
+Use plugin like (telescope-ui-select.nvim)[https://github.com/nvim-telescope/telescope-ui-select.nvim]
+or (mini.nvim's mini-pick)[https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
+which create a nice wrapper for `vim.ui.select()` when you are selecting which
+command to run
 
 ### Got questions or have any ideas on how to improve this plugin?
 
