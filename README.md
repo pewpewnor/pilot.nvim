@@ -4,11 +4,12 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **run** your **project or file** based
-on the **custom JSON run configuration file** that you wrote on the go. Usually
-you will have one run configuration file for each file type and project
+on the **custom JSON run configuration file** that you can edit on the go.
+
+Usually you will have one run configuration file for each file type and project
 (although, specifically for project, you can use the fallback feature instead).
 
-_Requirements: Neovim v0.11.0_
+_Requirement: Neovim v0.11.0_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
