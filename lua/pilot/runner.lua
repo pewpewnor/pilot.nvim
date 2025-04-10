@@ -273,7 +273,7 @@ function M.select_command_and_execute(run_config_path, run_classification)
             entries[i].name = i .. ". " .. entry.name
         end
         vim.ui.select(entries, {
-            prompt = "Select a run command for this "
+            prompt = "Run a command for this "
                 .. run_classification
                 .. (
                     run_classification == "file type"
