@@ -52,7 +52,13 @@ local function escape_non_interpolated(command)
     -- fnameescape will produce "ls\ a\\\ b \%"
     -- gsub escaped space once to produce "ls a\\ b \%"
     -- gsub escaped space again to produce ls a\ b \%"
-    return vim.fn.fnameescape(command):gsub("\\ ", " "):gsub("\\ ", " ")
+    -- extra gsubs for things that should not be escaped
+    return vim.fn
+        .fnameescape(command)
+        :gsub("\\ ", " ")
+        :gsub("\\ ", " ")
+        :gsub("\\'", "'")
+        :gsub('\\"', '"')
 end
 
 ---@param command string
