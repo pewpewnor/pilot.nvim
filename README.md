@@ -35,20 +35,16 @@ single key to compile/build and run my code with full control over the commands.
 Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
--- init.lua:
-{ "pewpewnor/pilot.nvim", opts = {} }
-
--- plugins/pilot.lua:
 return {
     "pewpewnor/pilot.nvim",
-    opts = {}
+    opts = {},
 }
 --or
 return {
     "pewpewnor/pilot.nvim",
     config = function()
         require("pilot").setup()
-    end
+    end,
 }
 ```
 
@@ -244,6 +240,13 @@ The example code above is actually the implementation of
 
 > [!NOTE]
 > There is no need to escape the command, pilot.nvim already does it for you 😉
+
+## Recommendation
+
+Use plugin like (telescope-ui-select.nvim)[https://github.com/nvim-telescope/telescope-ui-select.nvim]
+or (mini.nvim's mini-pick)[https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
+which create a nice wrapper for `vim.ui.select()` when you are selecting which
+command to run
 
 ### Got questions or have any ideas on how to improve this plugin?
 
