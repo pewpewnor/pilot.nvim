@@ -4,9 +4,9 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **run** your **project or file** based
-on the **custom JSON run configuration file** that you wrote on the go. You can
-have one JSON file for each file type and one (or instead use fallback) JSON
-file for each project.
+on the **custom JSON run configuration file** that you wrote on the go. Usually
+you will have one run configuration file for each file type and project
+(although, specifically for project, you can use the fallback feature instead).
 
 _Requirements: Neovim v0.11.0_
 
@@ -19,12 +19,13 @@ single key to compile/build and run my code with full control over the commands.
 
 ## Features
 
-- Run arbritrary command to run, test, and debug any file or project.
+- Run arbitrary command to run, test, and debug any file or project.
 - Placeholders for current file path, file name, directory name, cwd name, etc.
-- You can adjust it on the fly without needing to reload Neovim everytime.
+- You can adjust it on the fly without needing to reload Neovim every time.
 - Supports fallback project run configuration so you don't have to create the
   same JSON run configuration for each project
-- It is possible to compile code and run the program afterwards.
+- Unlike many other code runner plugins, it is possible to compile code and run
+  the program.
 - Customizable path/location for your project and file run configurations.
 - Customizable location of command execution (presets are also provided).
 - Bindable functions to run, edit, and remove your project and file type
@@ -61,10 +62,10 @@ use {
 
 ### General terms
 
-- Project run config -> the customizable JSON file containing your commands to
-  run the current project.
-- File type run config -> the customizable JSON file containing your commands to
-  run the current file based on the file type.
+- Project run configuration -> the customizable JSON file containing your
+  commands to run the current project.
+- File type run configuration -> the customizable JSON file containing your
+  commands to run the current file based on the file type.
 
 ## Default configuration
 
@@ -86,8 +87,8 @@ change any of the options.
 ```
 
 > [!NOTE]
-> Check out the [configurations documentation section](docs/pilot.md#configuration-options)
-> to see every possible configuration options for the setup function.
+> Check out the [configuration options documentation section](docs/pilot.md#configuration-options)
+> to see every possible configuration option for the setup function.
 
 ## Example configuration
 
@@ -97,21 +98,21 @@ pilot.setup({
     -- grab the pilot configuration from the current working directory instead
     -- of automatically generating one
     project_run_config_path = "{{cwd_path}}/pilot.json",
-    -- will be used instead if there is no project run config file
+    -- will be used instead if there is no project run configuration file
     -- at the path specified in the 'project_run_config_path' option
     fallback_project_run_config = function()
         -- you can customize this logic
         -- e.g. if the project has 'package-lock.json', then use our
-        -- 'npm_project.json' as the project run config
+        -- 'npm_project.json' as the project run configuration
         if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
             return  "{{pilot_data_path}}/npm_project.json"
         -- e.g. if the project has CMakeLists.txt, then we will use our
-        -- 'cmake_project.json' as our project run config
+        -- 'cmake_project.json' as our project run configuration
         elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
             return "/home/user/templates/cmake_project.json"
         end
     end,
-    -- define custom locations that can be used in any pilot run config
+    -- define custom locations that can be used in any pilot run configuration
     custom_locations = {
         -- custom location that executes the command in a new tmux window
         tmux_new_window = function(command)
@@ -136,10 +137,10 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
 ```
 
 > [!NOTE]
-> Check out the [functions documentation section](docs/pilot.md#functions) to
-> see the details of every pilot functions.
+> Check out the [function documentation section](docs/pilot.md#functions) to
+> see the details of every pilot function.
 
-## Example project run config
+## Example project run configuration
 
 As an example, if you set your `project_run_config_path` as
 "{{cwd_path}}/pilot.json", then here is what the _pilot.json_'s file content may
@@ -166,14 +167,14 @@ look like.
 ]
 ```
 
-## Example file type run config
+## Example file type run configuration
 
-Let's say you want to write a file type run config for compiling and running any
-file that has "c" as the vim file type (the c programming language).
+Let's say you want to write a file type run configuration for compiling and
+running any file with "c" as its Vim file type (the c programming language).
 
 > [!TIP]
 > For each entry, you don't have to specify a display name if you want it to be
-> the same as the literal command. You can also instead use a string for
+> the same as the raw command string. You can also instead use a string for
 > defining an entry/command.
 
 ```json
@@ -187,11 +188,12 @@ file that has "c" as the vim file type (the c programming language).
 ```
 
 > [!NOTE]
-> Check out the [run config documentation section](docs/pilot.md#run-config) to
-> see the JSON format for project and file type run configs even further.
+> Check out the [run configuration documentation section](docs/pilot.md#run-configuration)
+> to see more details about the JSON format for project and file type run
+> configurations.
 
 > [!NOTE]
-> The project run config and the file type run config use the exact same JSON
+> Both the project run and file type run configurations use the exact same JSON
 > format.
 
 ## Placeholders
@@ -243,9 +245,9 @@ The example code above is actually the implementation of
 
 ## Recommendation
 
-Use plugin like (telescope-ui-select.nvim)[https://github.com/nvim-telescope/telescope-ui-select.nvim]
-or (mini.nvim's mini-pick)[https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
-which create a nice wrapper for `vim.ui.select()` when you are selecting which
+Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
+or [mini.nvim's mini-pick][https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
+which creates a nice wrapper for `vim.ui.select()` when you are selecting which
 command to run
 
 ### Got questions or have any ideas on how to improve this plugin?

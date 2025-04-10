@@ -55,7 +55,7 @@ function M.get_default_project_run_config_dir_path(create_missing_dirs)
     if create_missing_dirs and not create_dir_path(default_dir_path) then
         error(
             string.format(
-                "[Pilot] Failed to create file type run config directory at '%s'.",
+                "[Pilot] Failed to create file type run configuration directory at '%s'.",
                 default_dir_path
             )
         )
@@ -70,7 +70,7 @@ function M.get_default_file_type_run_config_dir_path(create_missing_dirs)
     if create_missing_dirs and not create_dir_path(default_dir_path) then
         error(
             string.format(
-                "[Pilot] Failed to create file type run config directory at '%s'.",
+                "[Pilot] Failed to create file type run configuration directory at '%s'.",
                 default_dir_path
             )
         )

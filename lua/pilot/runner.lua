@@ -72,7 +72,7 @@ local function read_fallback_project_run_config()
     if not file_content then
         error(
             string.format(
-                "[Pilot] Error: Failed to read fallback project run config at '%s'.",
+                "[Pilot] Error: Failed to read fallback project run configuration at '%s'.",
                 fallback_path
             )
         )
@@ -126,7 +126,7 @@ local function read_and_decode_imported_path(import_path)
     if type(imported_list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Error: Imported file '%s' should contain JSON array, refer to the documentation for proper run config format.",
+                "[Pilot] Error: Imported file '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
                 import_path
             )
         )
@@ -141,7 +141,7 @@ local function parse_list_to_entries(list, run_config_path)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] run config must be a valid JSON array in '%s'.",
+                "[Pilot] run configuration must be a valid JSON array in '%s'.",
                 run_config_path
             )
         )
@@ -203,21 +203,21 @@ local function parse_run_config(run_config_path, run_classification)
         if run_classification == "project" then
             if not M.config.fallback_project_run_config then
                 print(
-                    "[Pilot] Error: No project run config detected and no fallback configuration."
+                    "[Pilot] Error: No project run configuration detected and no fallback configuration."
                 )
                 return
             end
             file_content = read_fallback_project_run_config()
             if not file_content then
                 print(
-                    "[Pilot] Error: No project run config detected and fallback returns nil."
+                    "[Pilot] Error: No project run configuration detected and fallback returns nil."
                 )
                 return
             end
         else
             print(
                 string.format(
-                    "[Pilot] No detected run config for file type %s.",
+                    "[Pilot] No detected run configuration for file type %s.",
                     vim.bo.filetype
                 )
             )
@@ -229,7 +229,7 @@ local function parse_run_config(run_config_path, run_classification)
     if not list then
         error(
             string.format(
-                "[Pilot] Error: Your %s run config has invalid JSON format or is empty.",
+                "[Pilot] Error: Your %s run configuration has invalid JSON format or is empty.",
                 run_classification
             )
         )
@@ -237,7 +237,7 @@ local function parse_run_config(run_config_path, run_classification)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Error: Your %s run config should contain JSON array, refer to the documentation for proper run config format.",
+                "[Pilot] Error: Your %s run configuration should contain JSON array, refer to the documentation for proper run configuration format.",
                 run_classification
             )
         )
@@ -262,9 +262,9 @@ function M.select_command_and_execute(run_config_path, run_classification)
         #entries == 1
         and (
             run_classification == "project"
-                and M.config.automatically_run_single_command.project
+            and M.config.automatically_run_single_command.project
             or run_classification == "file type"
-                and M.config.automatically_run_single_command.file_type
+            and M.config.automatically_run_single_command.file_type
         )
     then
         execute_entry(entries[1])
@@ -277,7 +277,7 @@ function M.select_command_and_execute(run_config_path, run_classification)
                 .. run_classification
                 .. (
                     run_classification == "file type"
-                        and " (" .. vim.bo.filetype .. ")"
+                    and " (" .. vim.bo.filetype .. ")"
                     or ""
                 ),
             format_item = function(entry)
