@@ -126,10 +126,10 @@ M.delete_project_run_config = module.delete_project_run_config
 
 M.delete_file_type_run_config = module.delete_file_type_run_config
 
-M.rmdir_default_project_run_config_dir =
-    module.rmdir_default_project_run_config_dir
+M.purge_all_default_project_run_config_dir =
+    module.purge_all_default_project_run_config_dir
 
-M.rmdir_default_file_type_run_config_dir =
-    module.rmdir_default_file_type_run_config_dir
+M.purge_all_default_project_run_config_dir =
+    module.purge_all_default_file_type_run_config_dir
 
 return M

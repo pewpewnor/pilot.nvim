@@ -17,7 +17,7 @@ local function delete_run_config(run_config_path)
 end
 
 ---@param run_config_dir_path string
-local function rmdir_run_config_dir(run_config_dir_path)
+local function purge_all_run_config_dir(run_config_dir_path)
     vim.fs.rm(run_config_dir_path, { recursive = true, force = true })
 end
 
@@ -60,12 +60,16 @@ function M.delete_file_type_run_config()
     delete_run_config(pathfinder.get_file_type_run_config_path())
 end
 
-function M.rmdir_default_project_run_config_dir()
-    rmdir_run_config_dir(pathfinder.get_default_project_run_config_dir_path())
+function M.purge_all_default_project_run_config_dir()
+    purge_all_run_config_dir(
+        pathfinder.get_default_project_run_config_dir_path()
+    )
 end
 
-function M.rmdir_default_file_type_run_config_dir()
-    rmdir_run_config_dir(pathfinder.get_default_file_type_run_config_dir_path())
+function M.purge_all_default_file_type_run_config_dir()
+    purge_all_run_config_dir(
+        pathfinder.get_default_file_type_run_config_dir_path()
+    )
 end
 
 return M
