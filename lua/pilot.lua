@@ -110,7 +110,7 @@ function M.print_executor(command)
 end
 
 ---@type Executor
-function M.background_executor(command)
+function M.silent_executor(command)
     vim.fn.system(command)
 end
 

@@ -226,7 +226,7 @@ running any file with "c" as its Vim file type (the c programming language).
 | `pilot.nvim_split_executor`             | Run the command on a new horizontal buffer at the bottom right |
 | `pilot.nvim_vsplit_executor`            | Run the command on a new vertical buffer at the right side     |
 | `pilot.print_executor`                  | Run the command with the output shown using the print function |
-| `pilot.background_executor`             | Run the command with no output displayed                       |
+| `pilot.silent_executor`                 | Run the command with no output displayed                       |
 
 Simply set the `default_executor` option in your configuration to use one of the
 above.
@@ -241,7 +241,7 @@ You can also create your own default executor like this:
 ```
 
 The example code above is actually the implementation of
-`pilot.background_executor`.
+`pilot.silent_executor`.
 
 > [!NOTE]
 > There is no need to escape the command, pilot.nvim already does it for you 😉
