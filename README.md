@@ -219,12 +219,14 @@ running any file with "c" as its Vim file type (the c programming language).
 
 ## Preset executors
 
-| Executor                                         | Description                                                             |
-| ------------------------------------------------ | ----------------------------------------------------------------------- |
-| `pilot.nvim_terminal_new_tab_executor` (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
-| `pilot.nvim_terminal_current_buffer_executor`    | Run the command in the current buffer with Neovim's integrated terminal |
-| `pilot.print_executor`                           | Run the command with the output shown using the print function          |
-| `pilot.background_executor`                      | Run the command with no output displayed                                |
+| Executor                                | Description                                                    |
+| --------------------------------------- | -------------------------------------------------------------- |
+| `pilot.nvim_new_tab_executor` (default) | Run the command on a new Neovim tab                            |
+| `pilot.nvim_current_buffer_executor`    | Run the command on the current buffer                          |
+| `pilot.nvim_split_executor`             | Run the command on a new horizontal buffer at the bottom right |
+| `pilot.nvim_vsplit_executor`            | Run the command on a new vertical buffer at the right side     |
+| `pilot.print_executor`                  | Run the command with the output shown using the print function |
+| `pilot.background_executor`             | Run the command with no output displayed                       |
 
 Simply set the `default_executor` option in your configuration to use one of the
 above.

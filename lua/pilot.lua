@@ -73,12 +73,7 @@ local function validate_config(options)
 end
 
 ---@type Executor
-function M.nvim_terminal_current_buffer(command)
-    vim.cmd("terminal " .. command)
-end
-
----@type Executor
-function M.nvim_terminal_new_tab(command, args)
+function M.nvim_new_tab_executor(command, args)
     if #args == 0 then
         vim.cmd("tabnew | terminal " .. command)
     else
@@ -87,7 +82,12 @@ function M.nvim_terminal_new_tab(command, args)
 end
 
 ---@type Executor
-function M.nvim_terminal_split(command, args)
+function M.nvim_current_buffer_executor(command)
+    vim.cmd("terminal " .. command)
+end
+
+---@type Executor
+function M.nvim_split_executor(command, args)
     if #args == 0 then
         vim.cmd("rightbelow split | terminal " .. command)
     else
@@ -96,7 +96,7 @@ function M.nvim_terminal_split(command, args)
 end
 
 ---@type Executor
-function M.nvim_terminal_vsplit(command, args)
+function M.nvim_vsplit_executor(command, args)
     if #args == 0 then
         vim.cmd("botright vsplit | terminal " .. command)
     else
@@ -123,7 +123,7 @@ M.config = {
         project = true,
         file_type = true,
     },
-    default_executor = M.nvim_terminal_new_tab,
+    default_executor = M.nvim_new_tab_executor,
     custom_locations = nil,
 }
 
