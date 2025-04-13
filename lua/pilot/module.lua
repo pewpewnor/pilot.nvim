@@ -29,14 +29,14 @@ function M.init(config)
 end
 
 function M.run_project()
-    runner.select_command_and_execute(
+    runner.select_and_run_entry(
         pathfinder.get_project_run_config_path(),
         "project"
     )
 end
 
 function M.run_file_type()
-    runner.select_command_and_execute(
+    runner.select_and_run_entry(
         pathfinder.get_file_type_run_config_path(),
         "file type"
     )

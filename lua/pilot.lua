@@ -4,7 +4,7 @@
 ---@field project boolean
 ---@field file_type boolean
 
----@alias Executor fun(command: string)
+---@alias Executor fun(command: string, args: [string])
 
 ---@class CustomLocations
 ---@field [string] Executor
@@ -73,13 +73,35 @@ local function validate_config(options)
 end
 
 ---@type Executor
-function M.nvim_terminal_new_tab_executor(command)
-    vim.cmd("tabnew | terminal " .. command)
+function M.nvim_terminal_current_buffer(command)
+    vim.cmd("terminal " .. command)
 end
 
 ---@type Executor
-function M.nvim_terminal_current_buffer_executor(command)
-    vim.cmd("terminal " .. command)
+function M.nvim_terminal_new_tab(command, args)
+    if #args == 0 then
+        vim.cmd("tabnew | terminal " .. command)
+    else
+        vim.cmd(args[1] .. "tabnew | terminal " .. command)
+    end
+end
+
+---@type Executor
+function M.nvim_terminal_split(command, args)
+    if #args == 0 then
+        vim.cmd("rightbelow split | terminal " .. command)
+    else
+        vim.cmd(args[1] .. " split | terminal " .. command)
+    end
+end
+
+---@type Executor
+function M.nvim_terminal_vsplit(command, args)
+    if #args == 0 then
+        vim.cmd("botright vsplit | terminal " .. command)
+    else
+        vim.cmd(args[1] .. " vsplit | terminal " .. command)
+    end
 end
 
 ---@type Executor
@@ -101,7 +123,7 @@ M.config = {
         project = true,
         file_type = true,
     },
-    default_executor = M.nvim_terminal_new_tab_executor,
+    default_executor = M.nvim_terminal_new_tab,
     custom_locations = nil,
 }
 

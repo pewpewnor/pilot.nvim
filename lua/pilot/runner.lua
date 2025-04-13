@@ -14,34 +14,37 @@ local interpolate = require("pilot.interpolation")
 ---@class Task
 ---@field command string
 ---@field executor Executor
+---@field args [string]
 
 local M = {}
 
 ---@type Task|nil
 M.last_executed_task = nil
 
----@param executor Executor
----@param command string
-local function execute_command(executor, command)
-    executor(interpolate(command))
+---@param task Task
+local function execute_task(task)
+    task.executor(interpolate(task.command), task.args)
 end
 
 ---@param entry Entry
-local function execute_entry(entry)
+local function run_entry(entry)
     local executor
+    local args = {}
     if not entry.location then
         executor = M.config.default_executor
     else
-        if not M.config or not M.config.custom_locations then
+        if not M.config.custom_locations then
             error(
                 "[Pilot] Error: Attempted to use a custom location, but none have been configured. Please define 'custom_locations' in your configuration."
             )
         end
-        executor = M.config.custom_locations[entry.location]
+        args = vim.fn.split(entry.location, " ")
+        local executor_name = table.remove(args, 1)
+        executor = M.config.custom_locations[executor_name]
         if not executor then
             error(
                 string.format(
-                    "[Pilot] Error: Attempted to retrieve custom location '%s' from 'custom_locations' in your configuration, but got nil instead.",
+                    "[Pilot] Error: Attempted to retrieve custom location '%s' from given custom locations in your configuration, but got nil instead.",
                     entry.location
                 )
             )
@@ -51,8 +54,9 @@ local function execute_entry(entry)
     M.last_executed_task = {
         command = entry.command,
         executor = executor,
+        args = args,
     }
-    execute_command(executor, entry.command)
+    execute_task(M.last_executed_task)
 end
 
 ---@return string?
@@ -252,7 +256,7 @@ end
 
 ---@param run_config_path string
 ---@param run_classification RunClassification
-function M.select_command_and_execute(run_config_path, run_classification)
+function M.select_and_run_entry(run_config_path, run_classification)
     local entries = parse_run_config(run_config_path, run_classification)
     if not entries then
         return
@@ -267,7 +271,7 @@ function M.select_command_and_execute(run_config_path, run_classification)
             and M.config.automatically_run_single_command.file_type
         )
     then
-        execute_entry(entries[1])
+        run_entry(entries[1])
     else
         for i, entry in ipairs(entries) do
             entries[i].name = i .. ". " .. entry.name
@@ -285,7 +289,7 @@ function M.select_command_and_execute(run_config_path, run_classification)
             end,
         }, function(chosen_entry)
             if chosen_entry then
-                execute_entry(chosen_entry)
+                run_entry(chosen_entry)
             end
         end)
     end
@@ -296,7 +300,7 @@ function M.run_last_executed_task()
         print("[Pilot] no previously executed task.")
         return
     end
-    execute_command(M.last_executed_task.executor, M.last_executed_task.command)
+    execute_task(M.last_executed_task)
 end
 
 return M
