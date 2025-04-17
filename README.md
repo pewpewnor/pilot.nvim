@@ -249,7 +249,7 @@ The example code above is actually the implementation of
 ## Recommendation
 
 Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
-or [mini.nvim's mini-pick][https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
+or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
 which creates a nice wrapper for `vim.ui.select()` when you are selecting which
 command to run
 
