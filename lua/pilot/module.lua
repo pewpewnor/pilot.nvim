@@ -45,11 +45,11 @@ end
 M.run_last_executed_task = runner.run_last_executed_task
 
 function M.edit_project_run_config()
-    edit_run_config(pathfinder.get_project_run_config_path())
+    edit_run_config(pathfinder.get_project_run_config_path(true))
 end
 
 function M.edit_file_type_run_config()
-    edit_run_config(pathfinder.get_file_type_run_config_path())
+    edit_run_config(pathfinder.get_file_type_run_config_path(true))
 end
 
 function M.delete_project_run_config()

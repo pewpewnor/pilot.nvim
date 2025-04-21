@@ -15,10 +15,11 @@ local function create_dir_path(dir_path)
 end
 
 ---@param path string
-local function custom_run_config_path(path)
+---@param create_missing_dirs boolean?
+local function custom_run_config_path(path, create_missing_dirs)
     path = interpolate(path)
     local dir_path = vim.fs.dirname(path)
-    if not create_dir_path(dir_path) then
+    if create_missing_dirs and not create_dir_path(dir_path) then
         error(
             string.format(
                 "[Pilot] Failed to create custom directory at '%s'.",
@@ -30,9 +31,10 @@ local function custom_run_config_path(path)
 end
 
 ---@return string
-local function get_pilot_data_path()
+---@param create_missing_dirs boolean?
+local function get_pilot_data_path(create_missing_dirs)
     local pilot_data_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
-    if not create_dir_path(pilot_data_path) then
+    if create_missing_dirs and not create_dir_path(pilot_data_path) then
         error(
             string.format(
                 "[Pilot] Failed to create pilot data directory at '%s'.",
@@ -51,7 +53,8 @@ end
 ---@param create_missing_dirs boolean?
 ---@return string
 function M.get_default_project_run_config_dir_path(create_missing_dirs)
-    local default_dir_path = vim.fs.joinpath(get_pilot_data_path(), "projects")
+    local default_dir_path =
+        vim.fs.joinpath(get_pilot_data_path(create_missing_dirs), "projects")
     if create_missing_dirs and not create_dir_path(default_dir_path) then
         error(
             string.format(
@@ -66,7 +69,8 @@ end
 ---@param create_missing_dirs boolean?
 ---@return string
 function M.get_default_file_type_run_config_dir_path(create_missing_dirs)
-    local default_dir_path = vim.fs.joinpath(get_pilot_data_path(), "filetypes")
+    local default_dir_path =
+        vim.fs.joinpath(get_pilot_data_path(create_missing_dirs), "filetypes")
     if create_missing_dirs and not create_dir_path(default_dir_path) then
         error(
             string.format(
@@ -78,26 +82,34 @@ function M.get_default_file_type_run_config_dir_path(create_missing_dirs)
     return default_dir_path
 end
 
+---@param create_missing_dirs boolean?
 ---@return string
-function M.get_project_run_config_path()
+function M.get_project_run_config_path(create_missing_dirs)
     if M.config.project_run_config_path then
-        return custom_run_config_path(M.config.project_run_config_path)
+        return custom_run_config_path(
+            M.config.project_run_config_path,
+            create_missing_dirs
+        )
     end
 
     return vim.fs.joinpath(
-        M.get_default_project_run_config_dir_path(true),
+        M.get_default_project_run_config_dir_path(create_missing_dirs),
         vim.fn.sha256(vim.fn.getcwd())
     ) .. ".json"
 end
 
+---@param create_missing_dirs boolean?
 ---@return string
-function M.get_file_type_run_config_path()
+function M.get_file_type_run_config_path(create_missing_dirs)
     if M.config.file_type_run_config_path then
-        return custom_run_config_path(M.config.file_type_run_config_path)
+        return custom_run_config_path(
+            M.config.file_type_run_config_path,
+            create_missing_dirs
+        )
     end
 
     return vim.fs.joinpath(
-        M.get_default_file_type_run_config_dir_path(true),
+        M.get_default_file_type_run_config_dir_path(create_missing_dirs),
         vim.bo.filetype
     ) .. ".json"
 end
