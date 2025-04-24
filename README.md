@@ -20,7 +20,7 @@ single key to compile/build and run my code with full control over the commands.
 
 ## Features
 
-- Run arbitrary command to run, test, and debug any file or project.
+- Run arbitrary commands to run, test, and debug any file or project.
 - Placeholders for current file path, file name, directory name, cwd name, etc.
 - You can adjust it on the fly without needing to reload Neovim every time.
 - Supports fallback project run configuration so you don't have to create the
