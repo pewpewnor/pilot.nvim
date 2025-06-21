@@ -9,7 +9,7 @@ on the **custom JSON run configuration file** that you can edit on the go.
 Usually you will have one run configuration file for each file type and project
 (although, specifically for project, you can use the fallback feature instead).
 
-_Requirement: Neovim v0.11.0_
+_Requirement: Neovim v0.11.x_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
