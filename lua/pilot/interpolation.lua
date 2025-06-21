@@ -44,6 +44,12 @@ local function resolve_placeholder(placeholder)
     )
 end
 
+--- the reason why we need to do this dance is because e.g. the user expects the
+--- bash command "echo %" (without any placeholder interpolation) to work
+--- perfectly fine since it makes sense. Unfortunately, in the end, it would
+--- become something like `tabnew | terminal echo %` which is illegal in vim
+--- because of the % symbol. we need to not only escape the interpolated part
+--- with fnameescape, but also the non interpolated part.
 ---@param command string
 ---@return string
 local function escape_non_interpolated(command)
