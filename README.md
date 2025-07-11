@@ -3,11 +3,11 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A Neovim plugin that allows you to **run** your **project or file** based
-on the **custom JSON run configuration file** that you can edit on the go.
+A Neovim plugin that allows you to **run** your **project or file** based on the
+**JSON run configuration file** with placeholder support that you can edit on the go.
 
-Usually you will have one run configuration file for each file type and project
-(although, specifically for project, you can use the fallback feature instead).
+Usually you will end up with one run configuration file for each file type and project
+(specifically for project: you can use the fallback feature instead).
 
 _Requirement: Neovim v0.11.x_
 
@@ -15,7 +15,7 @@ _Requirement: Neovim v0.11.x_
 
 ## Motivation
 
-I wanted a code runner plugin with placeholder interpolation so that I can hit a
+I wanted a code runner plugin that supports placeholder interpolation so that I can hit a
 single key to compile/build and run my code with full control over the commands.
 
 ## Features
@@ -122,11 +122,11 @@ pilot.setup({
 })
 
 -- customize these keybindings to your liking
-vim.keymap.set("n", "<Leader>xp", pilot.run_project)
-vim.keymap.set("n", "<Leader>xf", pilot.run_file_type)
-vim.keymap.set("n", "<Leader>xl", pilot.run_last_executed_task)
-vim.keymap.set("n", "<Leader>ep", pilot.edit_project_run_config)
-vim.keymap.set("n", "<Leader>ef", pilot.edit_file_type_run_config)
+vim.keymap.set("n", "<F10>", pilot.run_project)
+vim.keymap.set("n", "<F12>", pilot.run_file_type)
+vim.keymap.set("n", "<F11>", pilot.run_last_executed_task)
+vim.keymap.set("n", "<Leader><F10>", pilot.edit_project_run_config)
+vim.keymap.set("n", "<Leader><F12>", pilot.edit_file_type_run_config)
 
 -- example of creating vim user commands for pilot functions
 vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
@@ -141,8 +141,7 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
 
 ## Example project run configuration
 
-As an example, if you set your `project_run_config_path` as "{{cwd_path}}/pilot.json",
-then here is what the _pilot.json_'s file content may look like.
+Here is what the project run configration file may look like.
 
 > [!TIP]
 > Use the mustache syntax like `{{cword}}` to insert a placeholder that will
@@ -151,12 +150,12 @@ then here is what the _pilot.json_'s file content may look like.
 ```json
 [
     {
-        "name": "run specific test (cursor hover over the function name)",
-        "command": "go test -v --run {{cword}}"
-    },
-    {
         "name": "build & run project",
         "command": "make build && make run"
+    },
+    {
+        "name": "run hovered test function name",
+        "command": "go test -v --run {{cword}}"
     },
     {
         "command": "ls {{dir_path}}",
