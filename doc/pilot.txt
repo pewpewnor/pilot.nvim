@@ -223,7 +223,7 @@ PLACEHOLDERS                                   *pilot-pilot.nvim-placeholders*
   --------------------------------------------------------------------------------
   Placeholder                  Resolved value
   ---------------------------- ---------------------------------------------------
-  {{file_path}}                Absolute file path of the current buffer
+  {{file_path}}                Current buffer’s absolute file path
 
   {{file_path_relative}}       Current buffer’s file path that is relative to the
                                current working directory

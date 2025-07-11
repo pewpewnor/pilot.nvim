@@ -201,7 +201,7 @@ running any file with "c" as its Vim file type (the c programming language).
 
 | Placeholder                  | Resolved value                                                               |
 | ---------------------------- | ---------------------------------------------------------------------------- |
-| `{{file_path}}`              | Absolute file path of the current buffer                                     |
+| `{{file_path}}`              | Current buffer's absolute file path                                          |
 | `{{file_path_relative}}`     | Current buffer's file path that is relative to the current working directory |
 | `{{file_name}}`              | Current buffer's file name (file extension included)                         |
 | `{{file_name_no_extension}}` | Current buffer's file name without the file extension                        |
