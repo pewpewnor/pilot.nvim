@@ -25,12 +25,10 @@ single key to compile/build and run my code with full control over the commands.
 - You can adjust it on the fly without needing to reload Neovim every time.
 - Supports fallback project run configuration so you don't have to create the
   same JSON run configuration for each project
-- Unlike many other code runner plugins, it is possible to compile code and run
-  the program.
+- Unlike many other code runner plugins, it is possible to compile code and run the program.
 - Customizable path/location for your project and file run configurations.
 - Customizable location of command execution (presets are also provided).
-- Bindable functions to run, edit, and remove your project and file type
-  run configuration.
+- Bindable functions to run, edit, and remove your project and file type run configuration.
 
 ## Installation
 
@@ -143,9 +141,8 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
 
 ## Example project run configuration
 
-As an example, if you set your `project_run_config_path` as
-"{{cwd_path}}/pilot.json", then here is what the _pilot.json_'s file content may
-look like.
+As an example, if you set your `project_run_config_path` as "{{cwd_path}}/pilot.json",
+then here is what the _pilot.json_'s file content may look like.
 
 > [!TIP]
 > Use the mustache syntax like `{{cword}}` to insert a placeholder that will
@@ -228,8 +225,7 @@ running any file with "c" as its Vim file type (the c programming language).
 | `pilot.print_executor`                  | Run the command with the output shown using the print function |
 | `pilot.silent_executor`                 | Run the command with no output displayed                       |
 
-Simply set the `default_executor` option in your configuration to use one of the
-above.
+Simply set the `default_executor` option in your configuration to use one of the above.
 You can also create your own default executor like this:
 
 ```lua
@@ -240,8 +236,7 @@ You can also create your own default executor like this:
 }
 ```
 
-The example code above is actually the implementation of
-`pilot.silent_executor`.
+The example code above is actually the implementation of `pilot.silent_executor`.
 
 > [!NOTE]
 > There is no need to escape the command, pilot.nvim already does it for you 😉
@@ -250,10 +245,8 @@ The example code above is actually the implementation of
 
 Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
 or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
-which creates a nice wrapper for `vim.ui.select()` when you are selecting which
-command to run
+which creates a nice wrapper for `vim.ui.select()` when you are selecting which command to run
 
 ### Got questions or have any ideas on how to improve this plugin?
 
-Check out our [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions)
-or simply create a new issue!
+Check out the [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions) or simply create a new issue!

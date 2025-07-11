@@ -5,7 +5,7 @@ Thank you for your willingness to contribute to this plugin. It means a lot!
 ## Ways you can contribute to this project
 
 - Make the documentation better for everyone
-- Suggests a new feature
+- Suggest a new feature
 - Fix existing bugs or bugs that you found
 - Add a new feature
 
@@ -25,7 +25,7 @@ These are more of like suggestions, hence not strictly enforced.
 
 ### Commit messages
 
-Try to use the following commit message format if you can:
+Try using the following commit message format if you can:
 
 - `fix: commit message` for fixes.
 - `feat: commit message` for new features.
