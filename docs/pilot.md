@@ -4,11 +4,12 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 A Neovim plugin that allows you to **run** your **project or file** based
-on the **custom JSON run configuration file** that you wrote on the go. Usually
-you will have one run configuration file for each file type and project
+on the **custom JSON run configuration file** that you can edit on the go.
+
+Usually you will have one run configuration file for each file type and project
 (although, specifically for project, you can use the fallback feature instead).
 
-_Requirement: Neovim v0.11.0_
+_Requirement: Neovim v0.11.x_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
@@ -19,7 +20,7 @@ single key to compile/build and run my code with full control over the commands.
 
 ## Features
 
-- Run arbitrary command to run, test, and debug any file or project.
+- Run arbitrary commands to run, test, and debug any file or project.
 - Placeholders for current file path, file name, directory name, cwd name, etc.
 - You can adjust it on the fly without needing to reload Neovim every time.
 - Supports fallback project run configuration so you don't have to create the
@@ -218,12 +219,14 @@ running any file with "c" as its Vim file type (the c programming language).
 
 ## Preset executors
 
-| Executor                                         | Description                                                             |
-| ------------------------------------------------ | ----------------------------------------------------------------------- |
-| `pilot.nvim_terminal_new_tab_executor` (default) | Run the command in a new Neovim tab with Neovim's integrated terminal   |
-| `pilot.nvim_terminal_current_buffer_executor`    | Run the command in the current buffer with Neovim's integrated terminal |
-| `pilot.print_executor`                           | Run the command with the output shown using the print function          |
-| `pilot.background_executor`                      | Run the command with no output displayed                                |
+| Executor                                | Description                                                    |
+| --------------------------------------- | -------------------------------------------------------------- |
+| `pilot.nvim_new_tab_executor` (default) | Run the command on a new Neovim tab                            |
+| `pilot.nvim_current_buffer_executor`    | Run the command on the current buffer                          |
+| `pilot.nvim_split_executor`             | Run the command on a new horizontal buffer at the bottom right |
+| `pilot.nvim_vsplit_executor`            | Run the command on a new vertical buffer at the right side     |
+| `pilot.print_executor`                  | Run the command with the output shown using the print function |
+| `pilot.silent_executor`                 | Run the command with no output displayed                       |
 
 Simply set the `default_executor` option in your configuration to use one of the
 above.
@@ -238,7 +241,7 @@ You can also create your own default executor like this:
 ```
 
 The example code above is actually the implementation of
-`pilot.background_executor`.
+`pilot.silent_executor`.
 
 > [!NOTE]
 > There is no need to escape the command, pilot.nvim already does it for you 😉
@@ -246,7 +249,7 @@ The example code above is actually the implementation of
 ## Recommendation
 
 Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
-or [mini.nvim's mini-pick][https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md]
+or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
 which creates a nice wrapper for `vim.ui.select()` when you are selecting which
 command to run
 
