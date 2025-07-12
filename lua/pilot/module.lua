@@ -42,7 +42,7 @@ function M.run_file_type()
     )
 end
 
-M.run_last_executed_task = runner.run_last_executed_task
+M.run_previous_task = runner.run_previous_task
 
 function M.edit_project_run_config()
     edit_run_config(pathfinder.get_project_run_config_path(true))

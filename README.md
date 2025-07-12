@@ -124,7 +124,7 @@ pilot.setup({
 -- customize these keybindings to your liking
 vim.keymap.set("n", "<F10>", pilot.run_project)
 vim.keymap.set("n", "<F12>", pilot.run_file_type)
-vim.keymap.set("n", "<F11>", pilot.run_last_executed_task)
+vim.keymap.set("n", "<F11>", pilot.run_previous_task)
 vim.keymap.set("n", "<Leader><F10>", pilot.edit_project_run_config)
 vim.keymap.set("n", "<Leader><F12>", pilot.edit_file_type_run_config)
 
@@ -244,7 +244,7 @@ The example code above is actually the implementation of `pilot.silent_executor`
 
 Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
 or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
-which creates a nice wrapper for `vim.ui.select()` when you are selecting which command to run
+which creates a nice wrapper for `vim.ui.select()` when you are selecting which command to run.
 
 ### Got questions or have any ideas on how to improve this plugin?
 

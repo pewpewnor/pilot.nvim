@@ -148,7 +148,7 @@ EXAMPLE CONFIGURATION                 *pilot-pilot.nvim-example-configuration*
     -- customize these keybindings to your liking
     vim.keymap.set("n", "<F10>", pilot.run_project)
     vim.keymap.set("n", "<F12>", pilot.run_file_type)
-    vim.keymap.set("n", "<F11>", pilot.run_last_executed_task)
+    vim.keymap.set("n", "<F11>", pilot.run_previous_task)
     vim.keymap.set("n", "<Leader><F10>", pilot.edit_project_run_config)
     vim.keymap.set("n", "<Leader><F12>", pilot.edit_file_type_run_config)
     
@@ -307,7 +307,7 @@ Useplugin like telescope-ui-select.nvim
 mini-pick
 <https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md> which
 creates a nice wrapper for `vim.ui.select()` when you are selecting which
-command to run
+command to run.
 
 
 GOT QUESTIONS OR HAVE ANY IDEAS ON HOW TO IMPROVE THIS PLUGIN? ~

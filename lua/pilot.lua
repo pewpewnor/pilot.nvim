@@ -4,7 +4,7 @@
 ---@field project boolean
 ---@field file_type boolean
 
----@alias Executor fun(command: string, args: [string])
+---@alias Executor fun(command: string, args: [string]?)
 
 ---@class CustomLocations
 ---@field [string] Executor
@@ -138,7 +138,7 @@ M.run_project = module.run_project
 
 M.run_file_type = module.run_file_type
 
-M.run_last_executed_task = module.run_last_executed_task
+M.run_previous_task = module.run_previous_task
 
 M.edit_project_run_config = module.edit_project_run_config
 

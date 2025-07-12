@@ -295,7 +295,7 @@ function M.select_and_run_entry(run_config_path, run_classification)
     end
 end
 
-function M.run_last_executed_task()
+function M.run_previous_task()
     if not M.last_executed_task then
         print("[Pilot] no previously executed task.")
         return
