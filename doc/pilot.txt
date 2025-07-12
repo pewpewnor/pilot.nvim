@@ -104,6 +104,7 @@ to change any of the options.
             file_type = true, -- boolean
         },
         fallback_project_run_config = nil, -- (function that returns a string) | nil
+        default_executor = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
         custom_locations = nil, -- (key/value table with the values being strings) | nil
     }
 <
@@ -135,6 +136,8 @@ EXAMPLE CONFIGURATION                 *pilot-pilot.nvim-example-configuration*
                 return "/home/user/templates/cmake_project.json"
             end
         end,
+        -- if location is not specified in JSON, then execute it on a new horizontal buffer
+        default_executor = pilot.nvim_split_executor,
         -- define custom locations that can be used in any pilot run configuration
         custom_locations = {
             -- custom location that executes the command in a new tmux window
