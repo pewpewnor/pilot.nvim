@@ -5,7 +5,7 @@ local interpolate = require("pilot.interpolation")
 
 ---@class Entry
 ---@field name string?
----@field command string?
+---@field command string|table|nil
 ---@field import string?
 ---@field location string?
 
@@ -185,8 +185,20 @@ local function parse_list_to_entries(list, run_config_path)
             end
 
             if item.command then
+                if type(item.command) == "table" then
+                    item.command = table.concat(item.command, " && ")
+                elseif type(item.command) ~= "string" then
+                    error(
+                        "[Pilot] command must be a string or a list of strings"
+                    )
+                end
                 add_command_entry(entries, item)
             else
+                if type(item.import) ~= "string" then
+                    error(
+                        "[Pilot] imported item must be a string that resolves to a path of a file"
+                    )
+                end
                 local import_path = interpolate(item.import)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
