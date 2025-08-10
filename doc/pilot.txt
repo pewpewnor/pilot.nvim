@@ -300,12 +300,9 @@ The example code above is actually the implementation of
 `pilot.silent_executor`.
 
 
-  [!NOTE] There is no need to escape the command, pilot.nvim already does it for
-  you
-
 RECOMMENDATION                               *pilot-pilot.nvim-recommendation*
 
-Useplugin like telescope-ui-select.nvim
+Use plugin like telescope-ui-select.nvim
 <https://github.com/nvim-telescope/telescope-ui-select.nvim> or mini.nvim’s
 mini-pick
 <https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md> which

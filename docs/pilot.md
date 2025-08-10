@@ -240,9 +240,6 @@ You can also create your own default executor like this:
 
 The example code above is actually the implementation of `pilot.silent_executor`.
 
-> [!NOTE]
-> There is no need to escape the command, pilot.nvim already does it for you 😉
-
 ## Recommendation
 
 Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
