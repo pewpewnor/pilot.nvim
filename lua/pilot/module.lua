@@ -3,10 +3,22 @@ local runner = require("pilot.runner")
 
 local M = {}
 
+local new_run_config_template = {
+    "[",
+    "   {",
+    '       "name": "name of command",',
+    '       "command": "command to execute"',
+    "   }",
+    "]",
+}
+
 ---@param run_config_path string
 local function edit_run_config(run_config_path)
-    if vim.fn.filereadable(run_config_path) == 0 then
-        vim.fn.writefile({}, run_config_path, "a")
+    if
+        M.config.write_template_to_new_run_config
+        and vim.fn.filereadable(run_config_path) == 0
+    then
+        vim.fn.writefile(new_run_config_template, run_config_path, "a")
     end
     vim.cmd("tabedit " .. run_config_path)
 end

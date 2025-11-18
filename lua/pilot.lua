@@ -14,6 +14,7 @@
 ---@field file_type_run_config_path string?
 ---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
+---@field write_template_to_new_run_config boolean
 ---@field default_executor Executor
 ---@field custom_locations CustomLocations?
 
@@ -123,6 +124,7 @@ M.config = {
         project = true,
         file_type = true,
     },
+    write_template_to_new_run_config = false,
     default_executor = M.nvim_new_tab_executor,
     custom_locations = nil,
 }
