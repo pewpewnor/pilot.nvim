@@ -7,7 +7,7 @@ local new_run_config_template = {
     "[",
     "   {",
     '       "name": "name of command",',
-    '       "command": "command to execute"',
+    '       "command": "echo Hello, World!"',
     "   }",
     "]",
 }

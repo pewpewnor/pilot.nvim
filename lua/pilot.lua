@@ -17,8 +17,8 @@
 ---@field project_run_config_path string?
 ---@field file_type_run_config_path string?
 ---@field fallback_project_run_config FallbackProjectRunConfig?
----@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field write_template_to_new_run_config boolean
+---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
 ---@field custom_locations CustomLocations?
 
@@ -130,11 +130,11 @@ M.config = {
     project_run_config_path = nil,
     file_types_run_config_path = nil,
     fallback_project_run_config = nil,
+    write_template_to_new_run_config = true,
     automatically_run_single_command = {
         project = true,
         file_type = true,
     },
-    write_template_to_new_run_config = true,
     default_executor = {
         project = M.executors.new_tab,
         file_type = M.executors.new_tab,

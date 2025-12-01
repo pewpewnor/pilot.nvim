@@ -81,6 +81,7 @@ change any of the options.
         file_type = true, -- boolean
     },
     fallback_project_run_config = nil, -- (function that returns a string) | nil
+    write_template_to_new_run_config = true, -- boolean
     default_executor = {
         project = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
         file_type = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
@@ -127,6 +128,7 @@ pilot.setup({
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
     },
+    write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
 })
 
 -- customize these keybindings to your liking
