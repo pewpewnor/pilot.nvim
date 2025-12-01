@@ -81,7 +81,10 @@ change any of the options.
         file_type = true, -- boolean
     },
     fallback_project_run_config = nil, -- (function that returns a string) | nil
-    default_executor = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
+    default_executor = {
+        project = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
+        file_type = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
+    },
     custom_locations = nil, -- (key/value table with the values being strings) | nil
 }
 ```
@@ -112,8 +115,10 @@ pilot.setup({
             return "/home/user/templates/cmake_project.json"
         end
     end,
-    -- if location is not specified in JSON, then execute it on a new horizontal buffer
-    default_executor = pilot.nvim_split_executor,
+    default_executor = {
+        -- by default, we should execute the file on a new horizontal buffer
+        file_type = pilot.nvim_split_executor,
+    },
     -- define custom locations that can be used in any pilot run configuration
     custom_locations = {
         -- custom location that executes the command in a new tmux window
@@ -227,7 +232,7 @@ running any file with "c" as its Vim file type (the c programming language).
 | `pilot.print_executor`                  | Run the command with the output shown using the print function |
 | `pilot.silent_executor`                 | Run the command with no output displayed                       |
 
-Simply set the `default_executor` option in your configuration to use one of the above.
+Simply set the `default_executor` options in your configuration to use one of the above.
 You can also create your own default executor like this:
 
 ```lua

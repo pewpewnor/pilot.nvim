@@ -27,11 +27,16 @@ local function execute_task(task)
 end
 
 ---@param entry Entry
-local function run_entry(entry)
+---@param run_classification RunClassification
+local function run_entry(entry, run_classification)
     local executor
     local args = {}
     if not entry.location then
-        executor = M.config.default_executor
+        if run_classification == "file type" then
+            executor = M.config.default_executor.file_type
+        else
+            executor = M.config.default_executor.project
+        end
     else
         if not M.config.custom_locations then
             error(
@@ -271,7 +276,7 @@ function M.select_and_run_entry(run_config_path, run_classification)
                 and M.config.automatically_run_single_command.file_type
         )
     then
-        run_entry(entries[1])
+        run_entry(entries[1], run_classification)
     else
         for i, entry in ipairs(entries) do
             entries[i].name = i .. ". " .. entry.name
@@ -289,7 +294,7 @@ function M.select_and_run_entry(run_config_path, run_classification)
             end,
         }, function(chosen_entry)
             if chosen_entry then
-                run_entry(chosen_entry)
+                run_entry(chosen_entry, run_classification)
             end
         end)
     end

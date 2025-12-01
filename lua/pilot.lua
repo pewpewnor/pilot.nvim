@@ -6,6 +6,10 @@
 
 ---@alias Executor fun(command: string, args: [string]?)
 
+---@class DefaultExecutor
+---@field project Executor
+---@field file_type Executor
+
 ---@class CustomLocations
 ---@field [string] Executor
 
@@ -15,7 +19,7 @@
 ---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field write_template_to_new_run_config boolean
----@field default_executor Executor
+---@field default_executor DefaultExecutor
 ---@field custom_locations CustomLocations?
 
 local module = require("pilot.module")
@@ -68,8 +72,12 @@ local function validate_config(options)
         and options.custom_locations ~= nil
     then
         error("[Pilot] option 'custom_locations' must be a table or nil.")
-    elseif type(options.default_executor) ~= "function" then
-        error("[Pilot] option 'default_executor' must be a function.")
+    elseif type(options.default_executor) ~= "table" then
+        error("[Pilot] option 'default_executor' must be a table.")
+    elseif type(options.default_executor.project) ~= "function" then
+        error("[Pilot] option 'default_executor.project' must be a function.")
+    elseif type(options.default_executor.file_type) ~= "function" then
+        error("[Pilot] option 'default_executor.file_type' must be a function.")
     end
 end
 
@@ -124,8 +132,11 @@ M.config = {
         project = true,
         file_type = true,
     },
-    write_template_to_new_run_config = false,
-    default_executor = M.nvim_new_tab_executor,
+    write_template_to_new_run_config = true,
+    default_executor = {
+        project = M.nvim_new_tab_executor,
+        file_type = M.nvim_new_tab_executor,
+    },
     custom_locations = nil,
 }
 
