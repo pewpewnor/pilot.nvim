@@ -24,7 +24,9 @@
 
 local module = require("pilot.module")
 
-local M = {}
+local M = {
+    executors = {},
+}
 
 ---@param options Config
 local function validate_config(options)
@@ -82,7 +84,7 @@ local function validate_config(options)
 end
 
 ---@type Executor
-function M.nvim_new_tab_executor(command, args)
+function M.executors.new_tab(command, args)
     if #args == 0 then
         vim.cmd("tabnew | terminal " .. command)
     else
@@ -91,12 +93,12 @@ function M.nvim_new_tab_executor(command, args)
 end
 
 ---@type Executor
-function M.nvim_current_buffer_executor(command)
+function M.executors.current_buffer(command)
     vim.cmd("terminal " .. command)
 end
 
 ---@type Executor
-function M.nvim_split_executor(command, args)
+function M.executors.split(command, args)
     if #args == 0 then
         vim.cmd("rightbelow split | terminal " .. command)
     else
@@ -105,7 +107,7 @@ function M.nvim_split_executor(command, args)
 end
 
 ---@type Executor
-function M.nvim_vsplit_executor(command, args)
+function M.executors.vsplit(command, args)
     if #args == 0 then
         vim.cmd("botright vsplit | terminal " .. command)
     else
@@ -114,12 +116,12 @@ function M.nvim_vsplit_executor(command, args)
 end
 
 ---@type Executor
-function M.print_executor(command)
+function M.executors.print(command)
     print(vim.fn.system(command))
 end
 
 ---@type Executor
-function M.silent_executor(command)
+function M.executors.silent(command)
     vim.fn.system(command)
 end
 
@@ -134,8 +136,8 @@ M.config = {
     },
     write_template_to_new_run_config = true,
     default_executor = {
-        project = M.nvim_new_tab_executor,
-        file_type = M.nvim_new_tab_executor,
+        project = M.executors.new_tab,
+        file_type = M.executors.new_tab,
     },
     custom_locations = nil,
 }

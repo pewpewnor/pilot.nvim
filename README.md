@@ -82,8 +82,8 @@ change any of the options.
     },
     fallback_project_run_config = nil, -- (function that returns a string) | nil
     default_executor = {
-        project = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
-        file_type = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.nvim_new_tab_executor
+        project = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
+        file_type = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
     },
     custom_locations = nil, -- (key/value table with the values being strings) | nil
 }
@@ -116,8 +116,8 @@ pilot.setup({
         end
     end,
     default_executor = {
-        -- by default, we should execute the file on a new horizontal buffer
-        file_type = pilot.nvim_split_executor,
+        -- by default, we should execute the file on a new buffer at the bottom
+        file_type = pilot.executors.split,
     },
     -- define custom locations that can be used in any pilot run configuration
     custom_locations = {
@@ -223,23 +223,28 @@ running any file with "c" as its Vim file type (the c programming language).
 
 ## Preset executors
 
-| Executor                                | Description                                                    |
-| --------------------------------------- | -------------------------------------------------------------- |
-| `pilot.nvim_new_tab_executor` (default) | Run the command on a new Neovim tab                            |
-| `pilot.nvim_current_buffer_executor`    | Run the command on the current buffer                          |
-| `pilot.nvim_split_executor`             | Run the command on a new horizontal buffer at the bottom right |
-| `pilot.nvim_vsplit_executor`            | Run the command on a new vertical buffer at the right side     |
-| `pilot.print_executor`                  | Run the command with the output shown using the print function |
-| `pilot.silent_executor`                 | Run the command with no output displayed                       |
+| Executor                            | Description                                                    |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `pilot.executors.new_tab` (default) | Run the command on a new Neovim tab                            |
+| `pilot.executors.current_buffer`    | Run the command on the current buffer                          |
+| `pilot.executors.split`             | Run the command on a new horizontal buffer at the bottom right |
+| `pilot.executors.vsplit`            | Run the command on a new vertical buffer at the right side     |
+| `pilot.executors.print`             | Run the command with the output shown using the print function |
+| `pilot.executors.silent`            | Run the command with no output displayed                       |
 
 Simply set the `default_executor` options in your configuration to use one of the above.
 You can also create your own default executor like this:
 
 ```lua
+function my_executor(command)
+    vim.fn.system(command)
+end
+
 {
-    default_executor = function(command)
-        vim.fn.system(command)
-    end
+    default_executor = {
+        project = my_executor,
+        file_type = my_executor
+    }
 }
 ```
 
