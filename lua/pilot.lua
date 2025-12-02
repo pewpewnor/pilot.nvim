@@ -20,68 +20,13 @@
 ---@field write_template_to_new_run_config boolean
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
----@field custom_locations CustomLocations?
+---@field custom_locations CustomLocations
 
 local module = require("pilot.module")
 
 local M = {
     executors = {},
 }
-
----@param options Config
-local function validate_config(options)
-    if type(options) ~= "table" and options ~= nil then
-        error("[Pilot] given configuration must be a table or nil")
-    elseif
-        type(options.project_run_config_path) ~= "string"
-        and options.project_run_config_path ~= nil
-    then
-        error(
-            "[Pilot] option 'project_run_config_path' must either be a string or nil."
-        )
-    elseif
-        type(options.file_type_run_config_path) ~= "string"
-        and options.file_type_run_config_path ~= nil
-    then
-        error(
-            "[Pilot] option 'file_type_run_config_path' must either be a string or nil."
-        )
-    elseif type(options.automatically_run_single_command) ~= "table" then
-        error(
-            "[Pilot] option 'automatically_run_single_command' must be a table."
-        )
-    elseif
-        type(options.automatically_run_single_command.project) ~= "boolean"
-    then
-        error(
-            "[Pilot] option 'automatically_run_single_command.project' must be a boolean."
-        )
-    elseif
-        type(options.automatically_run_single_command.file_type) ~= "boolean"
-    then
-        error(
-            "[Pilot] option 'automatically_run_single_command.file_type' must be a boolean."
-        )
-    elseif
-        type(options.fallback_project_run_config) ~= "function"
-        and options.fallback_project_run_config ~= nil
-    then
-        error(
-            "[Pilot] option 'fallback_project_run_config' must be a function or nil."
-        )
-    elseif
-        type(options.custom_locations) ~= "table"
-        and options.custom_locations ~= nil
-    then
-        error("[Pilot] option 'custom_locations' must be a table or nil.")
-    elseif type(options.default_executor) ~= "table" then
-        error("[Pilot] option 'default_executor' must be a table.")
-    elseif type(options.default_executor.project) ~= "function" then
-        error("[Pilot] option 'default_executor.project' must be a function.")
-    elseif type(options.default_executor.file_type) ~= "function" then
-        error("[Pilot] option 'default_executor.file_type' must be a function.")
-    end
-end
 
 ---@type Executor
 function M.executors.new_tab(command, args)
@@ -139,13 +84,13 @@ M.config = {
         project = M.executors.new_tab,
         file_type = M.executors.new_tab,
     },
-    custom_locations = nil,
+    custom_locations = {},
 }
 
 ---@param options table?
 function M.setup(options)
     M.config = vim.tbl_deep_extend("force", M.config, options or {})
-    validate_config(M.config)
+    require("validate_opts")(M.config)
     module.init(M.config)
 end
 

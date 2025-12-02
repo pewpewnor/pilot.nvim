@@ -127,6 +127,7 @@ pilot.setup({
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
+        vsplit = pilot.executors.vsplit, -- so we can use vsplit in our run config
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
 })
