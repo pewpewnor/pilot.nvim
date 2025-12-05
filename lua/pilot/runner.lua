@@ -190,8 +190,21 @@ local function parse_list_to_entries(list, run_config_path)
             end
 
             if item.command then
+                if type(item.command) == "table" then
+                    ---@diagnostic disable-next-line: param-type-mismatch
+                    item.command = table.concat(item.command, " && ")
+                elseif type(item.command) ~= "string" then
+                    error(
+                        "[Pilot] Command must be a string or a list of strings"
+                    )
+                end
                 add_command_entry(entries, item)
             else
+                if type(item.import) ~= "string" then
+                    error(
+                        "[Pilot] Imported item must be a string that resolves to a path of a file"
+                    )
+                end
                 local import_path = interpolate(item.import)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
