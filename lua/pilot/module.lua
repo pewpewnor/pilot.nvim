@@ -3,6 +3,13 @@ local runner = require("pilot.runner")
 
 local M = {}
 
+---@param config Config
+function M.init(config)
+    M.config = config
+    pathfinder.init(config)
+    runner.init(config)
+end
+
 local new_run_config_template = {
     "[",
     "    {",
@@ -31,13 +38,6 @@ end
 ---@param run_config_dir_path string
 local function purge_all_run_config_dir(run_config_dir_path)
     vim.fs.rm(run_config_dir_path, { recursive = true, force = true })
-end
-
----@param config Config
-function M.init(config)
-    M.config = config
-    pathfinder.init(config)
-    runner.init(config)
 end
 
 function M.run_project()

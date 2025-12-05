@@ -2,6 +2,11 @@ local interpolate = require("pilot.interpolation")
 
 local M = {}
 
+---@param config Config
+function M.init(config)
+    M.config = config
+end
+
 ---@param dir_path string
 ---@return string?
 local function create_dir_path(dir_path)
@@ -42,11 +47,6 @@ local function get_pilot_data_path(create_missing_dirs)
         )
     end
     return pilot_data_path
-end
-
----@param config Config
-function M.init(config)
-    M.config = config
 end
 
 ---@param create_missing_dirs boolean?
