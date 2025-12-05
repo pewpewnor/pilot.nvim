@@ -68,6 +68,13 @@ local function escape_non_interpolated(command)
         :gsub("\\'", "'")
         :gsub('\\"', '"')
         :gsub("\\!", "!")
+        :gsub("\\\\", "\\")
+        :gsub("\\|", "|")
+        :gsub("\\{", "{")
+        :gsub("\\<", "<")
+        :gsub("\\%*", "*")
+        :gsub("\\%$", "$")
+        :gsub("#", "\\#")
 end
 
 ---@param command string
