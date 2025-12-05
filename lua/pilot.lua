@@ -14,7 +14,7 @@
 ---@field [string] Executor
 
 ---@class Config
----@field project_run_config_path string?
+---@field project_run_config_path string|[string]|nil
 ---@field file_type_run_config_path string?
 ---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field write_template_to_new_run_config boolean

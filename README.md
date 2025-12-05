@@ -73,8 +73,8 @@ change any of the options.
 
 ```lua
 {
-    project_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json"
-    file_type_run_config_path = nil, -- string | nil -> by default equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json"
+    project_run_config_path = nil, -- string | [string] | nil (nil is equivalent to "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json")
+    file_type_run_config_path = nil, -- string | nil (nil is equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json")
     -- if there is only one command listed, should we immediately run the command?
     automatically_run_single_command = {
         project = true, -- boolean
@@ -83,8 +83,8 @@ change any of the options.
     fallback_project_run_config = nil, -- (function that returns a string) | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
-        project = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
-        file_type = nil, -- (function that accepts a string) | nil -> by default equivalent to pilot.executors.new_tab
+        project = nil, -- (function that accepts a string) | nil (nil is equivalent to pilot.executors.new_tab)
+        file_type = nil, -- (function that accepts a string) | nil (nil is equivalent to pilot.executors.new_tab)
     },
     custom_locations = nil, -- (key/value table with the values being strings) | nil
 }

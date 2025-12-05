@@ -5,10 +5,10 @@ local M = {}
 
 local new_run_config_template = {
     "[",
-    "   {",
-    '       "name": "name of command",',
-    '       "command": "echo Hello, World!"',
-    "   }",
+    "    {",
+    '        "name": "name of command",',
+    '        "command": "echo Hello, World!"',
+    "    }",
     "]",
 }
 
@@ -42,14 +42,14 @@ end
 
 function M.run_project()
     runner.select_and_run_entry(
-        pathfinder.get_project_run_config_path(),
+        pathfinder.get_project_run_config_path(false),
         "project"
     )
 end
 
 function M.run_file_type()
     runner.select_and_run_entry(
-        pathfinder.get_file_type_run_config_path(),
+        pathfinder.get_file_type_run_config_path(false),
         "file type"
     )
 end
@@ -65,11 +65,11 @@ function M.edit_file_type_run_config()
 end
 
 function M.delete_project_run_config()
-    delete_run_config(pathfinder.get_project_run_config_path())
+    delete_run_config(pathfinder.get_project_run_config_path(false))
 end
 
 function M.delete_file_type_run_config()
-    delete_run_config(pathfinder.get_file_type_run_config_path())
+    delete_run_config(pathfinder.get_file_type_run_config_path(false))
 end
 
 function M.purge_all_default_project_run_config_dir()
