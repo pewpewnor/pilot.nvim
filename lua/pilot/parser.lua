@@ -48,25 +48,16 @@ local function read_fallback_project_run_config()
     return file_content
 end
 
----@param processed_entries [ProcessedEntry]
 ---@param command string
-local function add_string_entry(processed_entries, command)
-    table.insert(processed_entries, { name = command, command = command })
-end
-
----@param processed_entries [ProcessedEntry]
----@param entry RawEntry
-local function add_command_entry(processed_entries, entry)
-    entry.name = entry.name or entry.command
-    table.insert(processed_entries, entry)
-end
-
----@param processed_entries [ProcessedEntry]
----@param imported_entries [ProcessedEntry]
-local function add_imported_entries(processed_entries, imported_entries)
-    for _, imported_entry in ipairs(imported_entries) do
-        table.insert(processed_entries, imported_entry)
-    end
+---@param name string?
+---@param location string?
+---@return ProcessedEntry
+local function create_processed_entry(command, name, location)
+    return {
+        name = name or command,
+        command = command,
+        location = location,
+    }
 end
 
 ---@param import_path string
@@ -128,7 +119,7 @@ local function parse_list_to_entries(list, run_config_path)
         end
 
         if item_type == "string" then
-            add_string_entry(processed_entries, item)
+            table.insert(processed_entries, create_processed_entry(item))
         else
             if not item.command and not item.import then
                 error(
@@ -156,18 +147,28 @@ local function parse_list_to_entries(list, run_config_path)
                         "[Pilot] Command must be a string or a list of strings"
                     )
                 end
-                add_command_entry(processed_entries, item)
+                table.insert(
+                    processed_entries,
+                    create_processed_entry(
+                        item.command,
+                        item.name,
+                        item.location
+                    )
+                )
             else
                 if type(item.import) ~= "string" then
                     error(
                         "[Pilot] Imported item must be a string that resolves to a path of a file"
                     )
                 end
+
                 local import_path = interpolate(item.import)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)
-                add_imported_entries(processed_entries, imported_entries)
+                for _, imported_entry in ipairs(imported_entries) do
+                    table.insert(processed_entries, imported_entry)
+                end
             end
         end
     end
