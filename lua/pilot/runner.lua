@@ -9,7 +9,7 @@ local interpolate = require("pilot.interpolation")
 ---@field import string?
 ---@field location string?
 
----@alias Entries Entries
+---@alias Entries [Entry]
 
 ---@class Task
 ---@field command string
@@ -40,7 +40,7 @@ local function run_entry(entry, run_classification)
     else
         if not M.config.custom_locations then
             error(
-                "[Pilot] Error: Attempted to use a custom location, but none have been configured. Please define 'custom_locations' in your configuration."
+                "[Pilot] Attempted to use a custom location, but none have been configured. Please define 'custom_locations' in your configuration."
             )
         end
         args = vim.fn.split(entry.location, " ")
@@ -49,7 +49,7 @@ local function run_entry(entry, run_classification)
         if not executor then
             error(
                 string.format(
-                    "[Pilot] Error: Attempted to retrieve custom location '%s' from given custom locations in your configuration, but got nil instead.",
+                    "[Pilot] Attempted to retrieve custom location '%s' from given custom locations in your configuration, but got nil instead.",
                     entry.location
                 )
             )
@@ -72,7 +72,7 @@ local function read_fallback_project_run_config()
     end
     if type(fallback_project_run_config) ~= "string" then
         error(
-            "[Pilot] Error: 'fallback_project_run_config' must return a string or nil."
+            "[Pilot] 'fallback_project_run_config' must return a string or nil."
         )
     end
 
@@ -81,7 +81,7 @@ local function read_fallback_project_run_config()
     if not file_content then
         error(
             string.format(
-                "[Pilot] Error: Failed to read fallback project run configuration at '%s'.",
+                "[Pilot] Failed to read fallback project run configuration at '%s'.",
                 fallback_path
             )
         )
@@ -117,17 +117,16 @@ local function read_and_decode_imported_path(import_path)
     if not file_content then
         error(
             string.format(
-                "[Pilot] Error: Imported file '%s' doesn't exist",
+                "[Pilot] Imported file '%s' doesn't exist",
                 import_path
             )
         )
     end
-    -- TODO: validate JSON return must be a table (list)
     local imported_list = fs_utils.decode_json(file_content)
     if not imported_list then
         error(
             string.format(
-                "[Pilot] Error: Imported file '%s' has invalid JSON format or is empty.",
+                "[Pilot] Imported file '%s' has invalid JSON format or is empty.",
                 import_path
             )
         )
@@ -135,7 +134,7 @@ local function read_and_decode_imported_path(import_path)
     if type(imported_list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Error: Imported file '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
+                "[Pilot] Imported file '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
                 import_path
             )
         )
@@ -150,7 +149,7 @@ local function parse_list_to_entries(list, run_config_path)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] run configuration must be a valid JSON array in '%s'.",
+                "[Pilot] Run configuration must be a valid JSON array in '%s'.",
                 run_config_path
             )
         )
@@ -163,7 +162,7 @@ local function parse_list_to_entries(list, run_config_path)
         if item_type ~= "table" and item_type ~= "string" then
             error(
                 string.format(
-                    "[Pilot] Error: Each entry must be a valid JSON object or string in '%s'.",
+                    "[Pilot] Each entry must be a valid JSON object or string in '%s'.",
                     run_config_path
                 )
             )
@@ -175,7 +174,7 @@ local function parse_list_to_entries(list, run_config_path)
             if not item.command and not item.import then
                 error(
                     string.format(
-                        "[Pilot] Error: Each entry must either have a 'command' or an 'import' attribute in '%s'.",
+                        "[Pilot] Each entry must either have a 'command' or an 'import' attribute in '%s'.",
                         run_config_path
                     )
                 )
@@ -183,7 +182,7 @@ local function parse_list_to_entries(list, run_config_path)
             if item.command and item.import then
                 error(
                     string.format(
-                        "[Pilot] Error: Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
+                        "[Pilot] Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
                         run_config_path
                     )
                 )
@@ -225,14 +224,14 @@ local function parse_run_config(run_config_path, run_classification)
         if run_classification == "project" then
             if not M.config.fallback_project_run_config then
                 print(
-                    "[Pilot] Error: No project run configuration detected and no fallback configuration."
+                    "[Pilot] No project run configuration detected and no fallback configuration."
                 )
                 return
             end
             file_content = read_fallback_project_run_config()
             if not file_content then
                 print(
-                    "[Pilot] Error: No project run configuration detected and fallback returns nil."
+                    "[Pilot] No project run configuration detected and fallback returns nil."
                 )
                 return
             end
@@ -251,7 +250,7 @@ local function parse_run_config(run_config_path, run_classification)
     if not list then
         error(
             string.format(
-                "[Pilot] Error: Your %s run configuration has invalid JSON format or is empty.",
+                "[Pilot] Your %s run configuration has invalid JSON format or is empty.",
                 run_classification
             )
         )
@@ -259,7 +258,7 @@ local function parse_run_config(run_config_path, run_classification)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Error: Your %s run configuration should contain JSON array, refer to the documentation for proper run configuration format.",
+                "[Pilot] Your %s run configuration should contain JSON array, refer to the documentation for proper run configuration format.",
                 run_classification
             )
         )
@@ -315,7 +314,7 @@ end
 
 function M.run_previous_task()
     if not M.last_executed_task then
-        print("[Pilot] no previously executed task.")
+        print("[Pilot] No previously executed task.")
         return
     end
     execute_task(M.last_executed_task)

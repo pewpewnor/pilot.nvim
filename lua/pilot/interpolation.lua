@@ -38,7 +38,7 @@ local function resolve_placeholder(placeholder)
     end
     error(
         string.format(
-            "[Pilot] Error: Unknown command placeholder '%s', you can try surrounding it with {} to escape it.",
+            "[Pilot] Unknown command placeholder '%s', you can try surrounding it with {} to escape it.",
             placeholder
         )
     )
