@@ -72,7 +72,10 @@ local function read_and_decode_imported_path(import_path)
             )
         )
     end
+
+    ---@type table?
     local imported_list = fs_utils.decode_json(file_content)
+
     if not imported_list then
         error(
             string.format(
@@ -206,7 +209,9 @@ function M.parse_run_config(run_config_path, run_classification)
         end
     end
 
+    ---@type table?
     local list = fs_utils.decode_json(file_content)
+
     if not list then
         error(
             string.format(

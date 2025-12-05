@@ -1,3 +1,5 @@
+local required_braces = 2
+
 ---@param placeholder string
 ---@return string
 local function resolve_placeholder(placeholder)
@@ -44,12 +46,12 @@ local function resolve_placeholder(placeholder)
     )
 end
 
---- The reason why we need to do this dance is because e.g. the user expects the
---- bash command `echo %` (without any placeholder interpolation) to work
---- perfectly fine since it makes sense. Unfortunately, in the end, it would
---- become something like `tabnew | terminal echo %` which is illegal in vim
---- because of the `%` symbol. We need to not only escape the interpolated part
---- with fnameescape, but also the non interpolated part.
+-- The reason why we need to do this dance is because e.g. the user expects the
+-- bash command `echo %` (without any placeholder interpolation) to work
+-- perfectly fine since it makes sense. Unfortunately, in the end, it would
+-- become something like `tabnew | terminal echo %` which is illegal in vim
+-- because of the `%` symbol. We need to not only escape the interpolated part
+-- with fnameescape, but also the non interpolated part.
 ---@param command string
 ---@return string
 local function escape_non_interpolated(command)
@@ -65,12 +67,12 @@ local function escape_non_interpolated(command)
         :gsub("\\ ", " ")
         :gsub("\\'", "'")
         :gsub('\\"', '"')
+        :gsub("\\!", "!")
 end
 
 ---@param command string
 ---@return string
 local function interpolate(command)
-    local required_braces = 2
     local pattern = "({+)([^}]+)(}+)"
 
     local result = command:gsub(

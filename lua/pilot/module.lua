@@ -10,22 +10,20 @@ function M.init(config)
     runner.init(config)
 end
 
-local new_run_config_template = {
-    "[",
-    "    {",
-    '        "name": "name of command",',
-    '        "command": "echo Hello, World!"',
-    "    }",
-    "]",
-}
-
 ---@param run_config_path string
 local function edit_run_config(run_config_path)
     if
         M.config.write_template_to_new_run_config
         and vim.fn.filereadable(run_config_path) == 0
     then
-        vim.fn.writefile(new_run_config_template, run_config_path, "a")
+        vim.fn.writefile({
+            "[",
+            "    {",
+            '        "name": "put name of command here",',
+            '        "command": "echo \'Hello, World!\'"',
+            "    }",
+            "]",
+        }, run_config_path, "a")
     end
     vim.cmd("tabedit " .. run_config_path)
 end
