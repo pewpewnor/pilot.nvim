@@ -1,20 +1,25 @@
-local fs_utils = require("pilot.fs_utils")
-local interpolate = require("pilot.interpolation")
-
 ---@alias RunClassification "project"|"file type"
 
----@class Entry
+---@class RawEntryTable
 ---@field name string?
 ---@field command string?
 ---@field import string?
 ---@field location string?
 
----@alias Entries [Entry]
+---@alias RawEntry RawEntryTable|string
+
+---@class ProcessedEntry
+---@field name string
+---@field command string
+---@field location string?
 
 ---@class Task
 ---@field command string
 ---@field executor Executor
 ---@field args [string]
+
+local fs_utils = require("pilot.fs_utils")
+local interpolate = require("pilot.interpolation")
 
 local M = {}
 
@@ -26,7 +31,7 @@ local function execute_task(task)
     task.executor(interpolate(task.command), task.args)
 end
 
----@param entry Entry
+---@param entry ProcessedEntry
 ---@param run_classification RunClassification
 local function run_entry(entry, run_classification)
     local executor
@@ -89,29 +94,29 @@ local function read_fallback_project_run_config()
     return file_content
 end
 
----@param entries Entries
+---@param processed_entries [ProcessedEntry]
 ---@param command string
-local function add_string_entry(entries, command)
-    table.insert(entries, { name = command, command = command })
+local function add_string_entry(processed_entries, command)
+    table.insert(processed_entries, { name = command, command = command })
 end
 
----@param entries Entries
----@param entry Entry
-local function add_command_entry(entries, entry)
+---@param processed_entries [ProcessedEntry]
+---@param entry RawEntry
+local function add_command_entry(processed_entries, entry)
     entry.name = entry.name or entry.command
-    table.insert(entries, entry)
+    table.insert(processed_entries, entry)
 end
 
----@param entries Entries
----@param imported_entries Entries
-local function add_imported_entries(entries, imported_entries)
+---@param processed_entries [ProcessedEntry]
+---@param imported_entries [ProcessedEntry]
+local function add_imported_entries(processed_entries, imported_entries)
     for _, imported_entry in ipairs(imported_entries) do
-        table.insert(entries, imported_entry)
+        table.insert(processed_entries, imported_entry)
     end
 end
 
 ---@param import_path string
----@return table
+---@return [RawEntry]
 local function read_and_decode_imported_path(import_path)
     local file_content = fs_utils.read_file(import_path)
     if not file_content then
@@ -142,9 +147,9 @@ local function read_and_decode_imported_path(import_path)
     return imported_list
 end
 
----@param list table<number, table>
+---@param list [RawEntry]
 ---@param run_config_path string
----@return Entries
+---@return [ProcessedEntry]
 local function parse_list_to_entries(list, run_config_path)
     if type(list) ~= "table" then
         error(
@@ -155,7 +160,7 @@ local function parse_list_to_entries(list, run_config_path)
         )
     end
 
-    local entries = {}
+    local processed_entries = {}
 
     for _, item in ipairs(list) do
         local item_type = type(item)
@@ -169,7 +174,7 @@ local function parse_list_to_entries(list, run_config_path)
         end
 
         if item_type == "string" then
-            add_string_entry(entries, item)
+            add_string_entry(processed_entries, item)
         else
             if not item.command and not item.import then
                 error(
@@ -197,7 +202,7 @@ local function parse_list_to_entries(list, run_config_path)
                         "[Pilot] Command must be a string or a list of strings"
                     )
                 end
-                add_command_entry(entries, item)
+                add_command_entry(processed_entries, item)
             else
                 if type(item.import) ~= "string" then
                     error(
@@ -208,16 +213,16 @@ local function parse_list_to_entries(list, run_config_path)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)
-                add_imported_entries(entries, imported_entries)
+                add_imported_entries(processed_entries, imported_entries)
             end
         end
     end
-    return entries
+    return processed_entries
 end
 
 ---@param run_config_path string
 ---@param run_classification RunClassification
----@return Entries?
+---@return [ProcessedEntry]?
 local function parse_run_config(run_config_path, run_classification)
     local file_content = fs_utils.read_file(run_config_path)
     if not file_content then
@@ -226,14 +231,14 @@ local function parse_run_config(run_config_path, run_classification)
                 print(
                     "[Pilot] No project run configuration detected and no fallback configuration."
                 )
-                return
+                return nil
             end
             file_content = read_fallback_project_run_config()
             if not file_content then
                 print(
                     "[Pilot] No project run configuration detected and fallback returns nil."
                 )
-                return
+                return nil
             end
         else
             print(
@@ -242,7 +247,7 @@ local function parse_run_config(run_config_path, run_classification)
                     vim.bo.filetype
                 )
             )
-            return
+            return nil
         end
     end
 
