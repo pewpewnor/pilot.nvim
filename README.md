@@ -226,14 +226,16 @@ running any file with "c" as its Vim file type (the c programming language).
 
 ## Preset executors
 
-| Executor                            | Description                                                    |
-| ----------------------------------- | -------------------------------------------------------------- |
-| `pilot.executors.new_tab` (default) | Run the command on a new Neovim tab                            |
-| `pilot.executors.current_buffer`    | Run the command on the current buffer                          |
-| `pilot.executors.split`             | Run the command on a new horizontal buffer at the bottom right |
-| `pilot.executors.vsplit`            | Run the command on a new vertical buffer at the right side     |
-| `pilot.executors.print`             | Run the command with the output shown using the print function |
-| `pilot.executors.silent`            | Run the command with no output displayed                       |
+| Executor                                 | Description                                                    |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| `pilot.executors.new_tab` (default)      | Run the command on a new Neovim tab                            |
+| `pilot.executors.current_buffer`         | Run the command on the current buffer                          |
+| `pilot.executors.split`                  | Run the command on a new horizontal buffer at the bottom right |
+| `pilot.executors.vsplit`                 | Run the command on a new vertical buffer at the right side     |
+| `pilot.executors.print`                  | Run the command (blocking) with the output shown using print   |
+| `pilot.executors.silent`                 | Run the command (blocking) silently with no output displayed   |
+| `pilot.executors.background_silent`      | Run the command in a background job silently                   |
+| `pilot.executors.background_exit_status` | Run the command in a background job and print job exit status  |
 
 Simply set the `default_executor` options in your configuration to use one of the above.
 You can also create your own default executor like this:

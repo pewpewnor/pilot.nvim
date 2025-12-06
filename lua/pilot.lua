@@ -61,13 +61,31 @@ function M.executors.vsplit(command, args)
 end
 
 ---@type Executor
+function M.executors.silent(command)
+    vim.fn.system(command)
+end
+
+---@type Executor
 function M.executors.print(command)
     print(vim.fn.system(command))
 end
 
 ---@type Executor
-function M.executors.silent(command)
-    vim.fn.system(command)
+function M.executors.background_silent(command)
+    vim.fn.jobstart(command)
+end
+
+---@type Executor
+function M.executors.background_exit_status(command)
+    vim.fn.jobstart(command, {
+        ---@diagnostic disable-next-line: unused-local
+        on_exit = function(job_id, exit_code, event)
+            print(
+                exit_code == 0 and "[Pilot] Command job success (exit code 0)"
+                    or "[Pilot] Command job error (exit code 1)"
+            )
+        end,
+    })
 end
 
 ---@type Config
