@@ -1,4 +1,4 @@
-local interpolate = require("pilot.interpolation")
+local interpolate = require("pilot.interpolation").interpolate
 
 local M = {}
 

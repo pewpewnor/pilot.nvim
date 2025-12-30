@@ -74,7 +74,6 @@ local function escape_non_interpolated(command)
         :gsub("\\<", "<")
         :gsub("\\%*", "*")
         :gsub("\\%$", "$")
-        :gsub("#", "\\#")
 end
 
 ---@param command string
@@ -123,4 +122,8 @@ local function interpolate(command)
     return escape_non_interpolated(result)
 end
 
-return interpolate
+return {
+    interpolate = interpolate,
+    _resolve_placeholder = resolve_placeholder,
+    _escape_non_interpolated = escape_non_interpolated,
+}

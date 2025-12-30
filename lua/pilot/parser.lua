@@ -14,7 +14,7 @@
 ---@field location string?
 
 local fs_utils = require("pilot.fs_utils")
-local interpolate = require("pilot.interpolation")
+local interpolate = require("pilot.interpolation").interpolate
 
 local M = {}
 
