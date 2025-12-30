@@ -22,7 +22,7 @@ local function resolve_placeholder(placeholder)
     elseif placeholder == "cwd_path" then
         return vim.fn.getcwd()
     elseif placeholder == "cwd_name" then
-        return vim.fn.fnamemodify(placeholder, ":h:t")
+        return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
     elseif placeholder == "pilot_data_path" then
         local pilot_data_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
         if vim.fn.isdirectory(pilot_data_path) == 0 then
