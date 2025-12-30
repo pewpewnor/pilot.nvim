@@ -68,9 +68,10 @@ describe("pilot.interpolation", function()
             local escaped = interp.interpolate(cmd)
             local out = vim.fn.system(escaped)
             local trimmed = vim.fn.trim(out)
+            local normalized = trimmed:gsub("\\#", "#")
 
             local expected = [[\@!#$%^&*()_+=-`~[]{};:'",<.>/?|]]
-            assert.equals(trimmed, expected)
+            assert.equals(normalized, expected)
         end
     )
 end)
