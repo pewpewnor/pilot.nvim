@@ -39,7 +39,11 @@ local function run_entry(entry, run_classification)
                 "[Pilot] Attempted to use a custom location, but none have been configured. Please define 'custom_locations' in your configuration."
             )
         end
-        args = vim.fn.split(entry.location, " ")
+
+        for arg in entry.location:gmatch("%S+") do
+            table.insert(args, arg)
+        end
+
         local executor_name = table.remove(args, 1)
         executor = M.config.custom_locations[executor_name]
         if not executor then
