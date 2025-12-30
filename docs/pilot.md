@@ -104,7 +104,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 - **Type:** `string | string[] | nil`
 - **Default:** `nil` (internally resolves to `{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json`)
-- **Description:**  
+- **Description:**
   Path or list of paths to the project run configuration file(s).  
   If a list, the first readable file is used.  
   Supports placeholders (see [Placeholders](#placeholders)).
@@ -169,12 +169,12 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 - **Type:** `table<string, function(command: string, args: string[])>`
 - **Default:** `{}`
-- **Description:**  
+- **Description:**
   Table mapping location names to executor functions.  
   Used when a run config entry specifies a `"location"` field.  
   The executor function receives two arguments:
     - `command` (string): The shell command to run (with placeholders already expanded).
-    - `args` (list of string): The whole string that was written in the `custom_location` field split with whitespaces as the seperator and without the location name (first argument) inside the list.
+    - `args` (list of strings): The result from splitting the string that was written in the `custom_location` with whitespaces as the seperator and without the location name (first argument) inside the list.
 
 ---
 
