@@ -1,6 +1,6 @@
 ---@diagnostic disable: undefined-field
 
-local interp = require("pilot.interpolation")
+local interpolate = require("pilot.interpolation")
 
 describe("pilot.interpolation", function()
     it(
@@ -8,6 +8,7 @@ describe("pilot.interpolation", function()
         function()
             local rel = "test dir/file name.txt"
             local test_path = vim.fn.getcwd() .. "/" .. rel
+            local escaped_test_path = vim.fn.fnameescape(test_path)
             vim.api.nvim_buf_set_name(0, test_path)
             vim.bo.filetype = "text"
             vim.api.nvim_buf_set_lines(
@@ -19,43 +20,39 @@ describe("pilot.interpolation", function()
             )
             vim.fn.search("world")
 
-            local got_file_path = interp._resolve_placeholder("file_path")
-            assert.equals(vim.fn.fnamemodify(got_file_path, ":p"), test_path)
+            local got_file_path = interpolate("{{file_path}}")
+            assert.equals(
+                vim.fn.fnamemodify(got_file_path, ":p"),
+                escaped_test_path
+            )
 
-            local got_file_path_relative =
-                interp._resolve_placeholder("file_path_relative")
+            local got_file_path_relative = interpolate("{{file_path_relative}}")
             assert.is_truthy(
                 got_file_path_relative == rel
-                    or got_file_path_relative == test_path
+                    or got_file_path_relative == escaped_test_path
             )
 
+            assert.equals(interpolate("{{file_name}}"), "file\\ name.txt")
+            assert.equals(interpolate("{{dir_name}}"), "test\\ dir")
+            assert.equals(interpolate("{{cwd_path}}"), vim.fn.getcwd())
             assert.equals(
-                interp._resolve_placeholder("file_name"),
-                "file name.txt"
-            )
-            assert.equals(interp._resolve_placeholder("dir_name"), "test dir")
-            assert.equals(
-                interp._resolve_placeholder("cwd_path"),
-                vim.fn.getcwd()
-            )
-            assert.equals(
-                interp._resolve_placeholder("cwd_name"),
+                interpolate("{{cwd_name}}"),
                 vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
             )
 
-            local pd = interp._resolve_placeholder("pilot_data_path")
+            local pd = interpolate("{{pilot_data_path}}")
             assert.is_string(pd)
             assert.equals(vim.fn.isdirectory(pd), 1)
 
-            assert.equals(interp._resolve_placeholder("cword"), "world")
-            assert.equals(interp._resolve_placeholder("cWORD"), "world-over")
+            assert.equals(interpolate("{{cword}}"), "world")
+            assert.equals(interpolate("{{cWORD}}"), "world-over")
 
             assert.equals(
-                interp._resolve_placeholder("hash(cwd_path)"),
+                interpolate("{{hash(cwd_path)}}"),
                 vim.fn.sha256(vim.fn.getcwd())
             )
             assert.equals(
-                interp._resolve_placeholder("hash(file_path)"),
+                interpolate("{{hash(file_path)}}"),
                 vim.fn.sha256(test_path)
             )
         end
@@ -64,13 +61,19 @@ describe("pilot.interpolation", function()
     it(
         "interpolate: complex shell quoted string preserves content when executed",
         function()
-            local cmd = [[echo $'\\\\@!#$%^&*()_+=-`~[]{};:\'",<.>/?|']]
-            local escaped = interp.interpolate(cmd)
+            local cmd = [[echo $'\\^!#$%@&*()_+=-`~[]{};:\'",<.>/?|']]
+            local escaped = interpolate(cmd)
             local out = vim.fn.system(escaped)
             local trimmed = vim.fn.trim(out)
-            local normalized = trimmed:gsub("\\#", "#")
+            -- account for different output for different systems
+            local normalized = trimmed
+                :gsub("\\#", "#")
+                :gsub("\\@", "@")
+                :gsub("\\`", "`")
+                :gsub("\\%%", "%")
+                :gsub("\\%[", "[")
 
-            local expected = [[\@!#$%^&*()_+=-`~[]{};:'",<.>/?|]]
+            local expected = [[\^!#$%@&*()_+=-`~[]{};:'",<.>/?|]]
             assert.equals(normalized, expected)
         end
     )

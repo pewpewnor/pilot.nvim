@@ -4,7 +4,7 @@
 ---@field args [string]
 
 local parser = require("pilot.parser")
-local interpolate = require("pilot.interpolation").interpolate
+local interpolate = require("pilot.interpolation")
 
 local M = {}
 

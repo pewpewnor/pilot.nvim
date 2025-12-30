@@ -209,7 +209,7 @@ CUSTOM_LOCATIONS ~
     Used when a run config entry specifies a `"location"` field.
     The executor function receives two arguments:
     - `command` (string): The shell command to run (with placeholders already expanded).
-    - `args` (list of string): The whole string that was written in the `custom_location` field split with whitespaces as the seperator and without the location name (first argument) inside the list.
+    - `args` (list of strings): The result from splitting the string that was written in the `custom_location` with whitespaces as the seperator and without the location name (first argument) inside the list.
 
 ------------------------------------------------------------------------------
 

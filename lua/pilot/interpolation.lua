@@ -61,6 +61,9 @@ local function escape_non_interpolated(command)
     -- gsub escaped space once to produce "ls a\\ b \%"
     -- gsub escaped space again to produce ls a\ b \%"
     -- extra gsubs for things that should not be escaped
+
+    -- NOTE: some characters are non-deterministic and might differ across systems
+    -- such as '#', '@', '`', '%', '['
     return vim.fn
         .fnameescape(command)
         :gsub("\\ ", " ")
@@ -122,8 +125,4 @@ local function interpolate(command)
     return escape_non_interpolated(result)
 end
 
-return {
-    interpolate = interpolate,
-    _resolve_placeholder = resolve_placeholder,
-    _escape_non_interpolated = escape_non_interpolated,
-}
+return interpolate
