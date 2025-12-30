@@ -3,43 +3,55 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-A Neovim plugin that allows you to **run** your **project or file** based on the
-**JSON run configuration file** with placeholder support that you can edit on the go.
-
-Usually you will end up with one run configuration file for each file type and project
-(specifically for project: you can use the fallback feature instead).
+**pilot.nvim** is a Neovim plugin that lets you run, build, or test your project or file using a simple, editable JSON configuration.  
+It supports powerful placeholders, custom execution locations, and lets you edit or reload configs on the fly without needing to reload Neovim everytime.
 
 _Requirement: Neovim v0.11.x_
 
 ![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
+---
+
+## Table of Important Contents
+
+- [Installation](#installation)
+- [Default Configuration](#default-configuration)
+- [Example Configuration](#example-configuration)
+- [Run Configuration Format](#run-configuration-format)
+- [Example Project Run Configuration](#example-project-run-configuration)
+- [Example File Type Run Configuration](#example-file-type-run-configuration)
+- [Placeholders](#placeholders)
+- [Preset Executors](#preset-executors)
+
+---
+
 ## Motivation
 
-I wanted a code runner plugin that supports placeholder interpolation so that I can hit a
-single key to compile/build and run my code with full control over the commands.
+I wanted a code runner plugin that supports placeholder interpolation, allowing me to use a single keystroke to compile, build, and run my code at the same time, whilst still having full control over the commands.
+
+---
 
 ## Features
 
-- Run arbitrary commands to run, test, and debug any file or project.
-- Placeholders for current file path, file name, directory name, cwd name, etc.
-- You can adjust it on the fly without needing to reload Neovim every time.
-- Supports fallback project run configuration so you don't have to create the
-  same JSON run configuration for each project
-- Unlike many other code runner plugins, it is possible to compile code and run the program.
-- Customizable path/location for your project and file run configurations.
-- Customizable location of command execution (presets are also provided).
-- Bindable functions to run, edit, and remove your project and file type run configuration.
+- Run arbitrary commands for any file or project, with full control over execution.
+- Powerful placeholders for file paths, names, directories, and more.
+- Edit configuration files on the fly without needing to reload Neovim everytime.
+- Fallback project run configuration: use a default config if none is found for a project.
+- Customizable run configuration file locations, how it is executed, and execution locations (tabs, splits, background jobs, tmux, etc).
+- Much more other features such as importing/including other run configuration files.
+
+---
 
 ## Installation
 
-Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 return {
     "pewpewnor/pilot.nvim",
     opts = {},
 }
---or
+-- or
 return {
     "pewpewnor/pilot.nvim",
     config = function()
@@ -48,7 +60,7 @@ return {
 }
 ```
 
-Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
 use {
@@ -59,42 +71,42 @@ use {
 }
 ```
 
-### General terms
+---
 
-- Project run configuration -> the customizable JSON file containing your
-  commands to run the current project.
-- File type run configuration -> the customizable JSON file containing your
-  commands to run the current file based on the file type.
+## General Terms
 
-## Default configuration
+- **Project run configuration**: JSON file containing commands to run for the current project.
+- **File type run configuration**: JSON file containing commands to run for the current file type.
 
-There is no need to pass anything to the `setup` function if you don't want to
-change any of the options.
+---
+
+## Default Configuration
+
+You do not need to pass anything to `setup()` if you want the defaults.
 
 ```lua
 {
-    project_run_config_path = nil, -- string | [string] | nil (nil is equivalent to "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json")
-    file_type_run_config_path = nil, -- string | nil (nil is equivalent to "{{pilot_data_path}}/filetypes/{{file_type}}.json")
-    -- if there is only one command listed, should we immediately run the command?
+    project_run_config_path = nil, -- string | [string] | nil (nil = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json")
+    file_type_run_config_path = nil, -- string | nil (nil = "{{pilot_data_path}}/filetypes/{{file_type}}.json")
     automatically_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- (function that returns a string) | nil
+    fallback_project_run_config = nil, -- function() -> string | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
-        project = nil, -- (function that accepts a string) | nil (nil is equivalent to pilot.executors.new_tab)
-        file_type = nil, -- (function that accepts a string) | nil (nil is equivalent to pilot.executors.new_tab)
+        project = nil, -- function(command: string) | nil (nil = pilot.executors.new_tab)
+        file_type = nil, -- function(command: string) | nil (nil = pilot.executors.new_tab)
     },
-    custom_locations = nil, -- (key/value table with the values being strings) | nil
+    custom_locations = {}, -- table<string, function(command: string, args: string[])>
 }
 ```
 
-> [!NOTE]
-> Check out the [configuration options documentation section](docs/pilot.md#configuration-options)
-> to see every possible configuration option for the setup function.
+> **See:** [Full Configuration Options](docs/pilot.md#configuration-options)
 
-## Example configuration
+---
+
+## Example Configuration
 
 ```lua
 local pilot = require("pilot")
@@ -146,17 +158,26 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
     pilot.delete_file_type_run_config, { nargs = 0, bar = false })
 ```
 
-> [!NOTE]
-> Check out the [function documentation section](docs/pilot.md#functions) to
-> see the details of every pilot function.
+> **See:** [Functions Documentation](docs/pilot.md#functions) for all available functions.
 
-## Example project run configuration
+---
 
-Here is what the project run configration file may look like.
+## Run Configuration Format
 
-> [!TIP]
-> Use the mustache syntax like `{{cword}}` to insert a placeholder that will
-> automatically be replaced by pilot.nvim on the fly!
+Both project and file type run configurations use the same JSON format: an array of entries.
+
+Each entry can be:
+
+- A **string** (the command to run)
+- An **object** with fields:
+    - `name` (optional): Display name for the command.
+    - `command` (required): String or array of strings.
+    - `location` (optional): Name of a custom location/executor.
+    - `import` (optional): Path to another JSON file to import entries from.
+
+---
+
+## Example Project Run Configuration
 
 ```json
 [
@@ -169,21 +190,23 @@ Here is what the project run configration file may look like.
         "command": "go test -v --run {{cword}}"
     },
     {
-        "command": "ls {{dir_path}}",
+        "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
         "location": "tmux_new_window"
-    }
+    },
+    "echo Hello, World!"
 ]
 ```
 
-## Example file type run configuration
+> **Tip:**  
+> Use the mustache syntax like `{{cword}}` to insert a placeholder that will
+> automatically be replaced by pilot.nvim on the fly!
+
+---
+
+## Example File Type Run Configuration
 
 Let's say you want to write a file type run configuration for compiling and
-running any file with "c" as its Vim file type (the c programming language).
-
-> [!TIP]
-> For each entry, you don't have to specify a display name if you want it to be
-> the same as the raw command string. You can also instead use a string for
-> defining an entry/command.
+running C source code files.
 
 ```json
 [
@@ -195,72 +218,83 @@ running any file with "c" as its Vim file type (the c programming language).
 ]
 ```
 
-> [!NOTE]
-> Check out the [run configuration documentation section](docs/pilot.md#run-configuration)
-> to see more details about the JSON format for project and file type run
-> configurations.
+> **Tip:**  
+> For each entry, you don't have to specify a display name if you want it to be
+> the same as the raw command string. You can also instead use a string for
+> defining an entry/command.
 
-> [!NOTE]
-> Both the project run and file type run configurations use the exact same JSON
-> format.
+**Importing/Including Existing Run Configuration:**
+
+```json
+[{ "import": "{{pilot_data_path}}/common_commands.json" }]
+```
+
+---
 
 ## Placeholders
 
-| Placeholder                  | Resolved value                                                               |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `{{file_path}}`              | Current buffer's absolute file path                                          |
-| `{{file_path_relative}}`     | Current buffer's file path that is relative to the current working directory |
-| `{{file_name}}`              | Current buffer's file name (file extension included)                         |
-| `{{file_name_no_extension}}` | Current buffer's file name without the file extension                        |
-| `{{file_type}}`              | The filetype of the current buffer according to Neovim (`vim.bo.filetype`)   |
-| `{{file_extension}}`         | Extension of the current file                                                |
-| `{{dir_path}}`               | Absolute path of the directory that contains the current buffer              |
-| `{{dir_name}}`               | Name of the directory that contains the current buffer                       |
-| `{{cwd_path}}`               | Absolute path of the current working directory (`vim.fn.getcwd()`)           |
-| `{{cwd_name}}`               | The directory name of the current working directory                          |
-| `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`                        |
-| `{{cword}}`                  | Current word of which your cursor is hovering over                           |
-| `{{cWORD}}`                  | Current complete word (between spaces) of which your cursor is hovering over |
-| `{{hash(cwd_path)}}`         | Hash of the current working directory absolute path using sha256             |
-| `{{hash(file_path)}}`        | Hash of the current buffer's absolute path using sha256                      |
+| Placeholder                  | Resolved value                                      |
+| ---------------------------- | --------------------------------------------------- |
+| `{{file_path}}`              | Current buffer's absolute file path                 |
+| `{{file_path_relative}}`     | File path relative to current working directory     |
+| `{{file_name}}`              | File name (with extension)                          |
+| `{{file_name_no_extension}}` | File name without extension                         |
+| `{{file_type}}`              | Filetype of current buffer (`vim.bo.filetype`)      |
+| `{{file_extension}}`         | File extension                                      |
+| `{{dir_path}}`               | Directory containing the current buffer             |
+| `{{dir_name}}`               | Name of the directory containing the current buffer |
+| `{{cwd_path}}`               | Absolute path of the current working directory      |
+| `{{cwd_name}}`               | Name of the current working directory               |
+| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`        |
+| `{{cword}}`                  | Word under the cursor                               |
+| `{{cWORD}}`                  | WORD under the cursor                               |
+| `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory path   |
+| `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute path   |
 
-## Preset executors
+---
 
-| Executor                                 | Description                                                    |
-| ---------------------------------------- | -------------------------------------------------------------- |
-| `pilot.executors.new_tab` (default)      | Run the command on a new Neovim tab                            |
-| `pilot.executors.current_buffer`         | Run the command on the current buffer                          |
-| `pilot.executors.split`                  | Run the command on a new horizontal buffer at the bottom right |
-| `pilot.executors.vsplit`                 | Run the command on a new vertical buffer at the right side     |
-| `pilot.executors.print`                  | Run the command (blocking) with the output shown using print   |
-| `pilot.executors.silent`                 | Run the command (blocking) silently with no output displayed   |
-| `pilot.executors.background_silent`      | Run the command in a background job silently                   |
-| `pilot.executors.background_exit_status` | Run the command in a background job and print job exit status  |
+## Preset Executors
 
-Simply set the `default_executor` options in your configuration to use one of the above.
-You can also create your own default executor like this:
+| Executor                                 | Description                                            |
+| ---------------------------------------- | ------------------------------------------------------ |
+| `pilot.executors.new_tab` (default)      | Run the command in a new Neovim tab                    |
+| `pilot.executors.current_buffer`         | Run the command in the current buffer                  |
+| `pilot.executors.split`                  | Run the command in a new horizontal split              |
+| `pilot.executors.vsplit`                 | Run the command in a new vertical split                |
+| `pilot.executors.print`                  | Run the command and print output (blocking)            |
+| `pilot.executors.silent`                 | Run the command silently (blocking, no output)         |
+| `pilot.executors.background_silent`      | Run the command as a background job (no output)        |
+| `pilot.executors.background_exit_status` | Run as background job, print exit status on completion |
 
-```lua
-function my_executor(command)
-    vim.fn.system(command)
-end
+You can also create your own executor and use it in your config.
 
-{
-    default_executor = {
-        project = my_executor,
-        file_type = my_executor
-    }
-}
-```
+---
 
-The example code above is actually the implementation of `pilot.silent_executor`.
+## Tips & Recommendations
 
-## Recommendation
+- Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md) for a better `vim.ui.select()` experience.
+- You can import common commands into multiple configs using the `"import"` key.
+- Placeholders can be escaped by using triple braces, e.g. `{{{not_a_placeholder}}}`.
+- If you want to always use a specific executor for a certain location, add it to `custom_locations` and reference it by name in your config.
+- To disable template writing for new configs, set `write_template_to_new_run_config = false`.
+- All config files are validated on load; errors are shown in the command line.
 
-Use plugin like [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
-or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
-which creates a nice wrapper for `vim.ui.select()` when you are selecting which command to run.
+---
 
-### Got questions or have any ideas on how to improve this plugin?
+## Links
 
-Check out the [github discussions page](https://github.com/pewpewnor/pilot.nvim/discussions) or simply create a new issue!
+- [Full documentation and advanced usage](docs/pilot.md)
+- [GitHub Discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
+- [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
+- [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
+- [Neovim](https://neovim.io/)
+- [Lua](https://www.lua.org/)
+
+---
+
+## Have any questions or ideas?
+
+- Create a new [Issue](https://github.com/pewpewnor/pilot.nvim/issues)
+- See the [Contribution Guidelines](CONTRIBUTING.md) for creating pull requests
+- Open a [Discussion](https://github.com/pewpewnor/pilot.nvim/discussions)
+- See the [FAQ](docs/pilot.md#faq)

@@ -15,8 +15,8 @@ These are more of like suggestions, hence not strictly enforced.
 
 ### Feature addition and proposal
 
-- You can also create a github issue or start a github discussion in order to propose a feature.
 - You can create pull requests immediately to fix a bug or add new a feature.
+- You can also create a github issue or start a github discussion in order to propose a feature.
 
 ### Pull request
 
