@@ -233,40 +233,40 @@ running C source code files.
 
 ## Placeholders
 
-| Placeholder                  | Resolved value                                      |
-| ---------------------------- | --------------------------------------------------- |
-| `{{file_path}}`              | Current buffer's absolute file path                 |
-| `{{file_path_relative}}`     | File path relative to current working directory     |
-| `{{file_name}}`              | File name (with extension)                          |
-| `{{file_name_no_extension}}` | File name without extension                         |
-| `{{file_type}}`              | Filetype of current buffer (`vim.bo.filetype`)      |
-| `{{file_extension}}`         | File extension                                      |
-| `{{dir_path}}`               | Directory containing the current buffer             |
-| `{{dir_name}}`               | Name of the directory containing the current buffer |
-| `{{cwd_path}}`               | Absolute path of the current working directory      |
-| `{{cwd_name}}`               | Name of the current working directory               |
-| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`        |
-| `{{cword}}`                  | Word under the cursor                               |
-| `{{cWORD}}`                  | WORD under the cursor                               |
-| `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory path   |
-| `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute path   |
+| Placeholder                  | Resolved value                                                   |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `{{file_path}}`              | Current buffer's absolute file path                              |
+| `{{file_path_relative}}`     | Current buffer's file path relative to current working directory |
+| `{{file_name}}`              | Current buffer's file name (file extension included)             |
+| `{{file_name_no_extension}}` | Current buffer's file name without the file extension            |
+| `{{file_type}}`              | The Neovim file type of the current buffer (`vim.bo.filetype`)   |
+| `{{file_extension}}`         | File extension of current buffer's file name                     |
+| `{{dir_path}}`               | Absolute path of the directory containing the current buffer     |
+| `{{dir_name}}`               | Name of the directory containing the current buffer              |
+| `{{cwd_path}}`               | Absolute path of the current working directory                   |
+| `{{cwd_name}}`               | Directory name of the current working directory                  |
+| `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`            |
+| `{{cword}}`                  | Word under the cursor                                            |
+| `{{cWORD}}`                  | Complete word (between spaces) under the cursor                  |
+| `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory's absolute path     |
+| `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute file path           |
 
 ---
 
 ## Preset Executors
 
-| Executor                                 | Description                                            |
-| ---------------------------------------- | ------------------------------------------------------ |
-| `pilot.executors.new_tab` (default)      | Run the command in a new Neovim tab                    |
-| `pilot.executors.current_buffer`         | Run the command in the current buffer                  |
-| `pilot.executors.split`                  | Run the command in a new horizontal split              |
-| `pilot.executors.vsplit`                 | Run the command in a new vertical split                |
-| `pilot.executors.print`                  | Run the command and print output (blocking)            |
-| `pilot.executors.silent`                 | Run the command silently (blocking, no output)         |
-| `pilot.executors.background_silent`      | Run the command as a background job (no output)        |
-| `pilot.executors.background_exit_status` | Run as background job, print exit status on completion |
+| Executor                                 | Description                                                               |
+| ---------------------------------------- | ------------------------------------------------------------------------- |
+| `pilot.executors.new_tab` _(default)_    | Run the command in a new tab                                              |
+| `pilot.executors.current_buffer`         | Run the command in the current buffer                                     |
+| `pilot.executors.split`                  | Run the command in a new horizontal split                                 |
+| `pilot.executors.vsplit`                 | Run the command in a new vertical split                                   |
+| `pilot.executors.print`                  | Run the command and print output (blocking)                               |
+| `pilot.executors.silent`                 | Run the command silently with no output (blocking)                        |
+| `pilot.executors.background_silent`      | Run the command as a background job silently                              |
+| `pilot.executors.background_exit_status` | Run the command as a background job and print exit status upon completion |
 
-You can also create your own executor and use it in your config.
+You can also create your own executor and use it in your config for pilot.nvim.
 
 ---
 
