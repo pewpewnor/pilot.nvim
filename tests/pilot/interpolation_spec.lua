@@ -70,7 +70,7 @@ describe("pilot.interpolation", function()
                 :gsub("\\#", "#")
                 :gsub("\\@", "@")
                 :gsub("\\`", "`")
-                :gsub("\\%%", "%")
+                :gsub("\\%%", "%%")
                 :gsub("\\%[", "[")
 
             local expected = [[\^!#$%@&*()_+=-`~[]{};:'",<.>/?|]]
