@@ -11,28 +11,6 @@ The source code for this plugin is available in the [GitHub Repository](https://
 
 ---
 
-## Table of Contents
-
-- [Motivation](#motivation)
-- [Features](#features)
-- [Installation](#installation)
-- [General Terms](#general-terms)
-- [Default Configuration](#default-configuration)
-- [Configuration Options (Detailed)](#configuration-options-detailed)
-- [Example Configuration](#example-configuration)
-- [Run Configuration Format](#run-configuration-format)
-- [Example Project Run Configuration](#example-project-run-configuration)
-- [Example File Type Run Configuration](#example-file-type-run-configuration)
-- [Placeholders](#placeholders)
-- [Preset Executors](#preset-executors)
-- [Functions](#functions)
-- [Tips & Recommendations](#tips--recommendations)
-- [Links](#links)
-- [Contributing](#contributing)
-- [FAQ](#faq)
-
----
-
 ## Motivation
 
 I wanted a code runner plugin that supports placeholder interpolation, allowing me to use a single keystroke to compile, build, and run my code at the same time, whilst still having full control over the commands.

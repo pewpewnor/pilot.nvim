@@ -3,7 +3,6 @@
 ==============================================================================
 Table of Contents                                    *pilot-table-of-contents*
 
-  - Table of Contents                                |pilot-table-of-contents|
   - Motivation                                              |pilot-motivation|
   - Features                                                  |pilot-features|
   - Installation                                          |pilot-installation|
@@ -33,28 +32,6 @@ latest Neovim major release version.
 
 The source code for this plugin is available in the GitHub Repository
 <https://github.com/pewpewnor/pilot.nvim>.
-
-------------------------------------------------------------------------------
-
-TABLE OF CONTENTS                                    *pilot-table-of-contents*
-
-- |pilot-motivation|
-- |pilot-features|
-- |pilot-installation|
-- |pilot-general-terms|
-- |pilot-default-configuration|
-- |pilot-configuration-options-(detailed)|
-- |pilot-example-configuration|
-- |pilot-run-configuration-format|
-- |pilot-example-project-run-configuration|
-- |pilot-example-file-type-run-configuration|
-- |pilot-placeholders|
-- |pilot-preset-executors|
-- |pilot-functions|
-- |pilot-tips-&-recommendations|
-- |pilot-links|
-- |pilot-contributing|
-- |pilot-faq|
 
 ------------------------------------------------------------------------------
 
