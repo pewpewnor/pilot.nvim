@@ -59,14 +59,20 @@ describe("pilot.interpolation", function()
     )
 
     it(
-        "interpolate: complex shell quoted string preserves content when executed",
+        "interpolate: escapes vim specials in static text to prevent unwanted expansion",
         function()
-            local cmd = [[echo $'\\^!#$%@&*()_+=-`~[]{};:\'",<.>/?|']]
-            local escaped = interpolate(cmd)
-            local out = vim.fn.system(escaped)
-            local trimmed = vim.fn.trim(out)
-            local expected = [[\^!#$%@&*()_+=-`~[]{};:'",<.>/?|]]
-            assert.equals(trimmed, expected)
+            local cmd = "echo % # <"
+            local expected = "echo \\% \\# \\<"
+            assert.equals(interpolate(cmd), expected)
+        end
+    )
+
+    it(
+        "interpolate: correctly escapes vim specials inside complex shell quoted strings",
+        function()
+            local cmd = [[echo $'\\^!#$%@&*()_+=-`~[]{};:'",<.>/?|']]
+            local expected = [[echo $'\\^!\#$\%@&*()_+=-`~[]{};:'",\<.>/?|']]
+            assert.equals(interpolate(cmd), expected)
         end
     )
 end)
