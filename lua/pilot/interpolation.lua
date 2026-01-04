@@ -1,9 +1,31 @@
+---@class ExtractedPlaceholderFunctionCall
+---@field func_name string
+---@field func_arg string
+
 local required_braces = 2
+
+---@param placeholder string
+---@return ExtractedPlaceholderFunctionCall?
+local function extract_placeholder_function_call(placeholder)
+    if placeholder:sub(1, 1) == "(" or placeholder:sub(-1) ~= ")" then
+        return nil
+    end
+    local func_name, balanced_parens = placeholder:match("^(%w+)(%b())$")
+    if func_name and balanced_parens then
+        return {
+            func_name = func_name,
+            func_arg = balanced_parens:sub(2, -2),
+        }
+    end
+    return nil
+end
 
 ---@param placeholder string
 ---@return string
 local function resolve_placeholder(placeholder)
-    if placeholder == "file_path" then
+    if placeholder == "" then
+        return ""
+    elseif placeholder == "file_path" then
         return vim.fn.expand("%:p")
     elseif placeholder == "file_path_relative" then
         return vim.fn.expand("%")
@@ -33,14 +55,16 @@ local function resolve_placeholder(placeholder)
         return vim.fn.expand("<cword>")
     elseif placeholder == "cWORD" then
         return vim.fn.expand("<cWORD>")
-    elseif placeholder == "hash(cwd_path)" then
-        return vim.fn.sha256(vim.fn.getcwd())
-    elseif placeholder == "hash(file_path)" then
-        return vim.fn.sha256(vim.fn.expand("%:p"))
+    else
+        local extracted = extract_placeholder_function_call(placeholder)
+        if extracted and extracted.func_name == "hash" then
+            local resolved_arg = resolve_placeholder(extracted.func_arg)
+            return vim.fn.sha256(resolved_arg)
+        end
     end
     error(
         string.format(
-            "[Pilot] Unknown command placeholder '%s', you can try surrounding it with {} to escape it.",
+            "[Pilot] Unknown/invalid command placeholder '%s', you can try surrounding it with {} to escape it.",
             placeholder
         )
     )
