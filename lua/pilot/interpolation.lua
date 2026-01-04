@@ -59,7 +59,11 @@ local function resolve_placeholder(placeholder)
         local extracted = extract_placeholder_function_call(placeholder)
         if extracted and extracted.func_name == "hash" then
             local resolved_arg = resolve_placeholder(extracted.func_arg)
-            return vim.fn.sha256(resolved_arg)
+            if vim.fn.exists("*sha256") == 1 then
+                return vim.fn.sha256(resolved_arg)
+            else
+                return resolved_arg
+            end
         end
     end
     error(
@@ -70,83 +74,66 @@ local function resolve_placeholder(placeholder)
     )
 end
 
--- The reason why we need to do this dance is because e.g. the user expects the
--- bash command `echo %` (without any placeholder interpolation) to work
--- perfectly fine since it makes sense. Unfortunately, in the end, it would
--- become something like `tabnew | terminal echo %` which is illegal in vim
--- because of the `%` symbol. We need to not only escape the interpolated part
--- with fnameescape, but also the non interpolated part.
----@param command string
+---@param text string
 ---@return string
-local function escape_non_interpolated(command)
-    -- example of how this works:
-    -- interpolation will convert "ls {{dir_name}} {{file_name}}" to "ls a\ b %"
-    -- fnameescape will produce "ls\ a\\\ b \%"
-    -- gsub escaped space once to produce "ls a\\ b \%"
-    -- gsub escaped space again to produce ls a\ b \%"
-    -- extra gsubs for things that should not be escaped
-
-    -- NOTE: some characters are non-deterministic and might differ across systems
-    -- such as '#', '@', '`', '%', '['
-    return vim.fn
-        .fnameescape(command)
-        :gsub("\\ ", " ")
-        :gsub("\\ ", " ")
-        :gsub("\\'", "'")
-        :gsub('\\"', '"')
-        :gsub("\\!", "!")
-        :gsub("\\\\", "\\")
-        :gsub("\\|", "|")
-        :gsub("\\{", "{")
-        :gsub("\\<", "<")
-        :gsub("\\%*", "*")
-        :gsub("\\%$", "$")
+local function escape_vim_specials(text)
+    return (text:gsub("%%", "\\%%"):gsub("#", "\\#"):gsub("<", "\\<"))
 end
 
 ---@param command string
 ---@return string
 local function interpolate(command)
+    local result = {}
+    local cursor = 1
     local pattern = "({+)([^}]+)(}+)"
 
-    local result = command:gsub(
-        pattern,
-        function(open_braces, placeholder, closing_braces)
-            local open_count = #open_braces
-            local close_count = #closing_braces
+    while true do
+        local start_idx, end_idx, open_braces, placeholder, close_braces =
+            command:find(pattern, cursor)
 
-            if
-                open_count > required_braces
-                and close_count > required_braces
-            then
-                return open_braces:sub(1, open_count - 1)
-                    .. placeholder
-                    .. closing_braces:sub(1, close_count - 1)
-            elseif
-                open_count < required_braces
-                or close_count < required_braces
-            then
-                return open_braces .. placeholder .. closing_braces
-            end
-
-            -- we don't use fnameescape here since it will be done later
-            -- but space should be escaped so that later it can be
-            -- differentiated from literal command argument spaces
-            -- see the description of the escape_non_interpolated function
-            -- to understand why we need to do this dance
-            local interpolated =
-                resolve_placeholder(placeholder):gsub(" ", "\\ ")
-            if open_count > required_braces then
-                interpolated = open_braces:sub(1, open_count - required_braces)
-                    .. interpolated
-            end
-            if close_count > required_braces then
-                interpolated = interpolated
-                    .. closing_braces:sub(1, close_count - required_braces)
-            end
-            return interpolated
+        local static_end = start_idx and (start_idx - 1) or #command
+        if static_end >= cursor then
+            local static_text = command:sub(cursor, static_end)
+            table.insert(result, escape_vim_specials(static_text))
         end
-    )
-    return escape_non_interpolated(result)
+
+        if not start_idx then
+            break
+        end
+
+        local open_len = #open_braces
+        local close_len = #close_braces
+
+        if open_len > required_braces and close_len > required_braces then
+            -- case for escaped braces
+            local prefix = open_braces:sub(1, open_len - 1)
+            local suffix = close_braces:sub(1, close_len - 1)
+            local raw_segment = prefix .. placeholder .. suffix
+            table.insert(result, escape_vim_specials(raw_segment))
+        elseif open_len < required_braces or close_len < required_braces then
+            -- case for insufficient braces
+            local raw_segment = open_braces .. placeholder .. close_braces
+            table.insert(result, escape_vim_specials(raw_segment))
+        else
+            -- case for valid interpolation
+            local resolved_placeholder = resolve_placeholder(placeholder)
+            local escaped_resolved = vim.fn.fnameescape(resolved_placeholder)
+
+            -- handle potential extra braces
+            local prefix = open_len > required_braces
+                    and open_braces:sub(1, open_len - required_braces)
+                or ""
+            local suffix = close_len > required_braces
+                    and close_braces:sub(1, close_len - required_braces)
+                or ""
+
+            table.insert(result, prefix .. escaped_resolved .. suffix)
+        end
+
+        cursor = end_idx + 1
+    end
+
+    return table.concat(result)
 end
 
 return interpolate
