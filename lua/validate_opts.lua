@@ -5,7 +5,6 @@ local function validate_opts(options)
     elseif
         type(options.project_run_config_path) ~= "string"
         and type(options.project_run_config_path) ~= "table"
-        and options.project_run_config_path ~= nil
     then
         error(
             "[Pilot] option 'project_run_config_path' must either be a string, table, or nil."
@@ -17,10 +16,7 @@ local function validate_opts(options)
         error(
             "[Pilot] option 'project_run_config_path' table must atleast have 1 item."
         )
-    elseif
-        type(options.file_type_run_config_path) ~= "string"
-        and options.file_type_run_config_path ~= nil
-    then
+    elseif type(options.file_type_run_config_path) ~= "string" then
         error(
             "[Pilot] option 'file_type_run_config_path' must either be a string or nil."
         )

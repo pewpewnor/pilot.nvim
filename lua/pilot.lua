@@ -14,8 +14,8 @@
 ---@field [string] Executor
 
 ---@class Config
----@field project_run_config_path string|[string]|nil
----@field file_type_run_config_path string?
+---@field project_run_config_path string|[string]
+---@field file_type_run_config_path string
 ---@field fallback_project_run_config FallbackProjectRunConfig?
 ---@field write_template_to_new_run_config boolean
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
@@ -90,8 +90,8 @@ end
 
 ---@type Config
 M.config = {
-    project_run_config_path = nil,
-    file_types_run_config_path = nil,
+    project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json",
+    file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json",
     fallback_project_run_config = nil,
     write_template_to_new_run_config = true,
     automatically_run_single_command = {

@@ -15,7 +15,7 @@ _Requirement: Neovim v0.11.x_
 ## Table of Important Contents
 
 - [Installation](#installation)
-- [Default Configuration](#default-configuration)
+- [Default Configuration Values](#default-configuration-values)
 - [Example Configuration](#example-configuration)
 - [Run Configuration Format](#run-configuration-format)
 - [Example Project Run Configuration](#example-project-run-configuration)
@@ -80,14 +80,14 @@ use {
 
 ---
 
-## Default Configuration
+## Default Configuration Values
 
 You do not need to pass anything to `setup()` if you want the defaults.
 
 ```lua
 {
-    project_run_config_path = nil, -- string | [string] | nil (nil = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json")
-    file_type_run_config_path = nil, -- string | nil (nil = "{{pilot_data_path}}/filetypes/{{file_type}}.json")
+    project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+    file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
     automatically_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
@@ -95,8 +95,8 @@ You do not need to pass anything to `setup()` if you want the defaults.
     fallback_project_run_config = nil, -- function() -> string | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
-        project = nil, -- function(command: string) | nil (nil = pilot.executors.new_tab)
-        file_type = nil, -- function(command: string) | nil (nil = pilot.executors.new_tab)
+        project = pilot.executors.new_tab, -- function(command: string)
+        file_type = pilot.executors.new_tab, -- function(command: string)
     },
     custom_locations = {}, -- table<string, function(command: string, args: string[])>
 }

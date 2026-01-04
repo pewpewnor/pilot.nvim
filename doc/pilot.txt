@@ -7,7 +7,7 @@ Table of Contents                                    *pilot-table-of-contents*
   - Features                                                  |pilot-features|
   - Installation                                          |pilot-installation|
   - General Terms                                        |pilot-general-terms|
-  - Default Configuration                        |pilot-default-configuration|
+  - Default Configuration Values          |pilot-default-configuration-values|
   - Configuration Options                        |pilot-configuration-options|
   - Example Configuration                        |pilot-example-configuration|
   - Run Configuration Format                  |pilot-run-configuration-format|
@@ -100,14 +100,14 @@ GENERAL TERMS                                            *pilot-general-terms*
 
 ------------------------------------------------------------------------------
 
-DEFAULT CONFIGURATION                            *pilot-default-configuration*
+DEFAULT CONFIGURATION VALUES              *pilot-default-configuration-values*
 
 You do not need to pass anything to `setup()` if you want the defaults.
 
 >lua
     {
-        project_run_config_path = nil, -- string | [string] | nil (nil = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json")
-        file_type_run_config_path = nil, -- string | nil (nil = "{{pilot_data_path}}/filetypes/{{file_type}}.json")
+        project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+        file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
         automatically_run_single_command = {
             project = true, -- boolean
             file_type = true, -- boolean
@@ -115,8 +115,8 @@ You do not need to pass anything to `setup()` if you want the defaults.
         fallback_project_run_config = nil, -- function() -> string | nil
         write_template_to_new_run_config = true, -- boolean
         default_executor = {
-            project = nil, -- function(string) -> string | nil (nil = pilot.executors.new_tab)
-            file_type = nil, -- function(string) -> string | nil (nil = pilot.executors.new_tab)
+            project = pilot.executors.new_tab, -- function(command: string)
+            file_type = pilot.executors.new_tab, -- function(command: string)
         },
         custom_locations = {}, -- table<string, function(command: string, args: string[])>
     }

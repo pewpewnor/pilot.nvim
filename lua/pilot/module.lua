@@ -71,14 +71,12 @@ function M.delete_file_type_run_config()
 end
 
 function M.purge_all_default_project_run_config_dir()
-    purge_all_run_config_dir(
-        pathfinder.get_default_project_run_config_dir_path()
-    )
+    purge_all_run_config_dir(pathfinder.get_project_run_config_path(false))
 end
 
 function M.purge_all_default_file_type_run_config_dir()
     purge_all_run_config_dir(
-        pathfinder.get_default_file_type_run_config_dir_path()
+        pathfinder.get_get_file_type_run_config_path(false)
     )
 end
 
