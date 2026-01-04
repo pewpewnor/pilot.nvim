@@ -102,7 +102,16 @@ M.config = {
         project = M.executors.new_tab,
         file_type = M.executors.new_tab,
     },
-    custom_locations = {},
+    custom_locations = {
+        new_tab = M.executors.new_tab,
+        current_buffer = M.executors.current_buffer,
+        split = M.executors.split,
+        vsplit = M.executors.vsplit,
+        print = M.executors.print,
+        silent = M.executors.silent,
+        background_silent = M.executors.background_silent,
+        background_exit_status = M.executors.background_exit_status,
+    },
 }
 
 ---@param options table?

@@ -118,7 +118,16 @@ You do not need to pass anything to `setup()` if you want the defaults.
             project = pilot.executors.new_tab, -- function(command: string)
             file_type = pilot.executors.new_tab, -- function(command: string)
         },
-        custom_locations = {}, -- table<string, function(command: string, args: string[])>
+        custom_locations = {
+            new_tab = pilot.executors.new_tab,
+            current_buffer = pilot.executors.current_buffer,
+            split = pilot.executors.split,
+            vsplit = pilot.executors.vsplit,
+            print = pilot.executors.print,
+            silent = pilot.executors.silent,
+            background_silent = pilot.executors.background_silent,
+            background_exit_status = pilot.executors.background_exit_status,
+        }, -- table<string, function(command: string, args: string[])>
     }
 <
 
@@ -234,7 +243,7 @@ EXAMPLE CONFIGURATION                            *pilot-example-configuration*
                 vim.fn.system("tmux new-window -d")
                 vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
             end,
-            vsplit = pilot.executors.vsplit,
+            background = pilot.executors.background_exit_status,
         },
         write_template_to_new_run_config = false,
     })

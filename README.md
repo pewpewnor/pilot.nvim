@@ -98,7 +98,16 @@ You do not need to pass anything to `setup()` if you want the defaults.
         project = pilot.executors.new_tab, -- function(command: string)
         file_type = pilot.executors.new_tab, -- function(command: string)
     },
-    custom_locations = {}, -- table<string, function(command: string, args: string[])>
+    custom_locations = {
+        new_tab = pilot.executors.new_tab,
+        current_buffer = pilot.executors.current_buffer,
+        split = pilot.executors.split,
+        vsplit = pilot.executors.vsplit,
+        print = pilot.executors.print,
+        silent = pilot.executors.silent,
+        background_silent = pilot.executors.background_silent,
+        background_exit_status = pilot.executors.background_exit_status,
+    }, -- table<string, function(command: string, args: string[])>
 }
 ```
 
@@ -131,7 +140,7 @@ pilot.setup({
         end
     end,
     default_executor = {
-        -- by default, we should execute the file on a new buffer at the bottom
+        -- change so that by default, we execute the file on a new bottom buffer
         file_type = pilot.executors.split,
     },
     -- define custom locations that can be used in any pilot run configuration
@@ -141,7 +150,7 @@ pilot.setup({
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
-        vsplit = pilot.executors.vsplit, -- so we can use vsplit in our run config
+        background = pilot.executors.background_exit_status,
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
 })
