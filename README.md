@@ -108,6 +108,8 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ## Example Configuration
 
+This is a full example for learning how to configure the plugin itself.
+
 ```lua
 local pilot = require("pilot")
 pilot.setup({
@@ -179,6 +181,9 @@ Each entry can be:
 
 ## Example Project Run Configuration
 
+Here is an example list of commands w/ placeholders which can be executed in the current
+working directory.
+
 ```json
 [
     {
@@ -189,11 +194,11 @@ Each entry can be:
         "name": "run hovered test function name",
         "command": "go test -v --run {{cword}}"
     },
+    "echo Hello, World!",
     {
         "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
         "location": "tmux_new_window"
-    },
-    "echo Hello, World!"
+    }
 ]
 ```
 
@@ -210,11 +215,11 @@ running C source code files.
 
 ```json
 [
+    "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}",
     {
         "name": "clang",
         "command": "clang {{file_path_relative}} && ./a.out"
-    },
-    "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}"
+    }
 ]
 ```
 
