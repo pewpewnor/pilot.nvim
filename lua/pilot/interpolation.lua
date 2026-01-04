@@ -20,9 +20,10 @@ local function extract_placeholder_function_call(placeholder)
     return nil
 end
 
----@param placeholder string
+---@param placeholder string?
 ---@return string
 local function resolve_placeholder(placeholder)
+    placeholder = vim.fn.trim(placeholder or "")
     if placeholder == "" then
         return ""
     elseif placeholder == "file_path" then
