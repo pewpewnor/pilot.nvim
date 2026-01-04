@@ -53,11 +53,7 @@ local function resolve_placeholder(placeholder)
             extract_placeholder_function_call(placeholder)
         if func_name == "hash" and func_arg then
             local resolved_arg = resolve_placeholder(func_arg)
-            if vim.fn.exists("*sha256") == 1 then
-                return vim.fn.sha256(resolved_arg)
-            else
-                return resolved_arg
-            end
+            return vim.fn.sha256(resolved_arg)
         end
     end
     error(
