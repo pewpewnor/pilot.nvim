@@ -1,23 +1,15 @@
----@class ExtractedPlaceholderFunctionCall
----@field func_name string
----@field func_arg string
-
 local required_braces = 2
 
 ---@param placeholder string
----@return ExtractedPlaceholderFunctionCall?
+---@return string?, string?
 local function extract_placeholder_function_call(placeholder)
-    if placeholder:sub(1, 1) == "(" or placeholder:sub(-1) ~= ")" then
-        return nil
+    if placeholder:sub(1, 1) ~= "(" and placeholder:sub(-1) == ")" then
+        local func_name, balanced_parens = placeholder:match("^(%w+)(%b())$")
+        if func_name and balanced_parens then
+            return func_name, balanced_parens:sub(2, -2)
+        end
     end
-    local func_name, balanced_parens = placeholder:match("^(%w+)(%b())$")
-    if func_name and balanced_parens then
-        return {
-            func_name = func_name,
-            func_arg = balanced_parens:sub(2, -2),
-        }
-    end
-    return nil
+    return nil, nil
 end
 
 ---@param placeholder string?
@@ -57,9 +49,10 @@ local function resolve_placeholder(placeholder)
     elseif placeholder == "cWORD" then
         return vim.fn.expand("<cWORD>")
     else
-        local extracted = extract_placeholder_function_call(placeholder)
-        if extracted and extracted.func_name == "hash" then
-            local resolved_arg = resolve_placeholder(extracted.func_arg)
+        local func_name, func_arg =
+            extract_placeholder_function_call(placeholder)
+        if func_name == "hash" and func_arg then
+            local resolved_arg = resolve_placeholder(func_arg)
             if vim.fn.exists("*sha256") == 1 then
                 return vim.fn.sha256(resolved_arg)
             else
@@ -88,14 +81,19 @@ local function interpolate(command)
     local cursor = 1
     local pattern = "({+)([^}]+)(}+)"
 
+    function insert_result_for_joining(text)
+        table.insert(result, escape_vim_specials(text))
+    end
+
     while true do
         local start_idx, end_idx, open_braces, placeholder, close_braces =
             command:find(pattern, cursor)
 
         local static_end = start_idx and (start_idx - 1) or #command
         if static_end >= cursor then
+            -- case for normal text
             local static_text = command:sub(cursor, static_end)
-            table.insert(result, escape_vim_specials(static_text))
+            insert_result_for_joining(static_text)
         end
 
         if not start_idx then
@@ -110,11 +108,11 @@ local function interpolate(command)
             local prefix = open_braces:sub(1, open_len - 1)
             local suffix = close_braces:sub(1, close_len - 1)
             local raw_segment = prefix .. placeholder .. suffix
-            table.insert(result, escape_vim_specials(raw_segment))
+            insert_result_for_joining(raw_segment)
         elseif open_len < required_braces or close_len < required_braces then
             -- case for insufficient braces
             local raw_segment = open_braces .. placeholder .. close_braces
-            table.insert(result, escape_vim_specials(raw_segment))
+            insert_result_for_joining(raw_segment)
         else
             -- case for valid interpolation
             local resolved_placeholder = resolve_placeholder(placeholder)
@@ -128,7 +126,7 @@ local function interpolate(command)
                     and close_braces:sub(1, close_len - required_braces)
                 or ""
 
-            table.insert(result, prefix .. escaped_resolved .. suffix)
+            insert_result_for_joining(prefix .. escaped_resolved .. suffix)
         end
 
         cursor = end_idx + 1
