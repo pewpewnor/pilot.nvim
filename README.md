@@ -87,7 +87,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ```lua
 {
     run_config_path = {
-        project = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+        project = "{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json", -- string | string[]
         file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
@@ -101,16 +101,16 @@ You do not need to pass anything to `setup()` if you want the defaults.
         file_type = pilot.preset_executors.new_tab, -- function(command: string)
     },
     executors = {
-        new_tab = pilot.preset_executors.new_tab,
-        current_buffer = pilot.preset_executors.current_buffer,
-        split = pilot.preset_executors.split,
-        vsplit = pilot.preset_executors.vsplit,
-        print = pilot.preset_executors.print,
-        silent = pilot.preset_executors.silent,
-        background_silent = pilot.preset_executors.background_silent,
-        background_exit_status = pilot.preset_executors.background_exit_status,
+        -- (filled with all preset executors, e.g. new_tab, split, vsplit)
     }, -- table<string, function(command: string, args: string[])>
-    custom_placeholders = {}, -- table<string, string>
+    placeholders = {
+        vars = {
+            -- (filled with all preset placeholder vars, e.g. file_name, cwd_path)
+        }, -- table<string, function(): string>
+        funcs = {
+            -- (filled with all preset placeholder funcs, e.g. hash_sha256)
+        }, -- table<string, function(arg: string): string>
+    },
 }
 ```
 
@@ -158,8 +158,10 @@ pilot.setup({
         background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
-    custom_placeholders = {
-        greet_file_name = "Hello {{file_name}}", -- example to add a custom placeholder
+    placeholders = {
+        vars = {
+            greet_file_name = "Hello {{file_name}}", -- example to add a custom placeholder
+        },
     },
 })
 
@@ -270,8 +272,12 @@ running C source code files.
 | `{{pilot_data_path}}`        | Absolute path to `vim.fn.stdpath("data") .. "/pilot"`            |
 | `{{cword}}`                  | Word under the cursor                                            |
 | `{{cWORD}}`                  | Complete word (between spaces) under the cursor                  |
-| `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory's absolute path     |
-| `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute file path           |
+
+**Placeholder Funcs**
+
+| Function placeholder                 | Description / usage                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `{{hash_sha256(...)}}`               | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
 
 ---
 

@@ -56,11 +56,11 @@ describe("interpolation", function()
         assert.equals(interpolation.interpolate("{{cWORD}}"), "world-over")
 
         assert.equals(
-            interpolation.interpolate("{{hash(cwd_path)}}"),
+            interpolation.interpolate("{{hash_sha256(cwd_path)}}"),
             vim.fn.sha256(vim.fn.getcwd())
         )
         assert.equals(
-            interpolation.interpolate("{{hash(file_path)}}"),
+            interpolation.interpolate("{{hash_sha256(file_path)}}"),
             vim.fn.sha256(test_path)
         )
     end)

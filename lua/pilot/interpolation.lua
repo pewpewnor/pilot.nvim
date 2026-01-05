@@ -8,25 +8,11 @@ end
 local required_braces = 2
 
 ---@param placeholder string
----@return string?
-local function try_custom_placeholder(placeholder)
-    local custom_placeholder = M.config.custom_placeholders[placeholder]
-    if custom_placeholder then
-        if type(custom_placeholder) ~= "string" then
-            error(
-                "[Pilot] option 'custom_placeholders' must be a function that returns string or nil."
-            )
-        end
-        return M.interpolate(custom_placeholder, true)
-    end
-    return nil
-end
-
----@param placeholder string
 ---@return string?, string?
 local function extract_placeholder_function_call(placeholder)
     if placeholder:sub(1, 1) ~= "(" and placeholder:sub(-1) == ")" then
-        local func_name, balanced_parens = placeholder:match("^(%w+)(%b())$")
+        local func_name, balanced_parens =
+            placeholder:match("^([%w_%-]+)(%b())$")
         if func_name and balanced_parens then
             return func_name, balanced_parens:sub(2, -2)
         end
@@ -39,49 +25,21 @@ end
 local function resolve_placeholder(placeholder)
     placeholder = vim.fn.trim(placeholder or "")
 
-    local custom_resolved = try_custom_placeholder(placeholder)
-    if custom_resolved then
-        return custom_resolved
+    for var_name, resolve_var in pairs(M.config.placeholders.vars) do
+        if placeholder == var_name then
+            return resolve_var()
+        end
     end
 
-    if placeholder == "" then
-        return ""
-    elseif placeholder == "file_path" then
-        return vim.fn.expand("%:p")
-    elseif placeholder == "file_path_relative" then
-        return vim.fn.expand("%")
-    elseif placeholder == "file_name" then
-        return vim.fn.expand("%:t")
-    elseif placeholder == "file_name_no_extension" then
-        return vim.fn.expand("%:t:r")
-    elseif placeholder == "file_type" then
-        return vim.bo.filetype
-    elseif placeholder == "file_extension" then
-        return vim.fn.expand("%:e")
-    elseif placeholder == "dir_path" then
-        return vim.fn.expand("%:p:h")
-    elseif placeholder == "dir_name" then
-        return vim.fn.expand("%:p:h:t")
-    elseif placeholder == "cwd_path" then
-        return vim.fn.getcwd()
-    elseif placeholder == "cwd_name" then
-        return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-    elseif placeholder == "pilot_data_path" then
-        local pilot_data_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
-        if vim.fn.isdirectory(pilot_data_path) == 0 then
-            vim.fn.mkdir(pilot_data_path, "p")
-        end
-        return pilot_data_path
-    elseif placeholder == "cword" then
-        return vim.fn.expand("<cword>")
-    elseif placeholder == "cWORD" then
-        return vim.fn.expand("<cWORD>")
-    else
-        local func_name, func_arg =
-            extract_placeholder_function_call(placeholder)
-        if func_name == "hash" and func_arg then
-            local resolved_arg = resolve_placeholder(func_arg)
-            return vim.fn.sha256(resolved_arg)
+    local extracted_func_name, extracted_func_arg =
+        extract_placeholder_function_call(placeholder)
+    if extracted_func_name and extracted_func_arg then
+        for func_name, resolve_func in pairs(M.config.placeholders.funcs) do
+            if extracted_func_name == func_name then
+                local resolved_func_arg =
+                    resolve_placeholder(extracted_func_arg)
+                return resolve_func(resolved_func_arg)
+            end
         end
     end
 

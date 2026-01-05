@@ -80,7 +80,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ```lua
 {
     run_config_path = {
-        project = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+        project = "{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json", -- string | string[]
         file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
@@ -103,7 +103,10 @@ You do not need to pass anything to `setup()` if you want the defaults.
         background_silent = pilot.preset_executors.background_silent,
         background_exit_status = pilot.preset_executors.background_exit_status,
     }, -- table<string, function(command: string, args: string[])>
-    custom_placeholders = {}, -- table<string, string>
+    placeholders = { -- table with `vars` and `funcs` subtables
+        vars = {}, -- table<string, function(): string>
+        funcs = {}, -- table<string, function(arg: string): string>
+    },
 }
 ```
 
@@ -114,7 +117,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `run_config_path.project`
 
 - **Type:** `string | string[] | nil`
-- **Default:** `nil` (internally resolves to `{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json`)
+- **Default:** `"{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json"`)
 - **Description:**
   Path or list of paths to the project run configuration file(s).  
   If a list, the first readable file is used.  
@@ -126,7 +129,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `run_config_path.file_type`
 
 - **Type:** `string | nil`
-- **Default:** `nil` (internally resolves to `{{pilot_data_path}}/filetypes/{{file_type}}.json`)
+- **Default:** `"{{pilot_data_path}}/filetypes/{{file_type}}.json"`)
 - **Description:**
   Path to the file type run configuration file.  
   Supports placeholders.
@@ -187,13 +190,13 @@ You do not need to pass anything to `setup()` if you want the defaults.
     - `command` (string): The shell command to run (with placeholders already expanded).
     - `args` (list of strings): The result from splitting the string that was written in the `executor` with whitespaces as the seperator and without the executor name (first argument) inside the list.
 
-### `custom_placeholders`
+### `placeholders`
 
-- **Type:** `table<string, string>`
-- **Default:** `{}`
+- **Type:** `table` with `vars` and `funcs` subtables
+- **Default:** `{ vars = {}, funcs = {} }`
 - **Description:**
-  Table mapping custom placeholders to what they should resolve.  
-  You can place placeholders inside of mapped values since they are interpolated.
+- `vars` is a table mapping placeholder names to functions that return strings (e.g. `file_name`).
+- `funcs` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
 
 ---
 
@@ -223,8 +226,13 @@ pilot.setup({
         background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false,
-    custom_placeholders = {
-        greet_file_name = "Hello {{file_name}}",
+    placeholders = {
+        vars = {
+            greet_file_name = function()
+                return "Hello " .. vim.fn.expand("%:t")
+            end,
+        },
+        funcs = {},
     },
 })
 
@@ -314,8 +322,14 @@ running C source code files.
 
 ## Placeholders
 
-All placeholders are expanded in config paths and commands.  
-You can escape a placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
+All placeholders are expanded in config paths and commands.  You can escape a
+placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
+
+**Placeholder Vars**
+
+- Simple placeholders that expand to a string. Define them in
+    `placeholders.vars` as functions that return a string, and use them as
+    `{{name}}` in config paths or commands.
 
 | Placeholder                  | Resolved value                                      |
 | ---------------------------- | --------------------------------------------------- |
@@ -329,13 +343,21 @@ You can escape a placeholder by using triple braces, e.g. `{{{not_a_placeholder}
 | `{{dir_name}}`               | Name of the directory containing the current buffer |
 | `{{cwd_path}}`               | Absolute path of the current working directory      |
 | `{{cwd_name}}`               | Name of the current working directory               |
-| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`        |
+| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`    |
 | `{{cword}}`                  | Word under the cursor                               |
 | `{{cWORD}}`                  | WORD under the cursor                               |
-| `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory path   |
-| `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute path   |
 
-You may also add custom placeholders inside of the `custom_placeholders` field.
+**Placeholder Funcs**
+
+Callable placeholders that accept an argument and return a string. Define
+    them in `placeholders.funcs` as functions that accept a single argument and
+    return a string, and use them like `{{name(arg)}}` in configs.
+
+| Function placeholder                 | Description / usage                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `{{hash_sha256(...)}}`               | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
+
+Add custom vars to `placeholders.vars` and custom functions to `placeholders.funcs`.
 
 ---
 
