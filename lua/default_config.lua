@@ -130,6 +130,12 @@ M.default_opts = {
                     vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
                 )
             end,
+            config_path = function()
+                return vim.fn.fnameescape(vim.fn.stdpath("config"))
+            end,
+            data_path = function()
+                return vim.fn.fnameescape(vim.fn.stdpath("data"))
+            end,
             pilot_data_path = function()
                 local pilot_data_path =
                     vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")

@@ -274,7 +274,7 @@ pilot.setup({
     placeholders = {
         vars = {
             -- example to add custom placeholders
-            hello_world = function() return "Hello, World!" end,
+            new_temp_file = function() return vim.fn.tempname() end,
             template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
         },
         funcs = {},
@@ -376,21 +376,23 @@ Simple placeholders that expand to a string. Define them in
 `placeholders.vars` as functions that return a string, and use them as
 `{{name}}` in config paths or commands.
 
-| Placeholder                  | Resolved value                                      |
-| ---------------------------- | --------------------------------------------------- |
-| `{{file_path}}`              | Current buffer's absolute file path                 |
-| `{{file_path_relative}}`     | File path relative to current working directory     |
-| `{{file_name}}`              | File name (with extension)                          |
-| `{{file_name_no_extension}}` | File name without extension                         |
-| `{{file_type}}`              | Filetype of current buffer (`vim.bo.filetype`)      |
-| `{{file_extension}}`         | File extension                                      |
-| `{{dir_path}}`               | Directory containing the current buffer             |
-| `{{dir_name}}`               | Name of the directory containing the current buffer |
-| `{{cwd_path}}`               | Absolute path of the current working directory      |
-| `{{cwd_name}}`               | Name of the current working directory               |
-| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`        |
-| `{{cword}}`                  | Word under the cursor                               |
-| `{{cWORD}}`                  | WORD under the cursor                               |
+| Placeholder                  | Resolved value                                                               |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `{{file_path}}`              | Current buffer's absolute file path                                          |
+| `{{file_path_relative}}`     | File path relative to current working directory                              |
+| `{{file_name}}`              | File name (with extension)                                                   |
+| `{{file_name_no_extension}}` | File name without extension                                                  |
+| `{{file_type}}`              | Filetype of current buffer (`vim.bo.filetype`)                               |
+| `{{file_extension}}`         | File extension                                                               |
+| `{{dir_path}}`               | Directory containing the current buffer                                      |
+| `{{dir_name}}`               | Name of the directory containing the current buffer                          |
+| `{{cwd_path}}`               | Absolute path of the current working directory                               |
+| `{{cwd_name}}`               | Name of the current working directory                                        |
+| `{{config_path}}`            | Absolute path to your Neovim configuration directory                         |
+| `{{data_path}}`              | Absolute path to Neovim plugins data directory                               |
+| `{{pilot_data_path}}`        | Absolute path to the pilot directory inside of Neovim plugins data directory |
+| `{{cword}}`                  | Word under the cursor                                                        |
+| `{{cWORD}}`                  | WORD under the cursor                                                        |
 
 **Modifier Functions**
 
