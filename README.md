@@ -86,13 +86,15 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ```lua
 {
-    project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
-    file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+    run_config_path = {
+        project = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+        fallback_project = nil, -- (function() -> string) | nil
+    },
     automatically_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- (function() -> string) | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
         project = pilot.preset_executors.new_tab, -- function(command: string)
@@ -117,28 +119,30 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ## Example Configuration
 
-This is a full example for learning how to configure the plugin itself.
+This is a full example to see how the plugin can be configured.
 
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    -- grab the pilot configuration from the current working directory instead
-    -- of automatically generating one
-    project_run_config_path = "{{cwd_path}}/pilot.json",
-    -- will be used instead if there is no project run configuration file
-    -- at the path specified in the 'project_run_config_path' option
-    fallback_project_run_config = function()
-        -- you can customize this logic
-        -- e.g. if the project has 'package-lock.json', then use our
-        -- 'npm_project.json' as the project run configuration
-        if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-            return  "{{pilot_data_path}}/npm_project.json"
-        -- e.g. if the project has CMakeLists.txt, then we will use our
-        -- 'cmake_project.json' as our project run configuration
-        elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
-            return "/home/user/templates/cmake_project.json"
-        end
-    end,
+    run_config_path = {
+        -- grab the pilot configuration from the current working directory instead
+        -- of automatically generating one
+        project = "{{cwd_path}}/pilot.json",
+        -- will be used instead if there is no project run configuration file
+        -- at the path specified in the 'project_run_config_path' option
+        fallback_project = function()
+            -- you can customize this logic
+            -- e.g. if the project has 'package-lock.json', then use our
+            -- 'npm_project.json' as the project run configuration
+            if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                return  "{{pilot_data_path}}/npm_project.json"
+            -- e.g. if the project has CMakeLists.txt, then we will use our
+            -- 'cmake_project.json' as our project run configuration
+            elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
+                return "/home/user/templates/cmake_project.json"
+            end
+        end,
+    },
     default_executor = {
         -- change so that by default, we execute the file on a new bottom buffer
         file_type = pilot.preset_executors.split,

@@ -1,22 +1,22 @@
 ---@param options Config
 local function validate_opts(options)
-    if type(options) ~= "table" and options ~= nil then
-        error("[Pilot] given configuration must be a table or nil")
+    if type(options) ~= "table" then
+        error("[Pilot] given configuration must be a table")
     elseif
-        type(options.project_run_config_path) ~= "string"
-        and type(options.project_run_config_path) ~= "table"
+        type(options.run_config_path.project) ~= "string"
+        and type(options.run_config_path.project) ~= "table"
     then
         error(
             "[Pilot] option 'project_run_config_path' must either be a string, table, or nil."
         )
     elseif
-        type(options.project_run_config_path) == "table"
-        and #options.project_run_config_path < 1
+        type(options.run_config_path.project) == "table"
+        and #options.run_config_path.project < 1
     then
         error(
             "[Pilot] option 'project_run_config_path' table must atleast have 1 item."
         )
-    elseif type(options.file_type_run_config_path) ~= "string" then
+    elseif type(options.run_config_path.file_type) ~= "string" then
         error(
             "[Pilot] option 'file_type_run_config_path' must either be a string or nil."
         )
@@ -37,8 +37,8 @@ local function validate_opts(options)
             "[Pilot] option 'automatically_run_single_command.file_type' must be a boolean."
         )
     elseif
-        type(options.fallback_project_run_config) ~= "function"
-        and options.fallback_project_run_config ~= nil
+        type(options.run_config_path.fallback_project) ~= "function"
+        and options.run_config_path.fallback_project ~= nil
     then
         error(
             "[Pilot] option 'fallback_project_run_config' must be a function or nil."

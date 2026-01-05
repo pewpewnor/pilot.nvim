@@ -38,13 +38,13 @@ end
 ---@return string
 function M.get_project_run_config_path(create_missing_dirs)
     local first_valid_interpolated_path
-    if type(M.config.project_run_config_path) == "string" then
+    if type(M.config.run_config_path.project) == "string" then
         first_valid_interpolated_path =
             ---@diagnostic disable-next-line: param-type-mismatch
-            interpolate(M.config.project_run_config_path)
+            interpolate(M.config.run_config_path.project)
     else
         ---@diagnostic disable-next-line: param-type-mismatch
-        for _, path in pairs(M.config.project_run_config_path) do
+        for _, path in pairs(M.config.run_config_path.project) do
             local interpolated_path = interpolate(path)
             if
                 not first_valid_interpolated_path
@@ -63,7 +63,7 @@ end
 ---@param create_missing_dirs boolean
 ---@return string
 function M.get_file_type_run_config_path(create_missing_dirs)
-    local interpolated_path = interpolate(M.config.file_type_run_config_path)
+    local interpolated_path = interpolate(M.config.run_config_path.file_type)
     return custom_run_config_path(interpolated_path, create_missing_dirs)
 end
 

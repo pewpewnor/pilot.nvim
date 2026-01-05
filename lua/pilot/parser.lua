@@ -25,7 +25,8 @@ end
 
 ---@return string?
 local function read_fallback_project_run_config()
-    local fallback_project_run_config = M.config.fallback_project_run_config()
+    local fallback_project_run_config =
+        M.config.run_config_path.fallback_project()
     if not fallback_project_run_config then
         return nil
     end
@@ -185,9 +186,9 @@ function M.parse_run_config(run_config_path, run_classification)
     local file_content = fs_utils.read_file(run_config_path)
     if not file_content then
         if run_classification == "project" then
-            if not M.config.fallback_project_run_config then
+            if not M.config.run_config_path.fallback_project then
                 print(
-                    "[Pilot] No project run configuration detected and no fallback configuration."
+                    "[Pilot] No project run configuration detected and no fallback configured."
                 )
                 return nil
             end

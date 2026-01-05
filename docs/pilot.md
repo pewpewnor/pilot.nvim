@@ -79,13 +79,15 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ```lua
 {
-    project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
-    file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+    run_config_path = {
+        project = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json", -- string | string[]
+        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+        fallback_project = nil, -- (function() -> string) | nil
+    },
     automatically_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- (function() -> string) | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
         project = pilot.preset_executors.new_tab, -- function(command: string)
@@ -108,7 +110,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ## Configuration Options
 
-### `project_run_config_path`
+### `run_config_path.project`
 
 - **Type:** `string | string[] | nil`
 - **Default:** `nil` (internally resolves to `{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json`)
@@ -120,13 +122,21 @@ You do not need to pass anything to `setup()` if you want the defaults.
   `"{{cwd_path}}/pilot.json"`  
   `{ "{{cwd_path}}/pilot.json", "{{cwd_path}}/.pilot.json" }`
 
-### `file_type_run_config_path`
+### `run_config_path.file_type`
 
 - **Type:** `string | nil`
 - **Default:** `nil` (internally resolves to `{{pilot_data_path}}/filetypes/{{file_type}}.json`)
 - **Description:**
   Path to the file type run configuration file.  
   Supports placeholders.
+
+### `run_config_path.fallback_project`
+
+- **Type:** `function() -> string | nil`
+- **Default:** `nil`
+- **Description:**
+  Function returning a path to a fallback config file if the main one is missing.  
+  Useful for providing a default config for certain project types.
 
 ### `automatically_run_single_command.project`
 
@@ -141,14 +151,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 - **Default:** `true`
 - **Description:**
   If only one command is found in the filetype run config, run it immediately without prompting the user.
-
-### `fallback_project_run_config`
-
-- **Type:** `function() -> string | nil`
-- **Default:** `nil`
-- **Description:**
-  Function returning a path to a fallback config file if the main one is missing.  
-  Useful for providing a default config for certain project types.
 
 ### `write_template_to_new_run_config`
 
@@ -191,14 +193,16 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    project_run_config_path = "{{cwd_path}}/pilot.json",
-    fallback_project_run_config = function()
-        if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-            return "{{pilot_data_path}}/npm_project.json"
-        elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
-            return "/home/user/templates/cmake_project.json"
-        end
-    end,
+    run_config_path = {
+        project = "{{cwd_path}}/pilot.json",
+        fallback_project = function()
+            if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                return  "{{pilot_data_path}}/npm_project.json"
+            elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
+                return "/home/user/templates/cmake_project.json"
+            end
+        end,
+    },
     default_executor = {
         file_type = pilot.preset_executors.split,
     },

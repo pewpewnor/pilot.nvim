@@ -1,5 +1,10 @@
 ---@alias FallbackProjectRunConfig fun(): string
 
+---@class RunConfigPath
+---@field project string|[string]
+---@field file_type string
+---@field fallback_project FallbackProjectRunConfig?
+
 ---@class AutomaticallyRunSingleCommand
 ---@field project boolean
 ---@field file_type boolean
@@ -14,9 +19,7 @@
 ---@field [string] Executor
 
 ---@class Config
----@field project_run_config_path string|[string]
----@field file_type_run_config_path string
----@field fallback_project_run_config FallbackProjectRunConfig?
+---@field run_config_path RunConfigPath
 ---@field write_template_to_new_run_config boolean
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
@@ -90,9 +93,11 @@ end
 
 ---@type Config
 M.config = {
-    project_run_config_path = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json",
-    file_type_run_config_path = "{{pilot_data_path}}/filetypes/{{file_type}}.json",
-    fallback_project_run_config = nil,
+    run_config_path = {
+        project = "{{pilot_data_path}}/projects/{{hash(cwd_path)}}.json",
+        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json",
+        fallback_project = nil,
+    },
     write_template_to_new_run_config = true,
     automatically_run_single_command = {
         project = true,
