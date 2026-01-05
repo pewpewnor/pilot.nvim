@@ -87,8 +87,8 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ```lua
 {
     run_config_path = {
-        project = "{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json", -- string | string[]
-        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+        project = vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json"), -- string | string[]
+        file_type = vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json"), -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
     automatically_run_single_command = {
@@ -144,6 +144,7 @@ pilot.setup({
             end
         end,
     },
+    write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
     default_executor = {
         -- change so that by default, we execute the file on a new bottom buffer
         file_type = pilot.preset_executors.split,
@@ -157,10 +158,9 @@ pilot.setup({
         end,
         background = pilot.preset_executors.background_exit_status,
     },
-    write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
     placeholders = {
         vars = {
-            greet_file_name = "Hello {{file_name}}", -- example to add a custom placeholder
+            hello_world = function() return "Hello, World!" end, -- example to add a custom placeholder
         },
     },
 })

@@ -65,8 +65,16 @@ end
 ---@type Config
 M.default_opts = {
     run_config_path = {
-        project = "{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json",
-        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json",
+        project = vim.fs.joinpath(
+            "{{pilot_data_path}}",
+            "projects",
+            "{{hash_sha256(cwd_path)}}.json"
+        ),
+        file_type = vim.fs.joinpath(
+            "{{pilot_data_path}}",
+            "filetypes",
+            "{{file_type}}.json"
+        ),
         fallback_project = nil,
     },
     write_template_to_new_run_config = true,

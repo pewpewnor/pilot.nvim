@@ -80,8 +80,12 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ```lua
 {
     run_config_path = {
-        project = "{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json", -- string | string[]
-        file_type = "{{pilot_data_path}}/filetypes/{{file_type}}.json", -- string
+        project = vim.fs.joinpath(
+            "{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json"
+        ),  -- string | string[]
+        file_type = vim.fs.joinpath(
+            "{{pilot_data_path}}", "filetypes", "{{file_type}}.json"
+        ), -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
     automatically_run_single_command = {
@@ -168,7 +172,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `run_config_path.project`
 
 - **Type:** `string | string[] | nil`
-- **Default:** `"{{pilot_data_path}}/projects/{{hash_sha256(cwd_path)}}.json"`)
 - **Description:**
   Path or list of paths to the project run configuration file(s).  
   If a list, the first readable file is used.  
@@ -180,7 +183,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `run_config_path.file_type`
 
 - **Type:** `string | nil`
-- **Default:** `"{{pilot_data_path}}/filetypes/{{file_type}}.json"`)
 - **Description:**
   Path to the file type run configuration file.  
   Supports placeholders.
@@ -188,7 +190,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `run_config_path.fallback_project`
 
 - **Type:** `function() -> string | nil`
-- **Default:** `nil`
 - **Description:**
   Function returning a path to a fallback config file if the main one is missing.  
   Useful for providing a default config for certain project types.
@@ -196,28 +197,24 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `automatically_run_single_command.project`
 
 - **Type:** `boolean`
-- **Default:** `true`
 - **Description:**
   If only one command is found in the project run config, run it immediately without prompting the user.
 
 ### `automatically_run_single_command.file_type`
 
 - **Type:** `boolean`
-- **Default:** `true`
 - **Description:**
   If only one command is found in the filetype run config, run it immediately without prompting the user.
 
 ### `write_template_to_new_run_config`
 
 - **Type:** `boolean`
-- **Default:** `true`
 - **Description:**
   If true, writes a JSON template when creating a new config file (when editing a config that does not exist).
 
 ### `default_executor.project`
 
 - **Type:** `function(command: string) -> string`
-- **Default:** `nil` (internally resolves to `pilot.preset_executors.new_tab`)
 - **Description:**
   The default executor function used to run commands which have no specified `executor` in the project run config.  
   See [preset executors](#preset-executors) for available executors and their signatures.
@@ -225,7 +222,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `default_executor.file_type`
 
 - **Type:** `function(command: string) -> string`
-- **Default:** `nil` (internally resolves to `pilot.preset_executors.new_tab`)
 - **Description:**
   The default executor function used to run commands which have no specified `executor` in the filetype run config.  
   See [preset executors](#preset-executors) for available executors and their signatures.
@@ -233,7 +229,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `executors`
 
 - **Type:** `table<string, function(command: string, args: string[])>`
-- **Default:** `{}`
 - **Description:**
   Table mapping executor names to executor functions.  
   Used when a run config entry specifies a `"executor"` field.  
@@ -244,7 +239,6 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `placeholders`
 
 - **Type:** `table` with `vars` and `funcs` subtables
-- **Default:** `{ vars = {}, funcs = {} }`
 - **Description:**
 - `vars` is a table mapping placeholder names to functions that return strings (e.g. `file_name`).
 - `funcs` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
@@ -279,9 +273,7 @@ pilot.setup({
     write_template_to_new_run_config = false,
     placeholders = {
         vars = {
-            greet_file_name = function()
-                return "Hello " .. vim.fn.expand("%:t")
-            end,
+            hello_world = function() return "Hello, World!" end, -- example to add a custom placeholder
         },
         funcs = {},
     },
