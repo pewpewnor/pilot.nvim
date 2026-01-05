@@ -1,13 +1,12 @@
 <br />
 
 A Neovim plugin that allows you to **run** your **project or file** based on a
-**JSON run configuration file** with placeholder support and customizable execution
-locations. You can edit configurations on the fly, and the plugin supports advanced
+**JSON run configuration file** with placeholder support and customizable executors. You can edit configurations on the fly, and the plugin supports advanced
 features like fallback configs, custom executors, and more.
 
 This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the latest Neovim major release version.
 
-The source code for this plugin is available in the [GitHub Repository](https://github.com/pewpewnor/pilot.nvim).
+The source code for this plugin is available in the [GitHub repository](https://github.com/pewpewnor/pilot.nvim).
 
 ---
 
@@ -24,7 +23,7 @@ I wanted a code runner plugin that supports placeholder interpolation, allowing 
 - **On-the-fly configuration editing**: No need to reload Neovim after changes.
 - **Fallback project run configuration**: Use a default config if none is found for a project.
 - **Customizable config file locations**: Store configs wherever you want.
-- **Customizable execution location**: Run commands in new tabs, splits, vsplits, background jobs, or your own custom locations.
+- **Customizable executors**: Run commands in new tabs, splits, vsplits, background jobs, or your own custom way.
 - **Custom executors**: Define your own ways to run commands, including integration with tools like tmux.
 - **UI selection**: If multiple commands are available, select which to run via `vim.ui.select`.
 - **Automatic single-command execution**: Optionally auto-run if only one command is available.
@@ -86,21 +85,21 @@ You do not need to pass anything to `setup()` if you want the defaults.
         project = true, -- boolean
         file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- function() -> string | nil
+    fallback_project_run_config = nil, -- (function() -> string) | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
-        project = pilot.executors.new_tab, -- function(command: string)
-        file_type = pilot.executors.new_tab, -- function(command: string)
+        project = pilot.preset_executors.new_tab, -- function(command: string)
+        file_type = pilot.preset_executors.new_tab, -- function(command: string)
     },
-    custom_locations = {
-        new_tab = pilot.executors.new_tab,
-        current_buffer = pilot.executors.current_buffer,
-        split = pilot.executors.split,
-        vsplit = pilot.executors.vsplit,
-        print = pilot.executors.print,
-        silent = pilot.executors.silent,
-        background_silent = pilot.executors.background_silent,
-        background_exit_status = pilot.executors.background_exit_status,
+    executors = {
+        new_tab = pilot.preset_executors.new_tab,
+        current_buffer = pilot.preset_executors.current_buffer,
+        split = pilot.preset_executors.split,
+        vsplit = pilot.preset_executors.vsplit,
+        print = pilot.preset_executors.print,
+        silent = pilot.preset_executors.silent,
+        background_silent = pilot.preset_executors.background_silent,
+        background_exit_status = pilot.preset_executors.background_exit_status,
     }, -- table<string, function(command: string, args: string[])>
 }
 ```
@@ -116,7 +115,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
 - **Description:**
   Path or list of paths to the project run configuration file(s).  
   If a list, the first readable file is used.  
-  Supports placeholders (see [Placeholders](#placeholders)).
+  Supports placeholders (see [placeholders](#placeholders)).
 - **Example:**  
   `"{{cwd_path}}/pilot.json"`  
   `{ "{{cwd_path}}/pilot.json", "{{cwd_path}}/.pilot.json" }`
@@ -161,29 +160,29 @@ You do not need to pass anything to `setup()` if you want the defaults.
 ### `default_executor.project`
 
 - **Type:** `function(command: string) -> string`
-- **Default:** `nil` (internally resolves to `pilot.executors.new_tab`)
+- **Default:** `nil` (internally resolves to `pilot.preset_executors.new_tab`)
 - **Description:**
-  The default executor function used to run commands which have no specified `custom_location` in the project run config.  
-  See [Preset Executors](#preset-executors) for available executors and their signatures.
+  The default executor function used to run commands which have no specified `executor` in the project run config.  
+  See [preset executors](#preset-executors) for available executors and their signatures.
 
 ### `default_executor.file_type`
 
 - **Type:** `function(command: string) -> string`
-- **Default:** `nil` (internally resolves to `pilot.executors.new_tab`)
+- **Default:** `nil` (internally resolves to `pilot.preset_executors.new_tab`)
 - **Description:**
-  The default executor function used to run commands which have no specified `custom_location` in the filetype run config.  
-  See [Preset Executors](#preset-executors) for available executors and their signatures.
+  The default executor function used to run commands which have no specified `executor` in the filetype run config.  
+  See [preset executors](#preset-executors) for available executors and their signatures.
 
-### `custom_locations`
+### `executors`
 
 - **Type:** `table<string, function(command: string, args: string[])>`
 - **Default:** `{}`
 - **Description:**
-  Table mapping location names to executor functions.  
-  Used when a run config entry specifies a `"location"` field.  
+  Table mapping executor names to executor functions.  
+  Used when a run config entry specifies a `"executor"` field.  
   The executor function receives two arguments:
     - `command` (string): The shell command to run (with placeholders already expanded).
-    - `args` (list of strings): The result from splitting the string that was written in the `custom_location` with whitespaces as the seperator and without the location name (first argument) inside the list.
+    - `args` (list of strings): The result from splitting the string that was written in the `executor` with whitespaces as the seperator and without the executor name (first argument) inside the list.
 
 ---
 
@@ -201,14 +200,14 @@ pilot.setup({
         end
     end,
     default_executor = {
-        file_type = pilot.executors.split,
+        file_type = pilot.preset_executors.split,
     },
-    custom_locations = {
+    executors = {
         tmux_new_window = function(command, args)
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
-        background = pilot.executors.background_exit_status,
+        background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false,
 })
@@ -237,7 +236,7 @@ Each entry can be:
 - An **object** with fields:
     - `name` (optional): Display name for the command.
     - `command`: String or array of strings (joined with `&&`).
-    - `location` (optional): Name of a custom location/executor (see [custom_locations](#custom_locations)).
+    - `executor` (optional): Name of an executor that exists in [executors](#executors).
     - `import` (optional): Path to another JSON file to import entries from.  
       Imported entries are merged in place.
 
@@ -257,7 +256,7 @@ Each entry can be:
     },
     {
         "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
-        "location": "tmux_new_window"
+        "executor": "tmux_new_window"
     },
     "echo Hello, World!"
 ]
@@ -328,24 +327,24 @@ Executors are functions that run the command in a specific way.
 All executors receive two arguments:
 
 - `command` (string): The shell command to run (with placeholders already expanded).
-- `args` (table): List of arguments (see [custom_locations](#custom_locations)).
+- `args` (table): List of arguments (see [executors](#executors)).
 
 ### Built-in Executors
 
-| Executor                                 | Description                                                                     |
-| ---------------------------------------- | ------------------------------------------------------------------------------- | ------------- |
-| `pilot.executors.new_tab` (default)      | Run the command in a new Neovim tab. Uses `:tabnew                              | term <cmd>`.  |
-| `pilot.executors.current_buffer`         | Run the command in the current buffer (replaces buffer with terminal).          |
-| `pilot.executors.split`                  | Run the command in a new horizontal split (`:split                              | term <cmd>`). |
-| `pilot.executors.vsplit`                 | Run the command in a new vertical split (`:vsplit                               | term <cmd>`). |
-| `pilot.executors.print`                  | Run the command and print output to a message (blocking, uses `vim.fn.system`). |
-| `pilot.executors.silent`                 | Run the command silently (blocking, no output shown).                           |
-| `pilot.executors.background_silent`      | Run the command as a background job (no output, uses `vim.fn.jobstart`).        |
-| `pilot.executors.background_exit_status` | Run as background job, print exit status on completion.                         |
+| Executor                                        | Description                                                                     |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- | ------------- |
+| `pilot.preset_executors.new_tab` (default)      | Run the command in a new Neovim tab. Uses `:tabnew                              | term <cmd>`.  |
+| `pilot.preset_executors.current_buffer`         | Run the command in the current buffer (replaces buffer with terminal).          |
+| `pilot.preset_executors.split`                  | Run the command in a new horizontal split (`:split                              | term <cmd>`). |
+| `pilot.preset_executors.vsplit`                 | Run the command in a new vertical split (`:vsplit                               | term <cmd>`). |
+| `pilot.preset_executors.print`                  | Run the command and print output to a message (blocking, uses `vim.fn.system`). |
+| `pilot.preset_executors.silent`                 | Run the command silently (blocking, no output shown).                           |
+| `pilot.preset_executors.background_silent`      | Run the command as a background job (no output, uses `vim.fn.jobstart`).        |
+| `pilot.preset_executors.background_exit_status` | Run as background job, print exit status on completion.                         |
 
 ### Custom Executors
 
-You can define your own executor functions and add them to `custom_locations`.  
+You can define your own executor functions and add them to `executors`.  
 The executor function signature is:
 
 ```lua
@@ -357,7 +356,7 @@ end
 **Example:**
 
 ```lua
-custom_locations = {
+executors = {
     tmux_new_window = function(command, args)
         vim.fn.system("tmux new-window -d")
         vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
@@ -374,7 +373,7 @@ All functions are available via `require("pilot")`.
 
 | Function Name                                  | Description                                                                                    |
 | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `setup(options)`                               | Configure pilot.nvim. See [Configuration Options (Detailed)](#configuration-options-detailed). |
+| `setup(options)`                               | Configure pilot.nvim. See [configuration options (detailed)](#configuration-options-detailed). |
 | `run_project()`                                | Run a project command (from project run config). Prompts if multiple commands.                 |
 | `run_file_type()`                              | Run a file type command (from file type run config). Prompts if multiple commands.             |
 | `run_previous_task()`                          | Re-run the last executed task (project or file type).                                          |
@@ -392,7 +391,6 @@ All functions are available via `require("pilot")`.
 - Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md) for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
 - Placeholders can be escaped by using extra braces, e.g. `{{{not_a_placeholder}}}`.
-- If you want to always use a specific executor for a certain location, add it to `custom_locations` and reference it by name in your config.
 - To disable template writing for new configs, set `write_template_to_new_run_config = false`.
 - All config files are validated on load; errors are shown in the command line.
 
@@ -400,7 +398,7 @@ All functions are available via `require("pilot")`.
 
 ## Links
 
-- [GitHub Discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
+- [GitHub discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
 - [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
 - [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
 - [Neovim](https://neovim.io/)
@@ -417,7 +415,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 ## FAQ
 
 **Q: How do I add a new executor?**  
-A: Add a function to `custom_locations` in your config and reference its key in your run config's `"location"`.
+A: Add a function to `executors` in your config and reference its key in your run config's `"executor"`.
 
 **Q: How do I use placeholders in config paths?**  
 A: All config paths support placeholders like `{{cwd_path}}`, `{{file_type}}`, etc.
@@ -429,6 +427,6 @@ A: For project configs, the fallback function is used if provided. For file type
 A: Yes, arrays are joined with `&&` to form a single shell command.
 
 **Q: What is passed to custom executors?**  
-A: Both the expanded command string and an `arg` string (see [Preset Executors](#preset-executors)).
+A: Both the expanded command string and an `arg` string (see [preset executors](#preset-executors)).
 
 ---

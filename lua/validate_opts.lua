@@ -49,8 +49,8 @@ local function validate_opts(options)
         error("[Pilot] option 'default_executor.project' must be a function.")
     elseif type(options.default_executor.file_type) ~= "function" then
         error("[Pilot] option 'default_executor.file_type' must be a function.")
-    elseif type(options.custom_locations) ~= "table" then
-        error("[Pilot] option 'custom_locations' must be a table.")
+    elseif type(options.executors) ~= "table" then
+        error("[Pilot] option 'executors' must be a table.")
     end
 end
 

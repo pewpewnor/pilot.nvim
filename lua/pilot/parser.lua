@@ -4,14 +4,14 @@
 ---@field name string?
 ---@field command string?
 ---@field import string?
----@field location string?
+---@field executor string?
 
 ---@alias RawEntry RawEntryTable|string
 
 ---@class ProcessedEntry
 ---@field name string
 ---@field command string
----@field location string?
+---@field executor string?
 
 local fs_utils = require("pilot.fs_utils")
 local interpolate = require("pilot.interpolation")
@@ -50,13 +50,13 @@ end
 
 ---@param command string
 ---@param name string?
----@param location string?
+---@param executor string?
 ---@return ProcessedEntry
-local function create_processed_entry(command, name, location)
+local function create_processed_entry(command, name, executor)
     return {
         name = name or command,
         command = command,
-        location = location,
+        executor = executor,
     }
 end
 
@@ -155,7 +155,7 @@ local function parse_list_to_entries(list, run_config_path)
                     create_processed_entry(
                         item.command,
                         item.name,
-                        item.location
+                        item.executor
                     )
                 )
             else

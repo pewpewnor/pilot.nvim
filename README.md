@@ -4,24 +4,24 @@
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
 **pilot.nvim** is a Neovim plugin that lets you run, build, or test your project or file using a simple, editable JSON configuration.  
-It supports powerful placeholders, custom execution locations, and lets you edit or reload configs on the fly without needing to reload Neovim everytime.
+It supports powerful placeholders, custom executors, and lets you edit or reload configs on the fly without needing to reload Neovim everytime.
 
 _Requirement: Neovim v0.11.x_
 
-![Preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
+![preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
 ---
 
 ## Table of Important Contents
 
 - [Installation](#installation)
-- [Default Configuration Values](#default-configuration-values)
-- [Example Configuration](#example-configuration)
-- [Run Configuration Format](#run-configuration-format)
-- [Example Project Run Configuration](#example-project-run-configuration)
-- [Example File Type Run Configuration](#example-file-type-run-configuration)
+- [Default configuration values](#default-configuration-values)
+- [Example configuration](#example-configuration)
+- [Run configuration format](#run-configuration-format)
+- [Example project run configuration](#example-project-run-configuration)
+- [Example file type run configuration](#example-file-type-run-configuration)
 - [Placeholders](#placeholders)
-- [Preset Executors](#preset-executors)
+- [Preset executors](#preset-executors)
 
 ---
 
@@ -37,7 +37,7 @@ I wanted a code runner plugin that supports placeholder interpolation, allowing 
 - Powerful placeholders for file paths, names, directories, and more.
 - Edit configuration files on the fly without needing to reload Neovim everytime.
 - Fallback project run configuration: use a default config if none is found for a project.
-- Customizable run configuration file locations, how it is executed, and execution locations (tabs, splits, background jobs, tmux, etc).
+- Customizable run configuration file to define how it will be executed and the execution locations (tabs, splits, background jobs, custom location, etc).
 - Much more other features such as importing/including other run configuration files.
 
 ---
@@ -92,26 +92,26 @@ You do not need to pass anything to `setup()` if you want the defaults.
         project = true, -- boolean
         file_type = true, -- boolean
     },
-    fallback_project_run_config = nil, -- function() -> string | nil
+    fallback_project_run_config = nil, -- (function() -> string) | nil
     write_template_to_new_run_config = true, -- boolean
     default_executor = {
-        project = pilot.executors.new_tab, -- function(command: string)
-        file_type = pilot.executors.new_tab, -- function(command: string)
+        project = pilot.preset_executors.new_tab, -- function(command: string)
+        file_type = pilot.preset_executors.new_tab, -- function(command: string)
     },
-    custom_locations = {
-        new_tab = pilot.executors.new_tab,
-        current_buffer = pilot.executors.current_buffer,
-        split = pilot.executors.split,
-        vsplit = pilot.executors.vsplit,
-        print = pilot.executors.print,
-        silent = pilot.executors.silent,
-        background_silent = pilot.executors.background_silent,
-        background_exit_status = pilot.executors.background_exit_status,
+    executors = {
+        new_tab = pilot.preset_executors.new_tab,
+        current_buffer = pilot.preset_executors.current_buffer,
+        split = pilot.preset_executors.split,
+        vsplit = pilot.preset_executors.vsplit,
+        print = pilot.preset_executors.print,
+        silent = pilot.preset_executors.silent,
+        background_silent = pilot.preset_executors.background_silent,
+        background_exit_status = pilot.preset_executors.background_exit_status,
     }, -- table<string, function(command: string, args: string[])>
 }
 ```
 
-> **See:** [Full Configuration Options](docs/pilot.md#configuration-options)
+> **See:** [full configuration options](docs/pilot.md#configuration-options)
 
 ---
 
@@ -141,16 +141,16 @@ pilot.setup({
     end,
     default_executor = {
         -- change so that by default, we execute the file on a new bottom buffer
-        file_type = pilot.executors.split,
+        file_type = pilot.preset_executors.split,
     },
-    -- define custom locations that can be used in any pilot run configuration
-    custom_locations = {
-        -- custom location that executes the command in a new tmux window
+    -- define custom executors that can be used in any pilot run configuration
+    executors = {
+        -- custom executor that executes the command in a new tmux window
         tmux_new_window = function(command)
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
-        background = pilot.executors.background_exit_status,
+        background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
 })
@@ -169,7 +169,7 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
     pilot.delete_file_type_run_config, { nargs = 0, bar = false })
 ```
 
-> **See:** [Functions Documentation](docs/pilot.md#functions) for all available functions.
+> **See:** [functions documentation](docs/pilot.md#functions) for all available functions.
 
 ---
 
@@ -183,7 +183,7 @@ Each entry can be:
 - An **object** with fields:
     - `name` (optional): Display name for the command.
     - `command` (required): String or array of strings.
-    - `location` (optional): Name of a custom location/executor.
+    - `executor` (optional): Name of an executor that exists in the `executors` configuration field.
     - `import` (optional): Path to another JSON file to import entries from.
 
 ---
@@ -206,7 +206,7 @@ working directory.
     "echo Hello, World!",
     {
         "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
-        "location": "tmux_new_window"
+        "executor": "tmux_new_window"
     }
 ]
 ```
@@ -269,16 +269,16 @@ running C source code files.
 
 ## Preset Executors
 
-| Executor                                 | Description                                                               |
-| ---------------------------------------- | ------------------------------------------------------------------------- |
-| `pilot.executors.new_tab` _(default)_    | Run the command in a new tab                                              |
-| `pilot.executors.current_buffer`         | Run the command in the current buffer                                     |
-| `pilot.executors.split`                  | Run the command in a new horizontal split                                 |
-| `pilot.executors.vsplit`                 | Run the command in a new vertical split                                   |
-| `pilot.executors.print`                  | Run the command and print output (blocking)                               |
-| `pilot.executors.silent`                 | Run the command silently with no output (blocking)                        |
-| `pilot.executors.background_silent`      | Run the command as a background job silently                              |
-| `pilot.executors.background_exit_status` | Run the command as a background job and print exit status upon completion |
+| Executor                                        | Description                                                               |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `pilot.preset_executors.new_tab` _(default)_    | Run the command in a new tab                                              |
+| `pilot.preset_executors.current_buffer`         | Run the command in the current buffer                                     |
+| `pilot.preset_executors.split`                  | Run the command in a new horizontal split                                 |
+| `pilot.preset_executors.vsplit`                 | Run the command in a new vertical split                                   |
+| `pilot.preset_executors.print`                  | Run the command and print output (blocking)                               |
+| `pilot.preset_executors.silent`                 | Run the command silently with no output (blocking)                        |
+| `pilot.preset_executors.background_silent`      | Run the command as a background job silently                              |
+| `pilot.preset_executors.background_exit_status` | Run the command as a background job and print exit status upon completion |
 
 You can also create your own executor and use it in your config for pilot.nvim.
 
@@ -289,7 +289,7 @@ You can also create your own executor and use it in your config for pilot.nvim.
 - Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md) for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
 - Placeholders can be escaped by using triple braces, e.g. `{{{not_a_placeholder}}}`.
-- If you want to always use a specific executor for a certain location, add it to `custom_locations` and reference it by name in your config.
+- If you want to always use a specific executor, add it to `executors` and reference it by name in your config.
 - To disable template writing for new configs, set `write_template_to_new_run_config = false`.
 - All config files are validated on load; errors are shown in the command line.
 
@@ -298,7 +298,7 @@ You can also create your own executor and use it in your config for pilot.nvim.
 ## Links
 
 - [Full documentation and advanced usage](docs/pilot.md)
-- [GitHub Discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
+- [GitHub discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
 - [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
 - [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
 - [Neovim](https://neovim.io/)
@@ -308,7 +308,7 @@ You can also create your own executor and use it in your config for pilot.nvim.
 
 ## Have any questions or ideas?
 
-- Create a new [Issue](https://github.com/pewpewnor/pilot.nvim/issues)
-- See the [Contribution Guidelines](CONTRIBUTING.md) for creating pull requests
-- Open a [Discussion](https://github.com/pewpewnor/pilot.nvim/discussions)
+- Create a new [issue](https://github.com/pewpewnor/pilot.nvim/issues)
+- See the [contribution guidelines](CONTRIBUTING.md) for creating pull requests
+- Open a [discussion](https://github.com/pewpewnor/pilot.nvim/discussions)
 - See the [FAQ](docs/pilot.md#faq)

@@ -10,7 +10,7 @@
 ---@field project Executor
 ---@field file_type Executor
 
----@class CustomLocations
+---@class Executors
 ---@field [string] Executor
 
 ---@class Config
@@ -20,16 +20,16 @@
 ---@field write_template_to_new_run_config boolean
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
----@field custom_locations CustomLocations
+---@field executors Executors
 
 local module = require("pilot.module")
 
 local M = {
-    executors = {},
+    preset_executors = {},
 }
 
 ---@type Executor
-function M.executors.new_tab(command, args)
+function M.preset_executors.new_tab(command, args)
     if #args == 0 then
         vim.cmd("tabnew | terminal " .. command)
     else
@@ -38,12 +38,12 @@ function M.executors.new_tab(command, args)
 end
 
 ---@type Executor
-function M.executors.current_buffer(command)
+function M.preset_executors.current_buffer(command)
     vim.cmd("terminal " .. command)
 end
 
 ---@type Executor
-function M.executors.split(command, args)
+function M.preset_executors.split(command, args)
     if #args == 0 then
         vim.cmd("rightbelow split | terminal " .. command)
     else
@@ -52,7 +52,7 @@ function M.executors.split(command, args)
 end
 
 ---@type Executor
-function M.executors.vsplit(command, args)
+function M.preset_executors.vsplit(command, args)
     if #args == 0 then
         vim.cmd("botright vsplit | terminal " .. command)
     else
@@ -61,22 +61,22 @@ function M.executors.vsplit(command, args)
 end
 
 ---@type Executor
-function M.executors.silent(command)
+function M.preset_executors.silent(command)
     vim.fn.system(command)
 end
 
 ---@type Executor
-function M.executors.print(command)
+function M.preset_executors.print(command)
     print(vim.fn.system(command))
 end
 
 ---@type Executor
-function M.executors.background_silent(command)
+function M.preset_executors.background_silent(command)
     vim.fn.jobstart(command)
 end
 
 ---@type Executor
-function M.executors.background_exit_status(command)
+function M.preset_executors.background_exit_status(command)
     vim.fn.jobstart(command, {
         ---@diagnostic disable-next-line: unused-local
         on_exit = function(job_id, exit_code, event)
@@ -99,18 +99,18 @@ M.config = {
         file_type = true,
     },
     default_executor = {
-        project = M.executors.new_tab,
-        file_type = M.executors.new_tab,
+        project = M.preset_executors.new_tab,
+        file_type = M.preset_executors.new_tab,
     },
-    custom_locations = {
-        new_tab = M.executors.new_tab,
-        current_buffer = M.executors.current_buffer,
-        split = M.executors.split,
-        vsplit = M.executors.vsplit,
-        print = M.executors.print,
-        silent = M.executors.silent,
-        background_silent = M.executors.background_silent,
-        background_exit_status = M.executors.background_exit_status,
+    executors = {
+        new_tab = M.preset_executors.new_tab,
+        current_buffer = M.preset_executors.current_buffer,
+        split = M.preset_executors.split,
+        vsplit = M.preset_executors.vsplit,
+        print = M.preset_executors.print,
+        silent = M.preset_executors.silent,
+        background_silent = M.preset_executors.background_silent,
+        background_exit_status = M.preset_executors.background_exit_status,
     },
 }
 

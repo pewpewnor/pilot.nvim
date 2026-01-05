@@ -27,30 +27,24 @@ end
 local function run_entry(entry, run_classification)
     local executor
     local args = {}
-    if not entry.location then
+    if not entry.executor then
         if run_classification == "file type" then
             executor = M.config.default_executor.file_type
         else
             executor = M.config.default_executor.project
         end
     else
-        if not M.config.custom_locations then
-            error(
-                "[Pilot] Attempted to use a custom location, but none have been configured. Please define 'custom_locations' in your configuration."
-            )
-        end
-
-        for arg in entry.location:gmatch("%S+") do
+        for arg in entry.executor:gmatch("%S+") do
             table.insert(args, arg)
         end
 
         local executor_name = table.remove(args, 1)
-        executor = M.config.custom_locations[executor_name]
+        executor = M.config.executors[executor_name]
         if not executor then
             error(
                 string.format(
-                    "[Pilot] Attempted to retrieve custom location '%s' from given custom locations in your configuration, but got nil instead.",
-                    entry.location
+                    "[Pilot] Attempted to retrieve executor '%s' from your configuration, but got nil instead.",
+                    entry.executor
                 )
             )
         end
