@@ -8,6 +8,21 @@ end
 local required_braces = 2
 
 ---@param placeholder string
+---@return string?
+local function try_custom_placeholder(placeholder)
+    local custom_placeholder = M.config.custom_placeholders[placeholder]
+    if custom_placeholder then
+        if type(custom_placeholder) ~= "string" then
+            error(
+                "[Pilot] option 'custom_placeholders' must be a function that returns string or nil."
+            )
+        end
+        return M.interpolate(custom_placeholder, true)
+    end
+    return nil
+end
+
+---@param placeholder string
 ---@return string?, string?
 local function extract_placeholder_function_call(placeholder)
     if placeholder:sub(1, 1) ~= "(" and placeholder:sub(-1) == ")" then
@@ -24,16 +39,9 @@ end
 local function resolve_placeholder(placeholder)
     placeholder = vim.fn.trim(placeholder or "")
 
-    if M.config.additional_placeholders then
-        local custom_placeholder = M.config.additional_placeholders[placeholder]
-        if custom_placeholder then
-            if type(custom_placeholder) ~= "string" then
-                error(
-                    "[Pilot] option 'additional_placeholders' must be a function that returns string or nil."
-                )
-            end
-            return M.interpolate(custom_placeholder, true)
-        end
+    local custom_resolved = try_custom_placeholder(placeholder)
+    if custom_resolved then
+        return custom_resolved
     end
 
     if placeholder == "" then

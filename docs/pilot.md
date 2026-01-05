@@ -103,7 +103,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
         background_silent = pilot.preset_executors.background_silent,
         background_exit_status = pilot.preset_executors.background_exit_status,
     }, -- table<string, function(command: string, args: string[])>
-    additional_placeholders = {}, -- table<string, string>
+    custom_placeholders = {}, -- table<string, string>
 }
 ```
 
@@ -187,7 +187,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
     - `command` (string): The shell command to run (with placeholders already expanded).
     - `args` (list of strings): The result from splitting the string that was written in the `executor` with whitespaces as the seperator and without the executor name (first argument) inside the list.
 
-### `additional_placeholders`
+### `custom_placeholders`
 
 - **Type:** `table<string, string>`
 - **Default:** `{}`
@@ -223,7 +223,7 @@ pilot.setup({
         background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false,
-    additional_placeholders = {
+    custom_placeholders = {
         greet_file_name = "Hello {{file_name}}",
     },
 })
@@ -335,7 +335,7 @@ You can escape a placeholder by using triple braces, e.g. `{{{not_a_placeholder}
 | `{{hash(cwd_path)}}`         | SHA256 hash of the current working directory path   |
 | `{{hash(file_path)}}`        | SHA256 hash of the current buffer's absolute path   |
 
-You may also add custom placeholders inside of the `additional_placeholders` field.
+You may also add custom placeholders inside of the `custom_placeholders` field.
 
 ---
 

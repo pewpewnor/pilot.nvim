@@ -29,7 +29,7 @@
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
 ---@field executors Executors
----@field additional_placeholders AdditionalPlaceholders
+---@field custom_placeholders AdditionalPlaceholders
 
 local module = require("pilot.module")
 
@@ -123,7 +123,7 @@ M.config = {
         background_silent = M.preset_executors.background_silent,
         background_exit_status = M.preset_executors.background_exit_status,
     },
-    additional_placeholders = {},
+    custom_placeholders = {},
 }
 
 ---@param options table?
