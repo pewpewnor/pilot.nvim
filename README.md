@@ -160,7 +160,9 @@ pilot.setup({
     },
     placeholders = {
         vars = {
-            hello_world = function() return "Hello, World!" end, -- example to add a custom placeholder
+            -- example to add custom placeholders
+            hello_world = function() return "Hello, World!" end,
+            template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
         },
     },
 })

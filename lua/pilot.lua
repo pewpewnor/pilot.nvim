@@ -47,6 +47,9 @@ local module = require("pilot.module")
 
 local M = {
     preset_executors = default_config.preset_executors,
+    utils = {
+        interpolate = require("pilot.interpolation").interpolate,
+    },
 }
 
 ---@param options table?
