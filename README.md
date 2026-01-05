@@ -257,6 +257,8 @@ running C source code files.
 
 ## Placeholders
 
+**Variables**
+
 | Placeholder                  | Resolved value                                                   |
 | ---------------------------- | ---------------------------------------------------------------- |
 | `{{file_path}}`              | Current buffer's absolute file path                              |
@@ -273,11 +275,11 @@ running C source code files.
 | `{{cword}}`                  | Word under the cursor                                            |
 | `{{cWORD}}`                  | Complete word (between spaces) under the cursor                  |
 
-**Placeholder Funcs**
+**Modifier Functions**
 
-| Function placeholder                 | Description / usage                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------ |
-| `{{hash_sha256(...)}}`               | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
+| Placeholder            | Description / usage                                                            |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `{{hash_sha256(...)}}` | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
 
 ---
 

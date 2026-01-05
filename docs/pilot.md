@@ -322,14 +322,14 @@ running C source code files.
 
 ## Placeholders
 
-All placeholders are expanded in config paths and commands.  You can escape a
+All placeholders are expanded in config paths and commands. You can escape a
 placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
 
-**Placeholder Vars**
+**Variables**
 
-- Simple placeholders that expand to a string. Define them in
-    `placeholders.vars` as functions that return a string, and use them as
-    `{{name}}` in config paths or commands.
+Simple placeholders that expand to a string. Define them in
+`placeholders.vars` as functions that return a string, and use them as
+`{{name}}` in config paths or commands.
 
 | Placeholder                  | Resolved value                                      |
 | ---------------------------- | --------------------------------------------------- |
@@ -343,19 +343,19 @@ placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
 | `{{dir_name}}`               | Name of the directory containing the current buffer |
 | `{{cwd_path}}`               | Absolute path of the current working directory      |
 | `{{cwd_name}}`               | Name of the current working directory               |
-| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`    |
+| `{{pilot_data_path}}`        | Path to `vim.fn.stdpath("data") .. "/pilot"`        |
 | `{{cword}}`                  | Word under the cursor                               |
 | `{{cWORD}}`                  | WORD under the cursor                               |
 
-**Placeholder Funcs**
+**Modifier Functions**
 
 Callable placeholders that accept an argument and return a string. Define
-    them in `placeholders.funcs` as functions that accept a single argument and
-    return a string, and use them like `{{name(arg)}}` in configs.
+them in `placeholders.funcs` as functions that accept a single argument and
+return a string, and use them like `{{name(arg)}}` in configs.
 
-| Function placeholder                 | Description / usage                                                      |
-| ------------------------------------ | ------------------------------------------------------------------------ |
-| `{{hash_sha256(...)}}`               | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
+| Placeholder            | Description / usage                                                            |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| `{{hash_sha256(...)}}` | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
 
 Add custom vars to `placeholders.vars` and custom functions to `placeholders.funcs`.
 
