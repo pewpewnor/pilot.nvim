@@ -27,7 +27,18 @@ local function resolve_placeholder(placeholder)
 
     for var_name, resolve_var in pairs(M.config.placeholders.vars) do
         if placeholder == var_name then
-            return resolve_var()
+            if type(resolve_var) ~= "function" then
+                error(
+                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
+                )
+            end
+            local resolved = resolve_var()
+            if type(resolved) ~= "string" then
+                error(
+                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
+                )
+            end
+            return resolved
         end
     end
 
@@ -36,9 +47,20 @@ local function resolve_placeholder(placeholder)
     if extracted_func_name and extracted_func_arg then
         for func_name, resolve_func in pairs(M.config.placeholders.funcs) do
             if extracted_func_name == func_name then
+                if type(resolve_func) ~= "function" then
+                    error(
+                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                    )
+                end
                 local resolved_func_arg =
                     resolve_placeholder(extracted_func_arg)
-                return resolve_func(resolved_func_arg)
+                local resolved = resolve_func(resolved_func_arg)
+                if type(resolved) ~= "string" then
+                    error(
+                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                    )
+                end
+                return resolved
             end
         end
     end
@@ -104,9 +126,6 @@ function M.interpolate(command, no_escape)
         else
             -- case for valid interpolation
             local resolved = resolve_placeholder(placeholder)
-            if not no_escape then
-                resolved = vim.fn.fnameescape(resolved)
-            end
 
             -- handle potential extra braces
             local prefix = open_len > required_braces

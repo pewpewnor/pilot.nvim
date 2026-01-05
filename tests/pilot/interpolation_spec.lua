@@ -7,9 +7,13 @@ describe("interpolation", function()
     pilot.setup()
 
     it("all placeholders return expected values", function()
-        local rel = "test dir/file name.txt"
-        local test_path = vim.fn.getcwd() .. "/" .. rel
+        local test_dir_name = "test dir"
+        local test_file_name = "file name.txt"
+        local test_relative_path =
+            vim.fs.joinpath(test_dir_name, test_file_name)
+        local test_path = vim.fs.joinpath(vim.fn.getcwd(), test_relative_path)
         local escaped_test_path = vim.fn.fnameescape(test_path)
+
         vim.api.nvim_buf_set_name(0, test_path)
         vim.bo.filetype = "text"
         vim.api.nvim_buf_set_lines(
@@ -30,22 +34,25 @@ describe("interpolation", function()
         local got_file_path_relative =
             interpolation.interpolate("{{file_path_relative}}")
         assert.is_truthy(
-            got_file_path_relative == rel
+            got_file_path_relative == test_relative_path
                 or got_file_path_relative == escaped_test_path
         )
 
         assert.equals(
             interpolation.interpolate("{{file_name}}"),
-            "file\\ name.txt"
+            vim.fn.fnameescape(test_file_name)
         )
-        assert.equals(interpolation.interpolate("{{dir_name}}"), "test\\ dir")
+        assert.equals(
+            interpolation.interpolate("{{dir_name}}"),
+            vim.fn.fnameescape(test_dir_name)
+        )
         assert.equals(
             interpolation.interpolate("{{cwd_path}}"),
-            vim.fn.getcwd()
+            vim.fn.fnameescape(vim.fn.getcwd())
         )
         assert.equals(
             interpolation.interpolate("{{cwd_name}}"),
-            vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+            vim.fn.fnameescape(vim.fn.fnamemodify(vim.fn.getcwd(), ":t"))
         )
 
         local pd = interpolation.interpolate("{{pilot_data_path}}")
@@ -57,11 +64,11 @@ describe("interpolation", function()
 
         assert.equals(
             interpolation.interpolate("{{hash_sha256(cwd_path)}}"),
-            vim.fn.sha256(vim.fn.getcwd())
+            vim.fn.sha256(vim.fn.fnameescape(vim.fn.getcwd()))
         )
         assert.equals(
             interpolation.interpolate("{{hash_sha256(file_path)}}"),
-            vim.fn.sha256(test_path)
+            vim.fn.sha256(escaped_test_path)
         )
     end)
 
