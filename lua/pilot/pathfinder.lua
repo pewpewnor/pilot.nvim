@@ -1,4 +1,4 @@
-local interpolate = require("pilot.interpolation")
+local interpolation = require("pilot.interpolation")
 
 local M = {}
 
@@ -41,11 +41,11 @@ function M.get_project_run_config_path(create_missing_dirs)
     if type(M.config.run_config_path.project) == "string" then
         first_valid_interpolated_path =
             ---@diagnostic disable-next-line: param-type-mismatch
-            interpolate(M.config.run_config_path.project)
+            interpolation.interpolate(M.config.run_config_path.project)
     else
         ---@diagnostic disable-next-line: param-type-mismatch
         for _, path in pairs(M.config.run_config_path.project) do
-            local interpolated_path = interpolate(path)
+            local interpolated_path = interpolation.interpolate(path)
             if
                 not first_valid_interpolated_path
                 or vim.fn.filereadable(interpolated_path) == 1
@@ -63,7 +63,8 @@ end
 ---@param create_missing_dirs boolean
 ---@return string
 function M.get_file_type_run_config_path(create_missing_dirs)
-    local interpolated_path = interpolate(M.config.run_config_path.file_type)
+    local interpolated_path =
+        interpolation.interpolate(M.config.run_config_path.file_type)
     return custom_run_config_path(interpolated_path, create_missing_dirs)
 end
 

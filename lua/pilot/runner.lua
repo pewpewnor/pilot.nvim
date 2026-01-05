@@ -4,14 +4,13 @@
 ---@field args [string]
 
 local parser = require("pilot.parser")
-local interpolate = require("pilot.interpolation")
+local interpolation = require("pilot.interpolation")
 
 local M = {}
 
 ---@param config Config
 function M.init(config)
     M.config = config
-    parser.init(config)
 end
 
 ---@type Task|nil
@@ -19,7 +18,7 @@ M.last_executed_task = nil
 
 ---@param task Task
 local function execute_task(task)
-    task.executor(interpolate(task.command), task.args)
+    task.executor(interpolation.interpolate(task.command), task.args)
 end
 
 ---@param entry ProcessedEntry

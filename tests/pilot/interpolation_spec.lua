@@ -1,8 +1,11 @@
 ---@diagnostic disable: undefined-field
 
-local interpolate = require("pilot.interpolation")
+local pilot = require("pilot")
+local interpolation = require("pilot.interpolation")
 
 describe("interpolation", function()
+    pilot.setup()
+
     it("all placeholders return expected values", function()
         local rel = "test dir/file name.txt"
         local test_path = vim.fn.getcwd() .. "/" .. rel
@@ -18,39 +21,46 @@ describe("interpolation", function()
         )
         vim.fn.search("world")
 
-        local got_file_path = interpolate("{{file_path}}")
+        local got_file_path = interpolation.interpolate("{{file_path}}")
         assert.equals(
             vim.fn.fnamemodify(got_file_path, ":p"),
             escaped_test_path
         )
 
-        local got_file_path_relative = interpolate("{{file_path_relative}}")
+        local got_file_path_relative =
+            interpolation.interpolate("{{file_path_relative}}")
         assert.is_truthy(
             got_file_path_relative == rel
                 or got_file_path_relative == escaped_test_path
         )
 
-        assert.equals(interpolate("{{file_name}}"), "file\\ name.txt")
-        assert.equals(interpolate("{{dir_name}}"), "test\\ dir")
-        assert.equals(interpolate("{{cwd_path}}"), vim.fn.getcwd())
         assert.equals(
-            interpolate("{{cwd_name}}"),
+            interpolation.interpolate("{{file_name}}"),
+            "file\\ name.txt"
+        )
+        assert.equals(interpolation.interpolate("{{dir_name}}"), "test\\ dir")
+        assert.equals(
+            interpolation.interpolate("{{cwd_path}}"),
+            vim.fn.getcwd()
+        )
+        assert.equals(
+            interpolation.interpolate("{{cwd_name}}"),
             vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
         )
 
-        local pd = interpolate("{{pilot_data_path}}")
+        local pd = interpolation.interpolate("{{pilot_data_path}}")
         assert.is_string(pd)
         assert.equals(vim.fn.isdirectory(pd), 1)
 
-        assert.equals(interpolate("{{cword}}"), "world")
-        assert.equals(interpolate("{{cWORD}}"), "world-over")
+        assert.equals(interpolation.interpolate("{{cword}}"), "world")
+        assert.equals(interpolation.interpolate("{{cWORD}}"), "world-over")
 
         assert.equals(
-            interpolate("{{hash(cwd_path)}}"),
+            interpolation.interpolate("{{hash(cwd_path)}}"),
             vim.fn.sha256(vim.fn.getcwd())
         )
         assert.equals(
-            interpolate("{{hash(file_path)}}"),
+            interpolation.interpolate("{{hash(file_path)}}"),
             vim.fn.sha256(test_path)
         )
     end)
@@ -60,7 +70,7 @@ describe("interpolation", function()
         function()
             local cmd = "echo % # <"
             local expected = "echo \\% \\# \\<"
-            assert.equals(interpolate(cmd), expected)
+            assert.equals(interpolation.interpolate(cmd), expected)
         end
     )
 
@@ -69,7 +79,7 @@ describe("interpolation", function()
         function()
             local cmd = [[echo $'\\^!#$%@&*()_+=-`~[]{};:'",<.>/?|']]
             local expected = [[echo $'\\^!\#$\%@&*()_+=-`~[]{};:'",\<.>/?|']]
-            assert.equals(interpolate(cmd), expected)
+            assert.equals(interpolation.interpolate(cmd), expected)
         end
     )
 end)

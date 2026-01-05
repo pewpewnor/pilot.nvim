@@ -14,7 +14,7 @@
 ---@field executor string?
 
 local fs_utils = require("pilot.fs_utils")
-local interpolate = require("pilot.interpolation")
+local interpolation = require("pilot.interpolation")
 
 local M = {}
 
@@ -36,7 +36,7 @@ local function read_fallback_project_run_config()
         )
     end
 
-    local fallback_path = interpolate(fallback_project_run_config)
+    local fallback_path = interpolation.interpolate(fallback_project_run_config)
     local file_content = fs_utils.read_file(fallback_path)
     if not file_content then
         error(
@@ -166,7 +166,7 @@ local function parse_list_to_entries(list, run_config_path)
                     )
                 end
 
-                local import_path = interpolate(item.import)
+                local import_path = interpolation.interpolate(item.import)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)

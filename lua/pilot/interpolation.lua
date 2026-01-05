@@ -1,3 +1,10 @@
+local M = {}
+
+---@param config Config
+function M.init(config)
+    M.config = config
+end
+
 local required_braces = 2
 
 ---@param placeholder string
@@ -16,6 +23,19 @@ end
 ---@return string
 local function resolve_placeholder(placeholder)
     placeholder = vim.fn.trim(placeholder or "")
+
+    if M.config.additional_placeholders then
+        local custom_placeholder = M.config.additional_placeholders[placeholder]
+        if custom_placeholder then
+            if type(custom_placeholder) ~= "string" then
+                error(
+                    "[Pilot] option 'additional_placeholders' must be a function that returns string or nil."
+                )
+            end
+            return M.interpolate(custom_placeholder, true)
+        end
+    end
+
     if placeholder == "" then
         return ""
     elseif placeholder == "file_path" then
@@ -56,6 +76,7 @@ local function resolve_placeholder(placeholder)
             return vim.fn.sha256(resolved_arg)
         end
     end
+
     error(
         string.format(
             "[Pilot] Unknown/invalid command placeholder '%s', you can try surrounding it with {} to escape it.",
@@ -71,14 +92,19 @@ local function escape_vim_specials(text)
 end
 
 ---@param command string
+---@param no_escape boolean?
 ---@return string
-local function interpolate(command)
+function M.interpolate(command, no_escape)
     local result = {}
     local cursor = 1
     local pattern = "({+)([^}]+)(}+)"
 
-    function insert_result_for_joining(text)
-        table.insert(result, escape_vim_specials(text))
+    local function insert_result_for_joining(text)
+        if no_escape then
+            table.insert(result, text)
+        else
+            table.insert(result, escape_vim_specials(text))
+        end
     end
 
     while true do
@@ -111,8 +137,10 @@ local function interpolate(command)
             insert_result_for_joining(raw_segment)
         else
             -- case for valid interpolation
-            local resolved_placeholder = resolve_placeholder(placeholder)
-            local escaped_resolved = vim.fn.fnameescape(resolved_placeholder)
+            local resolved = resolve_placeholder(placeholder)
+            if not no_escape then
+                resolved = vim.fn.fnameescape(resolved)
+            end
 
             -- handle potential extra braces
             local prefix = open_len > required_braces
@@ -122,7 +150,8 @@ local function interpolate(command)
                     and close_braces:sub(1, close_len - required_braces)
                 or ""
 
-            insert_result_for_joining(prefix .. escaped_resolved .. suffix)
+            local interpolated_segment = prefix .. resolved .. suffix
+            insert_result_for_joining(interpolated_segment)
         end
 
         cursor = end_idx + 1
@@ -131,4 +160,4 @@ local function interpolate(command)
     return table.concat(result)
 end
 
-return interpolate
+return M

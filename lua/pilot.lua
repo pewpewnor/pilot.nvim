@@ -1,5 +1,9 @@
 ---@alias FallbackProjectRunConfig fun(): string
 
+---@alias Executor fun(command: string, args: [string]?)
+
+---@alias AdditionalPlaceholder fun(placeholder: string): string?
+
 ---@class RunConfigPath
 ---@field project string|[string]
 ---@field file_type string
@@ -9,8 +13,6 @@
 ---@field project boolean
 ---@field file_type boolean
 
----@alias Executor fun(command: string, args: [string]?)
-
 ---@class DefaultExecutor
 ---@field project Executor
 ---@field file_type Executor
@@ -18,12 +20,16 @@
 ---@class Executors
 ---@field [string] Executor
 
+---@class AdditionalPlaceholders
+---@field [string] string
+
 ---@class Config
 ---@field run_config_path RunConfigPath
 ---@field write_template_to_new_run_config boolean
 ---@field automatically_run_single_command AutomaticallyRunSingleCommand
 ---@field default_executor DefaultExecutor
 ---@field executors Executors
+---@field additional_placeholders AdditionalPlaceholders
 
 local module = require("pilot.module")
 
@@ -117,6 +123,7 @@ M.config = {
         background_silent = M.preset_executors.background_silent,
         background_exit_status = M.preset_executors.background_exit_status,
     },
+    additional_placeholders = {},
 }
 
 ---@param options table?

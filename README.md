@@ -110,6 +110,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
         background_silent = pilot.preset_executors.background_silent,
         background_exit_status = pilot.preset_executors.background_exit_status,
     }, -- table<string, function(command: string, args: string[])>
+    additional_placeholders = {}, -- table<string, string>
 }
 ```
 
@@ -157,6 +158,9 @@ pilot.setup({
         background = pilot.preset_executors.background_exit_status,
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
+    additional_placeholders = {
+        greet_file_name = "Hello {{file_name}}", -- example to add custom placeholders
+    },
 })
 
 -- customize these keybindings to your liking

@@ -7,6 +7,8 @@ local M = {}
 function M.init(config)
     M.config = config
     pathfinder.init(config)
+    require("pilot.interpolation").init(config)
+    require("pilot.parser").init(config)
     runner.init(config)
 end
 
