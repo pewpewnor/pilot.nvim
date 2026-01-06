@@ -257,6 +257,7 @@ pilot.setup({
     default_executor = {
         file_type = pilot.preset_executors.split,
     },
+    write_template_to_new_run_config = false,
     executors = {
         tmux_new_window = function(command, args)
             vim.fn.system("tmux new-window -d")
@@ -264,7 +265,6 @@ pilot.setup({
         end,
         background = pilot.preset_executors.background_exit_status,
     },
-    write_template_to_new_run_config = false,
     placeholders = {
         vars = {
             -- example to add custom placeholders
@@ -477,22 +477,6 @@ All functions are available via `require("pilot")`.
 
 ---
 
-## Links
-
-- [GitHub discussions](https://github.com/pewpewnor/pilot.nvim/discussions)
-- [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
-- [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
-- [Neovim](https://neovim.io/)
-- [Lua](https://www.lua.org/)
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
-
----
-
 ## FAQ
 
 **Q: How do I add a new executor?**  
@@ -509,5 +493,8 @@ A: Yes, arrays are joined with `&&` to form a single shell command.
 
 **Q: What is passed to custom executors?**  
 A: Both the expanded command string and an `arg` string (see [preset executors](#preset-executors)).
+
+Q: How do I contribute to this project?
+A: See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---

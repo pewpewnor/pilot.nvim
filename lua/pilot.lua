@@ -42,7 +42,7 @@
 ---@field executors Executors
 ---@field placeholders Placeholders
 
-local default_config = require("default_config")
+local default_config = require("pilot.default_config")
 local module = require("pilot.module")
 
 local M = {
@@ -56,7 +56,7 @@ local M = {
 function M.setup(options)
     M.config =
         vim.tbl_deep_extend("force", default_config.default_opts, options or {})
-    require("validate_opts")(M.config)
+    require("pilot.validate_opts")(M.config)
     module.init(M.config)
 end
 
