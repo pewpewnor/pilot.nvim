@@ -10,12 +10,6 @@ The source code for this plugin is available in the [GitHub repository](https://
 
 ---
 
-## Motivation
-
-I wanted a code runner plugin that supports placeholder interpolation, allowing me to use a single keystroke to compile, build, and run my code at the same time, whilst still having full control over the commands.
-
----
-
 ## Features
 
 - **Run arbitrary commands** for any file or project, with full control over execution.
@@ -311,7 +305,7 @@ Each entry can be:
 
 ---
 
-## Example Project Run Configuration
+## Example Project Run Config
 
 ```json
 [
@@ -337,7 +331,7 @@ Each entry can be:
 
 ---
 
-## Example File Type Run Configuration
+## Example File Type Run Config
 
 Let's say you want to write a file type run configuration for compiling and
 running C source code files.

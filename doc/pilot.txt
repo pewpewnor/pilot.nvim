@@ -3,7 +3,6 @@
 ==============================================================================
 Table of Contents                                    *pilot-table-of-contents*
 
-  - Motivation                                              |pilot-motivation|
   - Features                                                  |pilot-features|
   - Installation                                          |pilot-installation|
   - General Terms                                        |pilot-general-terms|
@@ -11,8 +10,8 @@ Table of Contents                                    *pilot-table-of-contents*
   - Configuration Options                        |pilot-configuration-options|
   - Example Configuration                        |pilot-example-configuration|
   - Run Configuration Format                  |pilot-run-configuration-format|
-  - Example Project Run Configuration|pilot-example-project-run-configuration|
-  - Example File Type Run Configuration|pilot-example-file-type-run-configuration|
+  - Example Project Run Config              |pilot-example-project-run-config|
+  - Example File Type Run Config          |pilot-example-file-type-run-config|
   - Placeholders                                          |pilot-placeholders|
   - Preset Executors                                  |pilot-preset-executors|
   - Functions                                                |pilot-functions|
@@ -32,14 +31,6 @@ latest Neovim major release version.
 
 The source code for this plugin is available in the GitHub repository
 <https://github.com/pewpewnor/pilot.nvim>.
-
-------------------------------------------------------------------------------
-
-MOTIVATION                                                  *pilot-motivation*
-
-I wanted a code runner plugin that supports placeholder interpolation, allowing
-me to use a single keystroke to compile, build, and run my code at the same
-time, whilst still having full control over the commands.
 
 ------------------------------------------------------------------------------
 
@@ -349,7 +340,7 @@ Each entry can be:
 
 ------------------------------------------------------------------------------
 
-EXAMPLE PROJECT RUN CONFIGURATION    *pilot-example-project-run-configuration*
+EXAMPLE PROJECT RUN CONFIG                  *pilot-example-project-run-config*
 
 >json
     [
@@ -374,7 +365,7 @@ EXAMPLE PROJECT RUN CONFIGURATION    *pilot-example-project-run-configuration*
   will automatically be replaced by pilot.nvim on the fly!
 ------------------------------------------------------------------------------
 
-EXAMPLE FILE TYPE RUN CONFIGURATION*pilot-example-file-type-run-configuration*
+EXAMPLE FILE TYPE RUN CONFIG              *pilot-example-file-type-run-config*
 
 Let’s say you want to write a file type run configuration for compiling and
 running C source code files.
