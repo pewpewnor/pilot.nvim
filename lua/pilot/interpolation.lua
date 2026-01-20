@@ -45,11 +45,11 @@ local function resolve_placeholder(placeholder)
     local extracted_func_name, extracted_func_arg =
         extract_placeholder_function_call(placeholder)
     if extracted_func_name and extracted_func_arg then
-        for func_name, resolve_func in pairs(M.config.placeholders.funcs) do
+        for func_name, resolve_func in pairs(M.config.placeholders.modifiers) do
             if extracted_func_name == func_name then
                 if type(resolve_func) ~= "function" then
                     error(
-                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                        "[Pilot] option 'placeholders.modifiers' values must a function that returns a string"
                     )
                 end
                 local resolved_func_arg =
@@ -57,7 +57,7 @@ local function resolve_placeholder(placeholder)
                 local resolved = resolve_func(resolved_func_arg)
                 if type(resolved) ~= "string" then
                     error(
-                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                        "[Pilot] option 'placeholders.modifiers' values must a function that returns a string"
                     )
                 end
                 return resolved

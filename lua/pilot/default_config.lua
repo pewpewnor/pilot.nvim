@@ -151,7 +151,7 @@ M.default_opts = {
                 return vim.fn.expand("<cWORD>")
             end,
         },
-        funcs = {
+        modifiers = {
             hash_sha256 = function(arg)
                 return vim.fn.sha256(arg)
             end,
