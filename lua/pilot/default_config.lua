@@ -141,9 +141,7 @@ M.default_opts = {
             pilot_data_path = function()
                 local pilot_data_path =
                     vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
-                if not common.is_directory(pilot_data_path) then
-                    common.mkdir_with_parents(pilot_data_path)
-                end
+                common.mkdir_with_parents(pilot_data_path)
                 return vim.fn.fnameescape(pilot_data_path)
             end,
             cword = function()

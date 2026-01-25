@@ -8,23 +8,11 @@ function M.init(config)
     M.config = config
 end
 
----@param dir_path string
----@return string?
-local function create_dir_path(dir_path)
-    if
-        not common.is_directory(dir_path)
-        and not common.mkdir_with_parents(dir_path)
-    then
-        return nil
-    end
-    return dir_path
-end
-
 ---@param path string
 ---@param create_missing_dirs boolean
 local function custom_run_config_path(path, create_missing_dirs)
     local dir_path = vim.fs.dirname(path)
-    if create_missing_dirs and not create_dir_path(dir_path) then
+    if create_missing_dirs and not common.mkdir_with_parents(dir_path) then
         error(
             string.format(
                 "[Pilot] Failed to create custom directory at '%s'.",

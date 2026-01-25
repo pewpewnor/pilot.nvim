@@ -44,11 +44,13 @@
 
 local default_config = require("pilot.default_config")
 local module = require("pilot.module")
+local validate_opts = require("pilot.validate_opts")
+local interpolation = require("pilot.interpolation")
 
 local M = {
     preset_executors = default_config.preset_executors,
     utils = {
-        interpolate = require("pilot.interpolation").interpolate,
+        interpolate = interpolation.interpolate,
     },
 }
 
@@ -56,7 +58,7 @@ local M = {
 function M.setup(options)
     M.config =
         vim.tbl_deep_extend("force", default_config.default_opts, options or {})
-    require("pilot.validate_opts")(M.config)
+    validate_opts(M.config)
     module.init(M.config)
 end
 
