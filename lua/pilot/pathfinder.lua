@@ -1,4 +1,5 @@
 local interpolation = require("pilot.interpolation")
+local common = require("pilot.common")
 
 local M = {}
 
@@ -11,8 +12,8 @@ end
 ---@return string?
 local function create_dir_path(dir_path)
     if
-        vim.fn.isdirectory(dir_path) == 0
-        and vim.fn.mkdir(dir_path, "p") == 0
+        not common.is_directory(dir_path)
+        and not common.mkdir_with_parents(dir_path)
     then
         return nil
     end

@@ -2,6 +2,7 @@
 
 local pilot = require("pilot")
 local interpolation = require("pilot.interpolation")
+local common = require("pilot.common")
 
 describe("interpolation", function()
     pilot.setup()
@@ -57,7 +58,7 @@ describe("interpolation", function()
 
         local pd = interpolation.interpolate("{{pilot_data_path}}")
         assert.is_string(pd)
-        assert.equals(vim.fn.isdirectory(pd), 1)
+        assert.is_truthy(common.is_directory(pd))
 
         assert.equals(interpolation.interpolate("{{cword}}"), "world")
         assert.equals(interpolation.interpolate("{{cWORD}}"), "world-over")

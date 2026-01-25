@@ -1,5 +1,6 @@
 local pathfinder = require("pilot.pathfinder")
 local runner = require("pilot.runner")
+local common = require("pilot.common")
 
 local M = {}
 
@@ -16,7 +17,7 @@ end
 local function edit_run_config(run_config_path)
     if
         M.config.write_template_to_new_run_config
-        and vim.fn.filereadable(run_config_path) == 0
+        and not common.is_file_and_readable(run_config_path)
     then
         vim.fn.writefile({
             "[",

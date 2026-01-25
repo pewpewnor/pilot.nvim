@@ -13,8 +13,8 @@
 ---@field command string
 ---@field executor string?
 
-local fs_utils = require("pilot.fs_utils")
 local interpolation = require("pilot.interpolation")
+local common = require("pilot.common")
 
 local M = {}
 
@@ -37,7 +37,7 @@ local function read_fallback_project_run_config()
     end
 
     local fallback_path = interpolation.interpolate(fallback_project_run_config)
-    local file_content = fs_utils.read_file(fallback_path)
+    local file_content = common.read_file(fallback_path)
     if not file_content then
         error(
             string.format(
@@ -64,7 +64,7 @@ end
 ---@param import_path string
 ---@return [RawEntry]
 local function read_and_decode_imported_path(import_path)
-    local file_content = fs_utils.read_file(import_path)
+    local file_content = common.read_file(import_path)
     if not file_content then
         error(
             string.format(
@@ -75,7 +75,7 @@ local function read_and_decode_imported_path(import_path)
     end
 
     ---@type table?
-    local imported_list = fs_utils.decode_json(file_content)
+    local imported_list = common.json_decode(file_content)
 
     if not imported_list then
         error(
@@ -183,7 +183,7 @@ end
 ---@param run_classification RunClassification
 ---@return [ProcessedEntry]?
 function M.parse_run_config(run_config_path, run_classification)
-    local file_content = fs_utils.read_file(run_config_path)
+    local file_content = common.read_file(run_config_path)
     if not file_content then
         if run_classification == "project" then
             if not M.config.run_config_path.fallback_project then
@@ -211,7 +211,7 @@ function M.parse_run_config(run_config_path, run_classification)
     end
 
     ---@type table?
-    local list = fs_utils.decode_json(file_content)
+    local list = common.json_decode(file_content)
 
     if not list then
         error(
