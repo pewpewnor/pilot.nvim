@@ -4,7 +4,7 @@
 
 ---@alias PlaceholderVar fun(): string
 
----@alias PlaceholderModifier fun(arg: string): string
+---@alias PlaceholderFunc fun(arg: string): string
 
 ---@alias AdditionalPlaceholder fun(placeholder: string): string?
 
@@ -27,12 +27,12 @@
 ---@class PlaceholderVars
 ---@field [string] PlaceholderVar
 
----@class PlaceholderModifiers
----@field [string] PlaceholderModifier
+---@class PlaceholderFuncs
+---@field [string] PlaceholderFunc
 
 ---@class Placeholders
 ---@field vars PlaceholderVars
----@field modifiers PlaceholderModifiers
+---@field funcs PlaceholderFuncs
 
 ---@class Config
 ---@field run_config_path RunConfigPath

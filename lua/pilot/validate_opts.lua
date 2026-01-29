@@ -53,8 +53,8 @@ local function validate_opts(options)
         error("[Pilot] option 'executors' must be a table.")
     elseif type(options.placeholders.vars) ~= "table" then
         error("[Pilot] option 'placeholders.vars' must be a table.")
-    elseif type(options.placeholders.modifiers) ~= "table" then
-        error("[Pilot] option 'placeholders.modifiers' must be a table.")
+    elseif type(options.placeholders.funcs) ~= "table" then
+        error("[Pilot] option 'placeholders.funcs' must be a table.")
     end
 end
 

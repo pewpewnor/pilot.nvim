@@ -107,8 +107,8 @@ You do not need to pass anything to `setup()` if you want the defaults.
         vars = {
             -- (filled with all preset placeholder vars, e.g. file_name, cwd_path)
         }, -- table<string, function(): string>
-        modifiers = {
-            -- (filled with all preset placeholder modifiers, e.g. hash_sha256)
+        funcs = {
+            -- (filled with all preset placeholder funcs, e.g. hash_sha256)
         }, -- table<string, function(arg: string): string>
     },
 }
@@ -279,7 +279,7 @@ running C source code files.
 | `{{cword}}`                  | Word under the cursor                                                        |
 | `{{cWORD}}`                  | Complete word (between spaces) under the cursor                              |
 
-**Modifiers**
+**Modifier Functions**
 
 | Placeholder            | Description / usage                                                            |
 | ---------------------- | ------------------------------------------------------------------------------ |

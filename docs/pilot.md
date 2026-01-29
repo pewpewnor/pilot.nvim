@@ -150,7 +150,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
                 return vim.fn.expand("<cWORD>")
             end,
         },  -- table<string, function(): string>
-        modifiers = {
+        funcs = {
             hash_sha256 = function(arg)
                 return vim.fn.sha256(arg)
             end,
@@ -232,10 +232,10 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ### `placeholders`
 
-- **Type:** `table` with `vars` and `modifiers` subtables
+- **Type:** `table` with `vars` and `funcs` subtables
 - **Description:**
 - `vars` is a table mapping placeholder names to functions that return strings (e.g. `file_name`).
-- `modifiers` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
+- `funcs` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
 
 ---
 
@@ -271,7 +271,7 @@ pilot.setup({
             new_temp_file = function() return vim.fn.tempname() end,
             template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
         },
-        modifiers = {},
+        funcs = {},
     },
 })
 
@@ -388,17 +388,17 @@ Simple placeholders that expand to a string. Define them in
 | `{{cword}}`                  | Word under the cursor                                                        |
 | `{{cWORD}}`                  | WORD under the cursor                                                        |
 
-**Modifier**
+**Modifier Functions**
 
 Callable placeholders that accept an argument and return a string. Define
-them in `placeholders.modifiers` as functions that accept a single argument and
+them in `placeholders.funcs` as functions that accept a single argument and
 return a string, and use them like `{{name(arg)}}` in configs.
 
 | Placeholder            | Description / usage                                                            |
 | ---------------------- | ------------------------------------------------------------------------------ |
 | `{{hash_sha256(...)}}` | SHA256 hash of the supplied path or string (e.g. `{{hash_sha256(cwd_path)}}`). |
 
-Add custom vars to `placeholders.vars` and custom functions to `placeholders.modifiers`.
+Add custom vars to `placeholders.vars` and custom functions to `placeholders.funcs`.
 
 ---
 
@@ -448,11 +448,11 @@ executors = {
 
 ---
 
-## Modifiers
+## Functions
 
 All functions are available via `require("pilot")`.
 
-| Modifier Name                                  | Description                                                                                    |
+| Function Name                                  | Description                                                                                    |
 | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `setup(options)`                               | Configure pilot.nvim. See [configuration options (detailed)](#configuration-options-detailed). |
 | `run_project()`                                | Run a project command (from project run config). Prompts if multiple commands.                 |
