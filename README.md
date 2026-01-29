@@ -279,7 +279,7 @@ running C source code files.
 | `{{cword}}`                  | Word under the cursor                                                        |
 | `{{cWORD}}`                  | Complete word (between spaces) under the cursor                              |
 
-**Modifier Functions**
+**Functions**
 
 | Placeholder            | Description / usage                                                            |
 | ---------------------- | ------------------------------------------------------------------------------ |

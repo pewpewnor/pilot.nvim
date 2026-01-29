@@ -436,7 +436,7 @@ or commands.
 
   {{cWORD}}                    WORD under the cursor
   --------------------------------------------------------------------------------
-**Modifier Functions**
+**Functions**
 
 Callable placeholders that accept an argument and return a string. Define them
 in `placeholders.funcs` as functions that accept a single argument and return a

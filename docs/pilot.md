@@ -388,7 +388,7 @@ Simple placeholders that expand to a string. Define them in
 | `{{cword}}`                  | Word under the cursor                                                        |
 | `{{cWORD}}`                  | WORD under the cursor                                                        |
 
-**Modifier Functions**
+**Functions**
 
 Callable placeholders that accept an argument and return a string. Define
 them in `placeholders.funcs` as functions that accept a single argument and

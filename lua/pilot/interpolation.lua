@@ -87,6 +87,7 @@ function M.interpolate(command, no_escape)
     local cursor = 1
     local pattern = "({+)([^}]+)(}+)"
 
+    ---@param text string
     local function insert_result_for_joining(text)
         if no_escape then
             table.insert(result, text)
