@@ -9,7 +9,7 @@ local required_braces = 2
 
 ---@param placeholder string
 ---@return string?, string?
-local function extract_placeholder_modifier_call(placeholder)
+local function extract_placeholder_function_call(placeholder)
     if placeholder:sub(1, 1) ~= "(" and placeholder:sub(-1) == ")" then
         local func_name, balanced_parens =
             placeholder:match("^([%w_%-]+)(%b())$")
@@ -29,37 +29,35 @@ local function resolve_placeholder(placeholder)
         if placeholder == var_name then
             if type(resolve_var) ~= "function" then
                 error(
-                    "[Pilot] option 'placeholders.vars' values must be a function that returns a string"
+                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
                 )
             end
             local resolved = resolve_var()
             if type(resolved) ~= "string" then
                 error(
-                    "[Pilot] option 'placeholders.vars' values must be a function that returns a string"
+                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
                 )
             end
             return resolved
         end
     end
 
-    local extracted_modifier_name, extracted_modifier_arg =
-        extract_placeholder_modifier_call(placeholder)
-    if extracted_modifier_name and extracted_modifier_arg then
-        for modifier_name, resolve_modifier in
-            pairs(M.config.placeholders.modifiers)
-        do
-            if extracted_modifier_name == modifier_name then
-                if type(resolve_modifier) ~= "function" then
+    local extracted_func_name, extracted_func_arg =
+        extract_placeholder_function_call(placeholder)
+    if extracted_func_name and extracted_func_arg then
+        for func_name, resolve_func in pairs(M.config.placeholders.modifiers) do
+            if extracted_func_name == func_name then
+                if type(resolve_func) ~= "function" then
                     error(
-                        "[Pilot] option 'placeholders.modifiers' values must be a function that returns a string"
+                        "[Pilot] option 'placeholders.modifiers' values must a function that returns a string"
                     )
                 end
-                local resolved_modifier_arg =
-                    resolve_placeholder(extracted_modifier_arg)
-                local resolved = resolve_modifier(resolved_modifier_arg)
+                local resolved_func_arg =
+                    resolve_placeholder(extracted_func_arg)
+                local resolved = resolve_func(resolved_func_arg)
                 if type(resolved) ~= "string" then
                     error(
-                        "[Pilot] option 'placeholders.modifiers' values must be a function that returns a string"
+                        "[Pilot] option 'placeholders.modifiers' values must a function that returns a string"
                     )
                 end
                 return resolved
