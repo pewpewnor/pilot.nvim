@@ -80,7 +80,7 @@ M.default_opts = {
         fallback_project = nil,
     },
     write_template_to_new_run_config = true,
-    automatically_run_single_command = {
+    auto_run_single_command = {
         project = true,
         file_type = true,
     },

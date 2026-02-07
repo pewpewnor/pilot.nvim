@@ -69,9 +69,9 @@ function M.select_and_run_entry(run_config_path, run_classification)
         #entries == 1
         and (
             run_classification == "project"
-                and M.config.automatically_run_single_command.project
+                and M.config.auto_run_single_command.project
             or run_classification == "file type"
-                and M.config.automatically_run_single_command.file_type
+                and M.config.auto_run_single_command.file_type
         )
     then
         run_entry(entries[1], run_classification)

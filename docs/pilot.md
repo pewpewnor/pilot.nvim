@@ -82,7 +82,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
         ), -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
-    automatically_run_single_command = {
+    auto_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
     },
@@ -188,13 +188,13 @@ You do not need to pass anything to `setup()` if you want the defaults.
   Function returning a path to a fallback config file if the main one is missing.  
   Useful for providing a default config for certain project types.
 
-### `automatically_run_single_command.project`
+### `auto_run_single_command.project`
 
 - **Type:** `boolean`
 - **Description:**
   If only one command is found in the project run config, run it immediately without prompting the user.
 
-### `automatically_run_single_command.file_type`
+### `auto_run_single_command.file_type`
 
 - **Type:** `boolean`
 - **Description:**

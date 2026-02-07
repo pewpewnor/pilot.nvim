@@ -20,21 +20,15 @@ local function validate_opts(options)
         error(
             "[Pilot] option 'file_type_run_config_path' must either be a string or nil."
         )
-    elseif type(options.automatically_run_single_command) ~= "table" then
+    elseif type(options.auto_run_single_command) ~= "table" then
+        error("[Pilot] option 'auto_run_single_command' must be a table.")
+    elseif type(options.auto_run_single_command.project) ~= "boolean" then
         error(
-            "[Pilot] option 'automatically_run_single_command' must be a table."
+            "[Pilot] option 'auto_run_single_command.project' must be a boolean."
         )
-    elseif
-        type(options.automatically_run_single_command.project) ~= "boolean"
-    then
+    elseif type(options.auto_run_single_command.file_type) ~= "boolean" then
         error(
-            "[Pilot] option 'automatically_run_single_command.project' must be a boolean."
-        )
-    elseif
-        type(options.automatically_run_single_command.file_type) ~= "boolean"
-    then
-        error(
-            "[Pilot] option 'automatically_run_single_command.file_type' must be a boolean."
+            "[Pilot] option 'auto_run_single_command.file_type' must be a boolean."
         )
     elseif
         type(options.run_config_path.fallback_project) ~= "function"

@@ -13,7 +13,7 @@
 ---@field file_type string
 ---@field fallback_project FallbackProjectRunConfig?
 
----@class AutomaticallyRunSingleCommand
+---@class AutoRunSingleCommand
 ---@field project boolean
 ---@field file_type boolean
 
@@ -37,7 +37,7 @@
 ---@class Config
 ---@field run_config_path RunConfigPath
 ---@field write_template_to_new_run_config boolean
----@field automatically_run_single_command AutomaticallyRunSingleCommand
+---@field auto_run_single_command AutoRunSingleCommand
 ---@field default_executor DefaultExecutor
 ---@field executors Executors
 ---@field placeholders Placeholders

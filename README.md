@@ -91,7 +91,7 @@ You do not need to pass anything to `setup()` if you want the defaults.
         file_type = vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json"), -- string
         fallback_project = nil, -- (function() -> string) | nil
     },
-    automatically_run_single_command = {
+    auto_run_single_command = {
         project = true, -- boolean
         file_type = true, -- boolean
     },
