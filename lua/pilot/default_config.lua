@@ -67,17 +67,20 @@ end
 ---@type Config
 M.default_opts = {
     run_config_path = {
-        project = vim.fs.joinpath(
-            "{{pilot_data_path}}",
-            "projects",
-            "{{hash_sha256(cwd_path)}}.json"
-        ),
-        file_type = vim.fs.joinpath(
-            "{{pilot_data_path}}",
-            "filetypes",
-            "{{file_type}}.json"
-        ),
-        fallback_project = nil,
+        project = function()
+            return vim.fs.joinpath(
+                "{{pilot_data_path}}",
+                "projects",
+                "{{hash_sha256(cwd_path)}}.json"
+            )
+        end,
+        file_type = function()
+            return vim.fs.joinpath(
+                "{{pilot_data_path}}",
+                "filetypes",
+                "{{file_type}}.json"
+            )
+        end,
     },
     write_template_to_new_run_config = true,
     auto_run_single_command = {

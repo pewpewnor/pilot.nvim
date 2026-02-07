@@ -43,14 +43,14 @@ end
 
 function M.run_project()
     runner.select_and_run_entry(
-        pathfinder.get_project_run_config_path(false),
+        pathfinder.get_project_run_config_path(),
         "project"
     )
 end
 
 function M.run_file_type()
     runner.select_and_run_entry(
-        pathfinder.get_file_type_run_config_path(false),
+        pathfinder.get_file_type_run_config_path(),
         "file type"
     )
 end
@@ -58,29 +58,27 @@ end
 M.run_previous_task = runner.run_previous_task
 
 function M.edit_project_run_config()
-    edit_run_config(pathfinder.get_project_run_config_path(true))
+    edit_run_config(pathfinder.get_project_run_config_path())
 end
 
 function M.edit_file_type_run_config()
-    edit_run_config(pathfinder.get_file_type_run_config_path(true))
+    edit_run_config(pathfinder.get_file_type_run_config_path())
 end
 
 function M.delete_project_run_config()
-    delete_run_config(pathfinder.get_project_run_config_path(false))
+    delete_run_config(pathfinder.get_project_run_config_path())
 end
 
 function M.delete_file_type_run_config()
-    delete_run_config(pathfinder.get_file_type_run_config_path(false))
+    delete_run_config(pathfinder.get_file_type_run_config_path())
 end
 
 function M.purge_all_default_project_run_config_dir()
-    purge_all_run_config_dir(pathfinder.get_project_run_config_path(false))
+    purge_all_run_config_dir(pathfinder.get_project_run_config_path())
 end
 
 function M.purge_all_default_file_type_run_config_dir()
-    purge_all_run_config_dir(
-        pathfinder.get_get_file_type_run_config_path(false)
-    )
+    purge_all_run_config_dir(pathfinder.get_get_file_type_run_config_path())
 end
 
 return M

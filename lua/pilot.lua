@@ -1,6 +1,6 @@
----@alias FallbackProjectRunConfig fun(): string
+---@alias RunConfigPathResolver fun(): string?
 
----@alias Executor fun(command: string, args: [string]?)
+---@alias Executor fun(command: string, args: string[]?)
 
 ---@alias PlaceholderVar fun(): string
 
@@ -9,9 +9,8 @@
 ---@alias AdditionalPlaceholder fun(placeholder: string): string?
 
 ---@class RunConfigPath
----@field project string|[string]
----@field file_type string
----@field fallback_project FallbackProjectRunConfig?
+---@field project RunConfigPathResolver|RunConfigPathResolver[]
+---@field file_type RunConfigPathResolver|RunConfigPathResolver[]
 
 ---@class AutoRunSingleCommand
 ---@field project boolean

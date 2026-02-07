@@ -69,17 +69,15 @@ use {
 
 ## Default Configuration Values
 
-You do not need to pass anything to `setup()` if you want the defaults.
-
 ```lua
 {
     run_config_path = {
-        project = vim.fs.joinpath(
-            "{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json"
-        ),  -- string | string[]
-        file_type = vim.fs.joinpath(
-            "{{pilot_data_path}}", "filetypes", "{{file_type}}.json"
-        ), -- string
+        project = function()
+            return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
+        end, -- function(): string? | (function(): string?)[]
+        file_type = function()
+            return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
+        end, -- function(): string? | (function(): string?)[]
         fallback_project = nil, -- (function() -> string) | nil
     },
     auto_run_single_command = {
@@ -165,10 +163,10 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ### `run_config_path.project`
 
-- **Type:** `string | string[] | nil`
+- **Type:** `function(): string? | (function(): string?)[]`
 - **Description:**
   Path or list of paths to the project run configuration file(s).  
-  If a list, the first readable file is used.  
+  If it's a list, the first existant & readable file will be used.  
   Supports placeholders (see [placeholders](#placeholders)).
 - **Example:**  
   `"{{cwd_path}}/pilot.json"`  
@@ -176,10 +174,10 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ### `run_config_path.file_type`
 
-- **Type:** `string | nil`
+- **Type:** `function(): string? | (function(): string?)[]`
 - **Description:**
-  Path to the file type run configuration file.  
-  Supports placeholders.
+  Path or list of paths to the file type run configuration file(s).  
+  If it's a list, the first existant & readable file will be used.
 
 ### `run_config_path.fallback_project`
 
@@ -239,20 +237,24 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ---
 
-## Example Configuration
+## Example Customization
 
 ```lua
 local pilot = require("pilot")
 pilot.setup({
     run_config_path = {
-        project = "{{cwd_path}}/pilot.json",
-        fallback_project = function()
-            if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-                return  "{{pilot_data_path}}/npm_project.json"
-            elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
-                return "/home/user/templates/cmake_project.json"
-            end
-        end,
+        -- grab the pilot configuration from the current working directory instead
+        -- of automatically generating one
+        project = {
+            function() return "{{cwd_path}}/pilot.json" end,
+            -- these will be checked if our above "pilot.json" file doesn't exist
+            function() return "{{cwd_path}}/.vscode/pilot.json" end,
+            function()
+                if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                    return "{{pilot_data_path}}/npm_project.json"
+                end
+            end,
+        },
     },
     default_executor = {
         file_type = pilot.preset_executors.split,

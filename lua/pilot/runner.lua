@@ -1,7 +1,7 @@
 ---@class Task
 ---@field command string
 ---@field executor Executor
----@field args [string]
+---@field args string[]
 
 local parser = require("pilot.parser")
 local interpolation = require("pilot.interpolation")

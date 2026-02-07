@@ -23,32 +23,6 @@ function M.init(config)
     M.config = config
 end
 
----@return string?
-local function read_fallback_project_run_config()
-    local fallback_project_run_config =
-        M.config.run_config_path.fallback_project()
-    if not fallback_project_run_config then
-        return nil
-    end
-    if type(fallback_project_run_config) ~= "string" then
-        error(
-            "[Pilot] 'fallback_project_run_config' must return a string or nil."
-        )
-    end
-
-    local fallback_path = interpolation.interpolate(fallback_project_run_config)
-    local file_content = common.read_file(fallback_path)
-    if not file_content then
-        error(
-            string.format(
-                "[Pilot] Failed to read fallback project run configuration at '%s'.",
-                fallback_path
-            )
-        )
-    end
-    return file_content
-end
-
 ---@param command string
 ---@param name string?
 ---@param executor string?
@@ -62,7 +36,7 @@ local function create_processed_entry(command, name, executor)
 end
 
 ---@param import_path string
----@return [RawEntry]
+---@return RawEntry[]
 local function read_and_decode_imported_path(import_path)
     local file_content = common.read_file(import_path)
     if not file_content then
@@ -96,9 +70,9 @@ local function read_and_decode_imported_path(import_path)
     return imported_list
 end
 
----@param list [RawEntry]
+---@param list RawEntry[]
 ---@param run_config_path string
----@return [ProcessedEntry]
+---@return ProcessedEntry[]
 local function parse_list_to_entries(list, run_config_path)
     if type(list) ~= "table" then
         error(
@@ -181,33 +155,14 @@ end
 
 ---@param run_config_path string
 ---@param run_classification RunClassification
----@return [ProcessedEntry]?
+---@return ProcessedEntry[]?
 function M.parse_run_config(run_config_path, run_classification)
     local file_content = common.read_file(run_config_path)
     if not file_content then
-        if run_classification == "project" then
-            if not M.config.run_config_path.fallback_project then
-                print(
-                    "[Pilot] No project run configuration detected and no fallback configured."
-                )
-                return nil
-            end
-            file_content = read_fallback_project_run_config()
-            if not file_content then
-                print(
-                    "[Pilot] No project run configuration detected and fallback returns nil."
-                )
-                return nil
-            end
-        else
-            print(
-                string.format(
-                    "[Pilot] No detected run configuration for file type %s.",
-                    vim.bo.filetype
-                )
-            )
-            return nil
-        end
+        print(
+            "[Pilot] No suitable run configuration file, all paths don't exist or unreadable."
+        )
+        return nil
     end
 
     ---@type table?

@@ -16,7 +16,7 @@ _Requirement: Neovim v0.11.x_
 
 - [Installation](#installation)
 - [Default configuration values](#default-configuration-values)
-- [Example configuration](#example-configuration)
+- [Example customization](#example-configuration)
 - [Run configuration format](#run-configuration-format)
 - [Example project run configuration](#example-project-run-configuration)
 - [Example file type run configuration](#example-file-type-run-configuration)
@@ -83,12 +83,17 @@ use {
 ## Default Configuration Values
 
 You do not need to pass anything to `setup()` if you want the defaults.
+The default values are usually enough unless you want heavy customizations.
 
 ```lua
 {
     run_config_path = {
-        project = vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json"), -- string | string[]
-        file_type = vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json"), -- string
+        project = function()
+            return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
+        end, -- function(): string? | (function(): string?)[]
+        file_type = function()
+            return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
+        end, -- function(): string? | (function(): string?)[]
         fallback_project = nil, -- (function() -> string) | nil
     },
     auto_run_single_command = {
@@ -118,9 +123,9 @@ You do not need to pass anything to `setup()` if you want the defaults.
 
 ---
 
-## Example Configuration
+## Example Customization
 
-This is a full example to see how the plugin can be configured.
+Full example to show how this plugin can be heavily customized.
 
 ```lua
 local pilot = require("pilot")
@@ -128,21 +133,16 @@ pilot.setup({
     run_config_path = {
         -- grab the pilot configuration from the current working directory instead
         -- of automatically generating one
-        project = "{{cwd_path}}/pilot.json",
-        -- will be used instead if there is no project run configuration file
-        -- at the path specified in the 'project_run_config_path' option
-        fallback_project = function()
-            -- you can customize this logic
-            -- e.g. if the project has 'package-lock.json', then use our
-            -- 'npm_project.json' as the project run configuration
-            if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-                return  "{{pilot_data_path}}/npm_project.json"
-            -- e.g. if the project has CMakeLists.txt, then we will use our
-            -- 'cmake_project.json' as our project run configuration
-            elseif vim.fn.filereadable(vim.fn.getcwd() .. "/CMakeLists.txt") == 1 then
-                return "/home/user/templates/cmake_project.json"
-            end
-        end,
+        project = {
+            function() return "{{cwd_path}}/pilot.json" end,
+            -- these will be checked if our above "pilot.json" file doesn't exist
+            function() return "{{cwd_path}}/.vscode/pilot.json" end,
+            function()
+                if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                    return "{{pilot_data_path}}/npm_project.json"
+                end
+            end,
+        },
     },
     write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
     default_executor = {
