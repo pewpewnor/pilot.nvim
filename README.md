@@ -36,7 +36,7 @@ I wanted a code runner plugin that supports placeholder interpolation, allowing 
 - Run arbitrary commands for any file or project, with full control over execution.
 - Powerful placeholders for file paths, names, directories, and more.
 - Edit configuration files on the fly without needing to reload Neovim everytime.
-- Fallback project run configuration: use a default config if none is found for a project.
+- Define multiple possible run config path locations.
 - Customizable run configuration file to define how it will be executed and the execution locations (tabs, splits, background jobs, custom location, etc).
 - Much more other features such as importing/including other run configuration files.
 
@@ -94,7 +94,6 @@ The default values are usually enough unless you want heavy customizations.
         file_type = function()
             return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
         end, -- function(): string? | (function(): string?)[]
-        fallback_project = nil, -- (function() -> string) | nil
     },
     auto_run_single_command = {
         project = true, -- boolean

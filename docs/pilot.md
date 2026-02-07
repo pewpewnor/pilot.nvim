@@ -2,7 +2,7 @@
 
 A Neovim plugin that allows you to **run** your **project or file** based on a
 **JSON run configuration file** with placeholder support and customizable executors. You can edit configurations on the fly, and the plugin supports advanced
-features like fallback configs, custom executors, and more.
+features like checks for possible config paths, custom executors, and more.
 
 This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the latest Neovim major release version.
 
@@ -15,7 +15,7 @@ The source code for this plugin is available in the [GitHub repository](https://
 - **Run arbitrary commands** for any file or project, with full control over execution.
 - **Placeholder interpolation** for file paths, names, directories, and more.
 - **On-the-fly configuration editing**: No need to reload Neovim after changes.
-- **Fallback project run configuration**: Use a default config if none is found for a project.
+- **Multiple run config paths**: It searches your list of possible run config path locations.
 - **Customizable config file locations**: Store configs wherever you want.
 - **Customizable executors**: Run commands in new tabs, splits, vsplits, background jobs, or your own custom way.
 - **Custom executors**: Define your own ways to run commands, including integration with tools like tmux.
@@ -78,7 +78,6 @@ use {
         file_type = function()
             return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
         end, -- function(): string? | (function(): string?)[]
-        fallback_project = nil, -- (function() -> string) | nil
     },
     auto_run_single_command = {
         project = true, -- boolean
@@ -178,13 +177,6 @@ use {
 - **Description:**
   Path or list of paths to the file type run configuration file(s).  
   If it's a list, the first existant & readable file will be used.
-
-### `run_config_path.fallback_project`
-
-- **Type:** `function() -> string | nil`
-- **Description:**
-  Function returning a path to a fallback config file if the main one is missing.  
-  Useful for providing a default config for certain project types.
 
 ### `auto_run_single_command.project`
 
@@ -486,9 +478,6 @@ A: Add a function to `executors` in your config and reference its key in your ru
 
 **Q: How do I use placeholders in config paths?**  
 A: All config paths support placeholders like `{{cwd_path}}`, `{{file_type}}`, etc.
-
-**Q: What happens if my config file is missing or invalid?**  
-A: For project configs, the fallback function is used if provided. For file type configs, a message is printed and nothing runs.
 
 **Q: Can I use arrays for the `command` field?**  
 A: Yes, arrays are joined with `&&` to form a single shell command.
