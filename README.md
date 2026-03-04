@@ -168,6 +168,11 @@ pilot.setup({
             template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
         },
     },
+    -- perhaps better display view for vanilla vim.ui.select when selecting entries
+    display = {
+        numbered = false,
+        last_entry_new_line = true,
+    },
 })
 
 -- customize these keybindings to your liking

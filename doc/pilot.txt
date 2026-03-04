@@ -279,11 +279,8 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
     local pilot = require("pilot")
     pilot.setup({
         run_config_path = {
-            -- grab the pilot configuration from the current working directory instead
-            -- of automatically generating one
             project = {
                 function() return "{{cwd_path}}/pilot.json" end,
-                -- these will be checked if our above "pilot.json" file doesn't exist
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
                 function()
                     if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
@@ -305,11 +302,14 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
         },
         placeholders = {
             vars = {
-                -- example to add custom placeholders
                 new_temp_file = function() return vim.fn.tempname() end,
                 template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
             },
             funcs = {},
+        },
+        display = {
+            numbered = false,
+            last_entry_new_line = true,
         },
     })
     
