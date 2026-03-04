@@ -65,7 +65,13 @@ function M.select_and_run_entry(run_config_path, run_classification)
         return
     end
 
-    if
+    if #entries == 0 then
+        print(
+            "[Pilot] No entries in the "
+                .. run_classification
+                .. " run config file."
+        )
+    elseif
         #entries == 1
         and (
             run_classification == "project"
@@ -76,8 +82,13 @@ function M.select_and_run_entry(run_config_path, run_classification)
     then
         run_entry(entries[1], run_classification)
     else
-        for i, entry in ipairs(entries) do
-            entries[i].name = i .. ". " .. entry.name
+        if M.config.display.numbered then
+            for i, entry in ipairs(entries) do
+                entries[i].name = i .. ". " .. entry.name
+            end
+        end
+        if M.config.display.last_entry_new_line then
+            entries[#entries].name = entries[#entries].name .. "\n"
         end
         vim.ui.select(entries, {
             prompt = "Run a command for this "

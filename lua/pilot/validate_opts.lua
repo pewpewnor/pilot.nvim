@@ -38,6 +38,10 @@ local function validate_opts(options)
         error("[Pilot] option 'placeholders.vars' must be a table.")
     elseif type(options.placeholders.funcs) ~= "table" then
         error("[Pilot] option 'placeholders.funcs' must be a table.")
+    elseif type(options.display.numbered) ~= "boolean" then
+        error("[Pilot] option 'display.numbered' must be a boolean.")
+    elseif type(options.display.last_entry_new_line) ~= "boolean" then
+        error("[Pilot] option 'display.last_entry_new_line' must be a boolean.")
     end
 end
 

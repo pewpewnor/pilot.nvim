@@ -153,6 +153,10 @@ use {
             end,
         },  -- table<string, function(arg: string): string>
     },
+    display = {
+        numbered = true,
+        last_entry_new_line = false,
+    },
 }
 ```
 
@@ -226,6 +230,13 @@ use {
 - **Description:**
 - `vars` is a table mapping placeholder names to functions that return strings (e.g. `file_name`).
 - `funcs` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
+
+### `display`
+
+- **Type:** `table` with display / UI options
+- **Description:**
+- `numbered` whether to label each entry name with numbers when selecting an entry.
+- `last_entry_new_line` whether to add new line on the last entry name when selecting an entry.
 
 ---
 

@@ -33,6 +33,10 @@
 ---@field vars PlaceholderVars
 ---@field funcs PlaceholderFuncs
 
+---@class Display
+---@field numbered boolean
+---@field last_entry_new_line boolean
+
 ---@class Config
 ---@field run_config_path RunConfigPath
 ---@field write_template_to_new_run_config boolean
@@ -40,6 +44,7 @@
 ---@field default_executor DefaultExecutor
 ---@field executors Executors
 ---@field placeholders Placeholders
+---@field display Display
 
 local default_config = require("pilot.default_config")
 local module = require("pilot.module")

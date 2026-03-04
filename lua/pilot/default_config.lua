@@ -160,6 +160,10 @@ M.default_opts = {
             end,
         },
     },
+    display = {
+        numbered = true,
+        last_entry_new_line = false,
+    },
 }
 
 return M
