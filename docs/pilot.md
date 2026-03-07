@@ -154,8 +154,8 @@ use {
         },  -- table<string, function(arg: string): string>
     },
     display = {
-        numbered = true,
-        last_entry_new_line = false,
+        numbered = true, -- boolean
+        last_entry_new_line = false, -- bolean
     },
 }
 ```
