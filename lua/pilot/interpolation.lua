@@ -29,13 +29,13 @@ local function resolve_placeholder(placeholder)
         if placeholder == var_name then
             if type(resolve_var) ~= "function" then
                 error(
-                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
+                    "[Pilot] option 'placeholders.vars' values must be a function that returns a string"
                 )
             end
             local resolved = resolve_var()
             if type(resolved) ~= "string" then
                 error(
-                    "[Pilot] option 'placeholders.vars' values must a function that returns a string"
+                    "[Pilot] option 'placeholders.vars' values must be a function that returns a string"
                 )
             end
             return resolved
@@ -49,7 +49,7 @@ local function resolve_placeholder(placeholder)
             if extracted_func_name == func_name then
                 if type(resolve_func) ~= "function" then
                     error(
-                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                        "[Pilot] option 'placeholders.funcs' values must be a function that returns a string"
                     )
                 end
                 local resolved_func_arg =
@@ -57,7 +57,7 @@ local function resolve_placeholder(placeholder)
                 local resolved = resolve_func(resolved_func_arg)
                 if type(resolved) ~= "string" then
                     error(
-                        "[Pilot] option 'placeholders.funcs' values must a function that returns a string"
+                        "[Pilot] option 'placeholders.funcs' values must be a function that returns a string"
                     )
                 end
                 return resolved
