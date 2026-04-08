@@ -1,5 +1,3 @@
----@alias RunClassification "project"|"file type"
-
 ---@class RawEntryTable
 ---@field name string?
 ---@field command string?
@@ -153,11 +151,11 @@ local function parse_list_to_entries(list, run_config_path)
     return processed_entries
 end
 
----@param run_config_path string
----@param run_classification RunClassification
+---@param path string
+---@param class_name string
 ---@return ProcessedEntry[]?
-function M.parse_run_config(run_config_path, run_classification)
-    local file_content = common.read_file(run_config_path)
+function M.parse_run_config_file(path, class_name)
+    local file_content = common.read_file(path)
     if not file_content then
         print(
             "[Pilot] No suitable run configuration file, all paths don't exist or unreadable."
@@ -171,20 +169,20 @@ function M.parse_run_config(run_config_path, run_classification)
     if not list then
         error(
             string.format(
-                "[Pilot] Your %s run configuration has invalid JSON format or is empty.",
-                run_classification
+                "[Pilot] Your run configuration for '%s' has invalid JSON format or is empty.",
+                class_name
             )
         )
     end
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Your %s run configuration should contain JSON array, refer to the documentation for proper run configuration format.",
-                run_classification
+                "[Pilot] Your  run configuration for '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
+                class_name
             )
         )
     end
-    return parse_list_to_entries(list, run_config_path)
+    return parse_list_to_entries(list, path)
 end
 
 return M

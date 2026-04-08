@@ -1,3 +1,9 @@
+---@class ProcessedRunClass
+---@field name string
+---@field path string
+---@field auto_run_single_command boolean
+---@field default_executor Executor
+
 ---@class Task
 ---@field command string
 ---@field executor Executor
@@ -22,16 +28,12 @@ local function execute_task(task)
 end
 
 ---@param entry ProcessedEntry
----@param run_classification RunClassification
-local function run_entry(entry, run_classification)
+---@param default_executor Executor
+local function run_entry(entry, default_executor)
     local executor
     local args = {}
     if not entry.executor then
-        if run_classification == "file type" then
-            executor = M.config.default_executor.file_type
-        else
-            executor = M.config.default_executor.project
-        end
+        executor = default_executor
     else
         for arg in entry.executor:gmatch("%S+") do
             table.insert(args, arg)
@@ -57,30 +59,22 @@ local function run_entry(entry, run_classification)
     execute_task(M.last_executed_task)
 end
 
----@param run_config_path string
----@param run_classification RunClassification
-function M.select_and_run_entry(run_config_path, run_classification)
-    local entries = parser.parse_run_config(run_config_path, run_classification)
+---@param class ProcessedRunClass
+function M.select_and_run_entry(class)
+    local entries = parser.parse_run_config_file(class.path, class.name)
     if not entries then
         return
     end
 
     if #entries == 0 then
         print(
-            "[Pilot] No entries in the "
-                .. run_classification
-                .. " run config file."
+            string.format(
+                "[Pilot] No entries in the run configuration file for '%s'.",
+                class.name
+            )
         )
-    elseif
-        #entries == 1
-        and (
-            run_classification == "project"
-                and M.config.auto_run_single_command.project
-            or run_classification == "file type"
-                and M.config.auto_run_single_command.file_type
-        )
-    then
-        run_entry(entries[1], run_classification)
+    elseif #entries == 1 and class.auto_run_single_command then
+        run_entry(entries[1], class.default_executor)
     else
         if M.config.display.numbered then
             for i, entry in ipairs(entries) do
@@ -91,19 +85,13 @@ function M.select_and_run_entry(run_config_path, run_classification)
             entries[#entries].name = entries[#entries].name .. "\n"
         end
         vim.ui.select(entries, {
-            prompt = "Run a command for this "
-                .. run_classification
-                .. (
-                    run_classification == "file type"
-                        and " (" .. vim.bo.filetype .. ")"
-                    or ""
-                ),
+            prompt = string.format("Run a '%s' command", class.name),
             format_item = function(entry)
                 return entry.name
             end,
         }, function(chosen_entry)
             if chosen_entry then
-                run_entry(chosen_entry, run_classification)
+                run_entry(chosen_entry, class.default_executor)
             end
         end)
     end

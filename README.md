@@ -75,6 +75,7 @@ use {
 
 ## General Terms
 
+- **Run class**: A category of run configurations (e.g., project, file_type). Each run class has its own config path, auto-run behavior, and default executor.
 - **Project run configuration**: JSON file containing commands to run for the current project.
 - **File type run configuration**: JSON file containing commands to run for the current file type.
 
@@ -87,23 +88,23 @@ The default values are usually enough unless you want heavy customizations.
 
 ```lua
 {
-    run_config_path = {
-        project = function()
-            return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
-        end, -- function(): string? | (function(): string?)[]
-        file_type = function()
-            return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
-        end, -- function(): string? | (function(): string?)[]
-    },
-    auto_run_single_command = {
-        project = true, -- boolean
-        file_type = true, -- boolean
+    run_classes = {
+        project = {
+            run_config_path = function()
+                return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
+            end, -- function(): string? | (function(): string?)[]
+            auto_run_single_command = true, -- boolean
+            default_executor = pilot.preset_executors.new_tab, -- function(command: string)
+        },
+        file_type = {
+            run_config_path = function()
+                return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
+            end, -- function(): string? | (function(): string?)[]
+            auto_run_single_command = true, -- boolean
+            default_executor = pilot.preset_executors.new_tab, -- function(command: string)
+        },
     },
     write_template_to_new_run_config = true, -- boolean
-    default_executor = {
-        project = pilot.preset_executors.new_tab, -- function(command: string)
-        file_type = pilot.preset_executors.new_tab, -- function(command: string)
-    },
     executors = {
         -- (filled with all preset executors, e.g. new_tab, split, vsplit)
     }, -- table<string, function(command: string, args: string[])>
@@ -133,29 +134,32 @@ Full example to show how this plugin can be heavily customized.
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_config_path = {
-        -- grab the pilot configuration from the current working directory instead
-        -- of automatically generating one
+    run_classes = {
+        -- customize the project run class
         project = {
-            function() return "{{cwd_path}}/pilot.json" end,
-            -- these will be checked if our above "pilot.json" file doesn't exist
-            function() return "{{cwd_path}}/.vscode/pilot.json" end,
-            function()
-                if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-                    return "{{pilot_data_path}}/npm_project.json"
-                end
-            end,
+            run_config_path = {
+                function() return "{{cwd_path}}/pilot.json" end,
+                function() return "{{cwd_path}}/.vscode/pilot.json" end,
+                function()
+                    if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                        return "{{pilot_data_path}}/npm_project.json"
+                    end
+                end,
+            },
+            auto_run_single_command = true,
+            default_executor = pilot.preset_executors.new_tab,
+        },
+        -- customize the file_type run class
+        file_type = {
+            auto_run_single_command = false,
+            default_executor = pilot.preset_executors.split,
         },
     },
-    write_template_to_new_run_config = false, -- disable json template that is written everytime for new run configs
-    default_executor = {
-        -- change so that by default, we execute the file on a new bottom buffer
-        file_type = pilot.preset_executors.split,
-    },
+    write_template_to_new_run_config = false,
     -- define custom executors that can be used in any pilot run configuration
     executors = {
         -- custom executor that executes the command in a new tmux window
-        tmux_new_window = function(command)
+        tmux_new_window = function(command, args)
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
@@ -176,17 +180,17 @@ pilot.setup({
 })
 
 -- customize these keybindings to your liking
-vim.keymap.set("n", "<F10>", pilot.run_project)
-vim.keymap.set("n", "<F12>", pilot.run_file_type)
+vim.keymap.set("n", "<F10>", function() pilot.run("project") end)
+vim.keymap.set("n", "<F12>", function() pilot.run("file_type") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
-vim.keymap.set("n", "<Leader><F10>", pilot.edit_project_run_config)
-vim.keymap.set("n", "<Leader><F12>", pilot.edit_file_type_run_config)
+vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_run_config("project") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_run_config("file_type") end)
 
 -- example of creating vim user commands for pilot functions
 vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
-    pilot.delete_project_run_config, { nargs = 0, bar = false })
+    function() pilot.delete_run_config("project") end, { nargs = 0, bar = false })
 vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
-    pilot.delete_file_type_run_config, { nargs = 0, bar = false })
+    function() pilot.delete_run_config("file_type") end, { nargs = 0, bar = false })
 ```
 
 > **See:** [functions documentation](docs/pilot.md#functions) for all available functions.

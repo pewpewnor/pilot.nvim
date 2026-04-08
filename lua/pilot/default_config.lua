@@ -64,33 +64,41 @@ function M.preset_executors.background_exit_status(command)
     })
 end
 
+---@class MinimumRunClass
+---@field run_config_path RunConfigPathResolver|RunConfigPathResolver[]
+
+---@param minimum_run_class MinimumRunClass
+---@return RunClass
+function M.fill_run_class(minimum_run_class)
+    return vim.tbl_deep_extend("force", {
+        auto_run_single_command = true,
+        default_executor = M.preset_executors.new_tab,
+    }, minimum_run_class)
+end
+
 ---@type Config
 M.default_opts = {
-    run_config_path = {
-        project = function()
-            return vim.fs.joinpath(
-                "{{pilot_data_path}}",
-                "projects",
-                "{{hash_sha256(cwd_path)}}.json"
-            )
-        end,
-        file_type = function()
-            return vim.fs.joinpath(
-                "{{pilot_data_path}}",
-                "filetypes",
-                "{{file_type}}.json"
-            )
-        end,
+    run_classes = {
+        project = M.fill_run_class({
+            run_config_path = function()
+                return vim.fs.joinpath(
+                    "{{pilot_data_path}}",
+                    "projects",
+                    "{{hash_sha256(cwd_path)}}.json"
+                )
+            end,
+        }),
+        file_type = M.fill_run_class({
+            run_config_path = function()
+                return vim.fs.joinpath(
+                    "{{pilot_data_path}}",
+                    "filetypes",
+                    "{{file_type}}.json"
+                )
+            end,
+        }),
     },
     write_template_to_new_run_config = true,
-    auto_run_single_command = {
-        project = true,
-        file_type = true,
-    },
-    default_executor = {
-        project = M.preset_executors.new_tab,
-        file_type = M.preset_executors.new_tab,
-    },
     executors = {
         new_tab = M.preset_executors.new_tab,
         current_buffer = M.preset_executors.current_buffer,

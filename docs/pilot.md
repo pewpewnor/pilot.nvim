@@ -71,23 +71,23 @@ use {
 
 ```lua
 {
-    run_config_path = {
-        project = function()
-            return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
-        end, -- function(): string? | (function(): string?)[]
-        file_type = function()
-            return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
-        end, -- function(): string? | (function(): string?)[]
-    },
-    auto_run_single_command = {
-        project = true, -- boolean
-        file_type = true, -- boolean
+    run_classes = {
+        project = {
+            run_config_path = function()
+                return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
+            end, -- function(): string? | (function(): string?)[]
+            auto_run_single_command = true, -- boolean
+            default_executor = pilot.preset_executors.new_tab, -- function(command: string)
+        },
+        file_type = {
+            run_config_path = function()
+                return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
+            end, -- function(): string? | (function(): string?)[]
+            auto_run_single_command = true, -- boolean
+            default_executor = pilot.preset_executors.new_tab, -- function(command: string)
+        },
     },
     write_template_to_new_run_config = true, -- boolean
-    default_executor = {
-        project = pilot.preset_executors.new_tab, -- function(command: string)
-        file_type = pilot.preset_executors.new_tab, -- function(command: string)
-    },
     executors = {
         new_tab = pilot.preset_executors.new_tab,
         current_buffer = pilot.preset_executors.current_buffer,
@@ -164,55 +164,41 @@ use {
 
 ## Configuration Options
 
-### `run_config_path.project`
+### `run_classes`
 
-- **Type:** `function(): string? | (function(): string?)[]`
+- **Type:** `table<string, RunClass>`
 - **Description:**
-  Path or list of paths to the project run configuration file(s).  
-  If it's a list, the first existant & readable file will be used.  
-  Supports placeholders (see [placeholders](#placeholders)).
-- **Example:**  
-  `"{{cwd_path}}/pilot.json"`  
-  `{ "{{cwd_path}}/pilot.json", "{{cwd_path}}/.pilot.json" }`
-
-### `run_config_path.file_type`
-
-- **Type:** `function(): string? | (function(): string?)[]`
-- **Description:**
-  Path or list of paths to the file type run configuration file(s).  
-  If it's a list, the first existant & readable file will be used.
-
-### `auto_run_single_command.project`
-
-- **Type:** `boolean`
-- **Description:**
-  If only one command is found in the project run config, run it immediately without prompting the user.
-
-### `auto_run_single_command.file_type`
-
-- **Type:** `boolean`
-- **Description:**
-  If only one command is found in the filetype run config, run it immediately without prompting the user.
+  A table mapping run class names to their configuration. Each run class can have its own `run_config_path`, `auto_run_single_command`, and `default_executor`.  
+  Built-in run classes: `project`, `file_type`. You can add custom run classes.
+- **RunClass structure:**
+  ```lua
+  {
+      run_config_path = function(): string? | (function(): string?)[], -- required
+      auto_run_single_command = boolean, -- optional
+      default_executor = function(command: string), -- optional
+  }
+  ```
+- **Example:**
+  ```lua
+  run_classes = {
+      project = {
+          run_config_path = "{{cwd_path}}/pilot.json",
+          auto_run_single_command = true,
+          default_executor = pilot.preset_executors.new_tab,
+      },
+      custom = {
+          run_config_path = "{{cwd_path}}/custom.json",
+          auto_run_single_command = false,
+          default_executor = pilot.preset_executors.split,
+      },
+  }
+  ```
 
 ### `write_template_to_new_run_config`
 
 - **Type:** `boolean`
 - **Description:**
   If true, writes a JSON template when creating a new config file (when editing a config that does not exist).
-
-### `default_executor.project`
-
-- **Type:** `function(command: string) -> string`
-- **Description:**
-  The default executor function used to run commands which have no specified `executor` in the project run config.  
-  See [preset executors](#preset-executors) for available executors and their signatures.
-
-### `default_executor.file_type`
-
-- **Type:** `function(command: string) -> string`
-- **Description:**
-  The default executor function used to run commands which have no specified `executor` in the filetype run config.  
-  See [preset executors](#preset-executors) for available executors and their signatures.
 
 ### `executors`
 
@@ -245,19 +231,20 @@ use {
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_config_path = {
+    run_classes = {
         project = {
-            function() return "{{cwd_path}}/pilot.json" end,
-            function() return "{{cwd_path}}/.vscode/pilot.json" end,
-            function()
-                if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
-                    return "{{pilot_data_path}}/npm_project.json"
-                end
-            end,
+            run_config_path = {
+                function() return "{{cwd_path}}/pilot.json" end,
+                function() return "{{cwd_path}}/.vscode/pilot.json" end,
+                function()
+                    if vim.fn.filereadable(vim.fn.getcwd() .. "/package-lock.json") == 1 then
+                        return "{{pilot_data_path}}/npm_project.json"
+                    end
+                end,
+            },
+            auto_run_single_command = true,
+            default_executor = pilot.preset_executors.new_tab,
         },
-    },
-    default_executor = {
-        file_type = pilot.preset_executors.split,
     },
     write_template_to_new_run_config = false,
     executors = {
@@ -280,16 +267,16 @@ pilot.setup({
     },
 })
 
-vim.keymap.set("n", "<F10>", pilot.run_project)
-vim.keymap.set("n", "<F12>", pilot.run_file_type)
+vim.keymap.set("n", "<F10>", function() pilot.run("project") end)
+vim.keymap.set("n", "<F12>", function() pilot.run("file_type") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
-vim.keymap.set("n", "<Leader><F10>", pilot.edit_project_run_config)
-vim.keymap.set("n", "<Leader><F12>", pilot.edit_file_type_run_config)
+vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_run_config("project") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_run_config("file_type") end)
 
 vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
-    pilot.delete_project_run_config, { nargs = 0, bar = false })
+    function() pilot.delete_run_config("project") end, { nargs = 0, bar = false })
 vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
-    pilot.delete_file_type_run_config, { nargs = 0, bar = false })
+    function() pilot.delete_run_config("file_type") end, { nargs = 0, bar = false })
 ```
 
 ---
@@ -457,18 +444,13 @@ executors = {
 
 All functions are available via `require("pilot")`.
 
-| Function Name                                  | Description                                                                                    |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `setup(options)`                               | Configure pilot.nvim. See [configuration options (detailed)](#configuration-options-detailed). |
-| `run_project()`                                | Run a project command (from project run config). Prompts if multiple commands.                 |
-| `run_file_type()`                              | Run a file type command (from file type run config). Prompts if multiple commands.             |
-| `run_previous_task()`                          | Re-run the last executed task (project or file type).                                          |
-| `edit_project_run_config()`                    | Open the project run config for editing (creates template if missing).                         |
-| `edit_file_type_run_config()`                  | Open the file type run config for editing (creates template if missing).                       |
-| `delete_project_run_config()`                  | Delete the current project run config file.                                                    |
-| `delete_file_type_run_config()`                | Delete the current file type run config file.                                                  |
-| `purge_all_default_project_run_config_dir()`   | Delete all default project run config files (in `{{pilot_data_path}}/projects`).               |
-| `purge_all_default_file_type_run_config_dir()` | Delete all default file type run config files (in `{{pilot_data_path}}/filetypes`).            |
+| Function Name                 | Description                                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- |
+| `setup(options)`              | Configure pilot.nvim. See [configuration options](#configuration-options).                    |
+| `run(run_class_name)`         | Run a command from the specified run class. Prompts if multiple commands available.            |
+| `run_previous_task()`         | Re-run the last executed task.                                                                |
+| `edit_run_config(run_class_name)` | Open the run config for the specified run class for editing (creates template if missing).     |
+| `delete_run_config(run_class_name)` | Delete the run config file for the specified run class.                                        |
 
 ---
 

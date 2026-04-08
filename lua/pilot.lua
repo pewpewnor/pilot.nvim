@@ -2,26 +2,20 @@
 
 ---@alias Executor fun(command: string, args: string[]?)
 
+---@class Executors
+---@field [string] Executor
+
+---@class RunClass
+---@field run_config_path RunConfigPathResolver|RunConfigPathResolver[]
+---@field auto_run_single_command boolean
+---@field default_executor Executor
+
+---@class RunClasses
+---@field [string] RunClass
+
 ---@alias PlaceholderVar fun(): string
 
 ---@alias PlaceholderFunc fun(arg: string): string
-
----@alias AdditionalPlaceholder fun(placeholder: string): string?
-
----@class RunConfigPath
----@field project RunConfigPathResolver|RunConfigPathResolver[]
----@field file_type RunConfigPathResolver|RunConfigPathResolver[]
-
----@class AutoRunSingleCommand
----@field project boolean
----@field file_type boolean
-
----@class DefaultExecutor
----@field project Executor
----@field file_type Executor
-
----@class Executors
----@field [string] Executor
 
 ---@class PlaceholderVars
 ---@field [string] PlaceholderVar
@@ -38,10 +32,8 @@
 ---@field last_entry_new_line boolean
 
 ---@class Config
----@field run_config_path RunConfigPath
+---@field run_classes RunClasses
 ---@field write_template_to_new_run_config boolean
----@field auto_run_single_command AutoRunSingleCommand
----@field default_executor DefaultExecutor
 ---@field executors Executors
 ---@field placeholders Placeholders
 ---@field display Display
@@ -66,24 +58,12 @@ function M.setup(options)
     module.init(M.config)
 end
 
-M.run_project = module.run_project
-
-M.run_file_type = module.run_file_type
+M.run = module.run
 
 M.run_previous_task = module.run_previous_task
 
-M.edit_project_run_config = module.edit_project_run_config
+M.edit_run_config = module.edit_run_config
 
-M.edit_file_type_run_config = module.edit_file_type_run_config
-
-M.delete_project_run_config = module.delete_project_run_config
-
-M.delete_file_type_run_config = module.delete_file_type_run_config
-
-M.purge_all_default_project_run_config_dir =
-    module.purge_all_default_project_run_config_dir
-
-M.purge_all_default_project_run_config_dir =
-    module.purge_all_default_file_type_run_config_dir
+M.delete_run_config = module.delete_run_config
 
 return M
