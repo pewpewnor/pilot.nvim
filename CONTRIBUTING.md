@@ -16,12 +16,15 @@ These are more of like suggestions, hence not strictly enforced.
 ### Feature addition and proposal
 
 - You can create pull requests immediately to fix a bug or add new a feature.
-- You can also create a github issue or start a github discussion in order to propose a feature.
+- You can also create a github issue or start a github discussion in order to propose
+  a feature.
 
 ### Pull request
 
-- Please state the purpose of the pull request and briefly about what it fixes or adds.
-- If the pull request is related to an issue, please reference the issue in the pull request comment.
+- Please state the purpose of the pull request and briefly about what it fixes or
+  adds.
+- If the pull request is related to an issue, please reference the issue in the
+  pull request comment.
 
 ### Commit messages
 
@@ -34,4 +37,5 @@ Try using the following commit message format if you can:
 
 ## Testing
 
-Run `make test` inside project root.
+- Ensure that Lua is added to your PATH (to run `lua` commands during simulations)
+- Run `make test` inside project root.

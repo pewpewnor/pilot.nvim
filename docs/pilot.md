@@ -159,7 +159,7 @@ use {
     },
     display = {
         numbered = true, -- boolean
-        last_entry_new_line = false, -- bolean
+        last_entry_new_line = false, -- boolean
     },
 }
 ```
@@ -246,6 +246,7 @@ local pilot = require("pilot")
 pilot.setup({
     run_targets = {
         project = {
+            -- customize where to find the run file path when running a project
             run_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
@@ -255,12 +256,17 @@ pilot.setup({
                     end
                 end,
             },
-            auto_run_single_command = true,
-            default_executor = pilot.preset_executors.new_tab,
+        },
+        -- customize what happens when attempting to run a file type
+        file_type = {
+            auto_run_single_command = false,
+            default_executor = pilot.preset_executors.split,
         },
     },
-    write_template_to_new_run_file = false,
+    write_template_to_new_pilot_file = false,
+    -- define custom executors that can be used in any pilot file
     executors = {
+        -- custom executor that executes the command in a new tmux window
         tmux_new_window = function(command, args)
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
@@ -269,11 +275,12 @@ pilot.setup({
     },
     placeholders = {
         vars = {
+            -- example to add custom placeholders
             new_temp_file = function() return vim.fn.tempname() end,
             template_path = function() return pilot.utils.interpolate("{{pilot_data_path}}/templates") end,
         },
-        funcs = {},
     },
+    -- perhaps better display view for vanilla vim.ui.select when selecting entries
     display = {
         numbered = false,
         last_entry_new_line = true,

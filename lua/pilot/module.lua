@@ -31,9 +31,10 @@ local function find_target(target_name)
 end
 
 ---@param target_name string
-function M.run(target_name)
+---@return any
+function M.run_target(target_name)
     local target = find_target(target_name)
-    runner.select_and_run_entry({
+    return runner.select_and_run_entry({
         name = target_name,
         path = pathfinder.get_true_path(target.pilot_file_path),
         auto_run_single_command = target.auto_run_single_command,
@@ -51,14 +52,14 @@ function M.edit_pilot_file(target_name)
         M.config.write_template_to_new_pilot_file
         and not common.is_file_and_readable(path)
     then
-        vim.fn.writefile({
+        common.write_file(path, {
             "[",
             "    {",
             '        "name": "put name of command here",',
             '        "command": "echo \'Hello, World!\'"',
             "    }",
             "]",
-        }, path, "a")
+        }, "a")
     end
     vim.cmd("tabedit " .. path)
 end

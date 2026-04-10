@@ -58,7 +58,7 @@ function M.setup(options)
     module.init(M.config)
 end
 
-M.run_target = module.run
+M.run_target = module.run_target
 
 M.run_previous_task = module.run_previous_task
 

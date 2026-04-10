@@ -101,7 +101,7 @@ local function parse_list_to_entries(list, pilot_file_path)
                 error(
                     string.format(
                         "[Pilot] Each entry must either have a 'command' or an 'import' attribute in '%s'.",
-                        run_file_path
+                        pilot_file_path
                     )
                 )
             end
@@ -109,7 +109,7 @@ local function parse_list_to_entries(list, pilot_file_path)
                 error(
                     string.format(
                         "[Pilot] Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
-                        run_file_path
+                        pilot_file_path
                     )
                 )
             end

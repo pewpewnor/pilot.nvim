@@ -125,7 +125,7 @@ The default values are usually enough unless you want heavy customizations.
     },
     display = {
         numbered = true, -- boolean
-        last_entry_new_line = false, -- bolean
+        last_entry_new_line = false, -- boolean
     },
 }
 ```
@@ -142,8 +142,8 @@ Full example to show how this plugin can be heavily customized.
 local pilot = require("pilot")
 pilot.setup({
     run_targets = {
-        -- customize the project run target
         project = {
+            -- customize where to find the run file path when running a project
             run_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
@@ -153,10 +153,8 @@ pilot.setup({
                     end
                 end,
             },
-            auto_run_single_command = true,
-            default_executor = pilot.preset_executors.new_tab,
         },
-        -- customize the file_type target
+        -- customize what happens when attempting to run a file type
         file_type = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,

@@ -7,6 +7,14 @@ function M.read_file(path)
     return success and vim.fn.join(lines) or nil
 end
 
+---@param path string
+---@param lines string[]
+---@param mode nil|"a"
+---@return boolean
+function M.write_file(path, lines, mode)
+    return vim.fn.writefile(lines, path, mode) == 0
+end
+
 ---@param json_string string
 ---@return any?
 function M.json_decode(json_string)

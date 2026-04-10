@@ -59,7 +59,7 @@ local function run_entry(entry, default_executor)
     execute_task(M.last_executed_task)
 end
 
----@param target ProcessedRunTarget
+---@param target ProcessedTarget
 function M.select_and_run_entry(target)
     local entries = parser.parse_pilot_file(target.path, target.name)
     if not entries then
@@ -73,28 +73,32 @@ function M.select_and_run_entry(target)
                 target.name
             )
         )
-    elseif #entries == 1 and target.auto_run_single_command then
-        run_entry(entries[1], target.default_executor)
-    else
-        if M.config.display.numbered then
-            for i, entry in ipairs(entries) do
-                entries[i].name = i .. ". " .. entry.name
-            end
-        end
-        if M.config.display.last_entry_new_line then
-            entries[#entries].name = entries[#entries].name .. "\n"
-        end
-        vim.ui.select(entries, {
-            prompt = string.format("Run a '%s' command", target.name),
-            format_item = function(entry)
-                return entry.name
-            end,
-        }, function(chosen_entry)
-            if chosen_entry then
-                run_entry(chosen_entry, target.default_executor)
-            end
-        end)
+        return
     end
+
+    if #entries == 1 and target.auto_run_single_command then
+        return run_entry(entries[1], target.default_executor)
+    end
+
+    if M.config.display.numbered then
+        for i, entry in ipairs(entries) do
+            entries[i].name = i .. ". " .. entry.name
+        end
+    end
+    if M.config.display.last_entry_new_line then
+        entries[#entries].name = entries[#entries].name .. "\n"
+    end
+    vim.ui.select(entries, {
+        prompt = string.format("Run a '%s' command", target.name),
+        format_item = function(entry)
+            return entry.name
+        end,
+    }, function(chosen_entry)
+        if not chosen_entry then
+            error("[Pilot] Unexpected: chosen entry is nil.")
+        end
+        return run_entry(chosen_entry, target.default_executor)
+    end)
 end
 
 function M.run_previous_task()
