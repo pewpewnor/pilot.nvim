@@ -76,7 +76,7 @@ end
 ---@param text string
 ---@return string
 local function escape_vim_specials(text)
-    return (text:gsub("%%", "\\%%"):gsub("#", "\\#"):gsub("<", "\\<"))
+    return (text:gsub("%%", "\\%%"):gsub("#", "\\#"))
 end
 
 ---@param command string

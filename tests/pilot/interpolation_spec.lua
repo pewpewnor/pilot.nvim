@@ -76,8 +76,8 @@ describe("interpolation", function()
     it(
         "escapes vim specials in static text to prevent unwanted expansion",
         function()
-            local cmd = "echo % # <"
-            local expected = "echo \\% \\# \\<"
+            local cmd = "echo % #"
+            local expected = "echo \\% \\#"
             assert.equals(interpolation.interpolate(cmd), expected)
         end
     )
@@ -86,7 +86,7 @@ describe("interpolation", function()
         "correctly escapes vim specials inside complex shell quoted strings",
         function()
             local cmd = [[echo $'\\^!#$%@&*()_+=-`~[]{};:'",<.>/?|']]
-            local expected = [[echo $'\\^!\#$\%@&*()_+=-`~[]{};:'",\<.>/?|']]
+            local expected = [[echo $'\\^!\#$\%@&*()_+=-`~[]{};:'",<.>/?|']]
             assert.equals(interpolation.interpolate(cmd), expected)
         end
     )
