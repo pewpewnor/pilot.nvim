@@ -7,7 +7,7 @@ function M.init(config)
     M.config = config
 end
 
----@param resolver RunConfigPathResolver
+---@param resolver PilotFilepathResolver
 ---@return string|nil
 local function resolve_path(resolver)
     local raw_path = resolver()
@@ -16,13 +16,13 @@ local function resolve_path(resolver)
     end
     if type(raw_path) ~= "string" then
         error(
-            "[Pilot] Run configuration path function must return a string path or nil."
+            "[Pilot] Pilot file path function must return a string path or nil."
         )
     end
     return interpolation.interpolate(raw_path)
 end
 
----@param path_resolvers RunConfigPathResolver|RunConfigPathResolver[]
+---@param path_resolvers PilotFilepathResolver|PilotFilepathResolver[]
 ---@return string
 function M.get_true_path(path_resolvers)
     local resolvers
@@ -32,7 +32,7 @@ function M.get_true_path(path_resolvers)
         resolvers = path_resolvers
     else
         error(
-            "[Pilot] Run config path function must be a function or a list of functions."
+            "[Pilot] Pilot file path function must be a function or a list of functions."
         )
     end
 
@@ -48,7 +48,7 @@ function M.get_true_path(path_resolvers)
     end
 
     if not first_interpolated_path then
-        print("[Pilot] No run configuration file exist.")
+        print("[Pilot] No pilot file exist.")
     end
     return first_interpolated_path
 end

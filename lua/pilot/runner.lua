@@ -1,4 +1,4 @@
----@class ProcessedRunClass
+---@class ProcessedTarget
 ---@field name string
 ---@field path string
 ---@field auto_run_single_command boolean
@@ -59,9 +59,9 @@ local function run_entry(entry, default_executor)
     execute_task(M.last_executed_task)
 end
 
----@param class ProcessedRunClass
-function M.select_and_run_entry(class)
-    local entries = parser.parse_run_config_file(class.path, class.name)
+---@param target ProcessedRunTarget
+function M.select_and_run_entry(target)
+    local entries = parser.parse_pilot_file(target.path, target.name)
     if not entries then
         return
     end
@@ -69,12 +69,12 @@ function M.select_and_run_entry(class)
     if #entries == 0 then
         print(
             string.format(
-                "[Pilot] No entries in the run configuration file for '%s'.",
-                class.name
+                "[Pilot] No entries in the pilot file for '%s'.",
+                target.name
             )
         )
-    elseif #entries == 1 and class.auto_run_single_command then
-        run_entry(entries[1], class.default_executor)
+    elseif #entries == 1 and target.auto_run_single_command then
+        run_entry(entries[1], target.default_executor)
     else
         if M.config.display.numbered then
             for i, entry in ipairs(entries) do
@@ -85,13 +85,13 @@ function M.select_and_run_entry(class)
             entries[#entries].name = entries[#entries].name .. "\n"
         end
         vim.ui.select(entries, {
-            prompt = string.format("Run a '%s' command", class.name),
+            prompt = string.format("Run a '%s' command", target.name),
             format_item = function(entry)
                 return entry.name
             end,
         }, function(chosen_entry)
             if chosen_entry then
-                run_entry(chosen_entry, class.default_executor)
+                run_entry(chosen_entry, target.default_executor)
             end
         end)
     end

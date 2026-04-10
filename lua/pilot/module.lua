@@ -13,42 +13,42 @@ function M.init(config)
     runner.init(config)
 end
 
----@param run_class_name string
-local function find_run_class(run_class_name)
-    if type(run_class_name) ~= "string" then
-        error("[Pilot] Given run class name must be a string.")
+---@param target_name string
+local function find_target(target_name)
+    if type(target_name) ~= "string" then
+        error("[Pilot] Given target name must be a string.")
     end
-    local run_class = M.config.run_classes[run_class_name]
-    if not run_class then
+    local target = M.config.targets[target_name]
+    if not target then
         error(
             string.format(
-                "[Pilot] Chosen run class '%s' doesn't exist.",
-                run_class_name
+                "[Pilot] Chosen target '%s' doesn't exist.",
+                target_name
             )
         )
     end
-    return run_class
+    return target
 end
 
----@param run_class_name string
-function M.run(run_class_name)
-    local run_class = find_run_class(run_class_name)
+---@param target_name string
+function M.run(target_name)
+    local target = find_target(target_name)
     runner.select_and_run_entry({
-        name = run_class_name,
-        path = pathfinder.get_true_path(run_class.run_config_path),
-        auto_run_single_command = run_class.auto_run_single_command,
-        default_executor = run_class.default_executor,
+        name = target_name,
+        path = pathfinder.get_true_path(target.pilot_file_path),
+        auto_run_single_command = target.auto_run_single_command,
+        default_executor = target.default_executor,
     })
 end
 
 M.run_previous_task = runner.run_previous_task
 
----@param run_class_name string
-function M.edit_run_config(run_class_name)
+---@param target_name string
+function M.edit_pilot_file(target_name)
     local path =
-        pathfinder.get_true_path(find_run_class(run_class_name).run_config_path)
+        pathfinder.get_true_path(find_target(target_name).pilot_file_path)
     if
-        M.config.write_template_to_new_run_config
+        M.config.write_template_to_new_pilot_file
         and not common.is_file_and_readable(path)
     then
         vim.fn.writefile({
@@ -63,10 +63,10 @@ function M.edit_run_config(run_class_name)
     vim.cmd("tabedit " .. path)
 end
 
----@param run_class_name string
-function M.delete_run_config(run_class_name)
+---@param target_name string
+function M.delete_pilot_file(target_name)
     local path =
-        pathfinder.get_true_path(find_run_class(run_class_name).run_config_path)
+        pathfinder.get_true_path(find_target(target_name).pilot_file_path)
     vim.fs.rm(path, { force = true })
 end
 

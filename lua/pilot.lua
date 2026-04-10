@@ -1,17 +1,17 @@
----@alias RunConfigPathResolver fun(): string?
+---@alias PilotFilepathResolver fun(): string?
 
 ---@alias Executor fun(command: string, args: string[]?)
 
 ---@class Executors
 ---@field [string] Executor
 
----@class RunClass
----@field run_config_path RunConfigPathResolver|RunConfigPathResolver[]
+---@class Target
+---@field pilot_file_path PilotFilepathResolver|PilotFilepathResolver[]
 ---@field auto_run_single_command boolean
 ---@field default_executor Executor
 
----@class RunClasses
----@field [string] RunClass
+---@class Targets
+---@field [string] Target
 
 ---@alias PlaceholderVar fun(): string
 
@@ -32,8 +32,8 @@
 ---@field last_entry_new_line boolean
 
 ---@class Config
----@field run_classes RunClasses
----@field write_template_to_new_run_config boolean
+---@field targets Targets
+---@field write_template_to_new_pilot_file boolean
 ---@field executors Executors
 ---@field placeholders Placeholders
 ---@field display Display
@@ -58,12 +58,12 @@ function M.setup(options)
     module.init(M.config)
 end
 
-M.run = module.run
+M.run_target = module.run
 
 M.run_previous_task = module.run_previous_task
 
-M.edit_run_config = module.edit_run_config
+M.edit_pilot_file = module.edit_pilot_file
 
-M.delete_run_config = module.delete_run_config
+M.delete_pilot_file = module.delete_pilot_file
 
 return M

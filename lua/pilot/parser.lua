@@ -60,7 +60,7 @@ local function read_and_decode_imported_path(import_path)
     if type(imported_list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Imported file '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
+                "[Pilot] Imported file '%s' should contain JSON array, refer to the documentation for proper pilot file format.",
                 import_path
             )
         )
@@ -69,14 +69,14 @@ local function read_and_decode_imported_path(import_path)
 end
 
 ---@param list RawEntry[]
----@param run_config_path string
+---@param pilot_file_path string
 ---@return ProcessedEntry[]
-local function parse_list_to_entries(list, run_config_path)
+local function parse_list_to_entries(list, pilot_file_path)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Run configuration must be a valid JSON array in '%s'.",
-                run_config_path
+                "[Pilot] Pilot file must be a valid JSON array in '%s'.",
+                pilot_file_path
             )
         )
     end
@@ -89,7 +89,7 @@ local function parse_list_to_entries(list, run_config_path)
             error(
                 string.format(
                     "[Pilot] Each entry must be a valid JSON object or string in '%s'.",
-                    run_config_path
+                    pilot_file_path
                 )
             )
         end
@@ -101,7 +101,7 @@ local function parse_list_to_entries(list, run_config_path)
                 error(
                     string.format(
                         "[Pilot] Each entry must either have a 'command' or an 'import' attribute in '%s'.",
-                        run_config_path
+                        run_file_path
                     )
                 )
             end
@@ -109,7 +109,7 @@ local function parse_list_to_entries(list, run_config_path)
                 error(
                     string.format(
                         "[Pilot] Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
-                        run_config_path
+                        run_file_path
                     )
                 )
             end
@@ -152,13 +152,13 @@ local function parse_list_to_entries(list, run_config_path)
 end
 
 ---@param path string
----@param class_name string
+---@param target_name string
 ---@return ProcessedEntry[]?
-function M.parse_run_config_file(path, class_name)
+function M.parse_pilot_file(path, target_name)
     local file_content = common.read_file(path)
     if not file_content then
         print(
-            "[Pilot] No suitable run configuration file, all paths don't exist or unreadable."
+            "[Pilot] No suitable pilot file, all paths don't exist or unreadable."
         )
         return nil
     end
@@ -169,16 +169,16 @@ function M.parse_run_config_file(path, class_name)
     if not list then
         error(
             string.format(
-                "[Pilot] Your run configuration for '%s' has invalid JSON format or is empty.",
-                class_name
+                "[Pilot] Your pilot file for '%s' has invalid JSON format or is empty.",
+                target_name
             )
         )
     end
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Your  run configuration for '%s' should contain JSON array, refer to the documentation for proper run configuration format.",
-                class_name
+                "[Pilot] Your run file for '%s' should contain JSON array, refer to the documentation for proper run file format.",
+                target_name
             )
         )
     end

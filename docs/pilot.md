@@ -1,10 +1,12 @@
 <br />
 
 A Neovim plugin that allows you to **run** your **project or file** based on a
-**JSON run configuration file** with placeholder support and customizable executors. You can edit configurations on the fly, and the plugin supports advanced
-features like checks for possible config paths, custom executors, and more.
+**JSON pilot file** with placeholder support and customizable executors. You can
+edit files on the fly, and the plugin supports advanced features like checks for
+possible file paths, custom executors, and more.
 
-This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the latest Neovim major release version.
+This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the
+latest Neovim major release version.
 
 The source code for this plugin is available in the [GitHub repository](https://github.com/pewpewnor/pilot.nvim).
 
@@ -15,16 +17,24 @@ The source code for this plugin is available in the [GitHub repository](https://
 - **Run arbitrary commands** for any file or project, with full control over execution.
 - **Placeholder interpolation** for file paths, names, directories, and more.
 - **On-the-fly configuration editing**: No need to reload Neovim after changes.
-- **Multiple run config paths**: It searches your list of possible run config path locations.
-- **Customizable config file locations**: Store configs wherever you want.
-- **Customizable executors**: Run commands in new tabs, splits, vsplits, background jobs, or your own custom way.
-- **Custom executors**: Define your own ways to run commands, including integration with tools like tmux.
-- **UI selection**: If multiple commands are available, select which to run via `vim.ui.select`.
-- **Automatic single-command execution**: Optionally auto-run if only one command is available.
-- **Purge/delete config files**: Easily remove or reset run configurations.
-- **Import other config files**: Use `"import"` in your JSON to include commands from other files.
-- **JSON validation and helpful errors**: Clear error messages for misconfigured files.
-- **Template writing**: Optionally auto-generate a template when creating a new config file.
+- **Multiple pilot file paths**: It searches your list of possible pilot file path
+  locations.
+- **Customizable file locations**: Store files wherever you want.
+- **Customizable executors**: Run commands in new tabs, splits, vsplits, background
+  jobs, or your own custom way.
+- **Custom executors**: Define your own ways to run commands, including integration
+  with tools like tmux.
+- **UI selection**: If multiple commands are available, select which to run via
+  `vim.ui.select`.
+- **Automatic single-command execution**: Optionally auto-run if only one command
+  is available.
+- **Purge/delete files**: Easily remove or reset pilot files.
+- **Import other files**: Use `"import"` in your JSON to include commands from other
+  files.
+- **JSON validation and helpful errors**: Clear error messages for misconfigured
+  files.
+- **Template writing**: Optionally auto-generate a template when creating a new
+  file.
 - **Full Lua API**: All features are accessible programmatically.
 
 ---
@@ -62,8 +72,9 @@ use {
 
 ## General Terms
 
-- **Project run configuration**: JSON file containing commands to run for the current project.
-- **File type run configuration**: JSON file containing commands to run for the current file type.
+- **Project pilot file**: JSON file containing commands to run for the current project.
+- **File type pilot file**: JSON file containing commands to run for the current
+  file type.
 
 ---
 
@@ -71,23 +82,16 @@ use {
 
 ```lua
 {
-    run_classes = {
+    run_targets = {
         project = {
-            run_config_path = function()
+            run_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
             end, -- function(): string? | (function(): string?)[]
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
-        file_type = {
-            run_config_path = function()
-                return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
-            end, -- function(): string? | (function(): string?)[]
-            auto_run_single_command = true, -- boolean
-            default_executor = pilot.preset_executors.new_tab, -- function(command: string)
-        },
     },
-    write_template_to_new_run_config = true, -- boolean
+    write_template_to_new_run_file = true, -- boolean
     executors = {
         new_tab = pilot.preset_executors.new_tab,
         current_buffer = pilot.preset_executors.current_buffer,
@@ -164,65 +168,74 @@ use {
 
 ## Configuration Options
 
-### `run_classes`
+### `run_targets`
 
-- **Type:** `table<string, RunClass>`
+- **Type:** `table<string, RunTarget>`
 - **Description:**
-  A table mapping run class names to their configuration. Each run class can have its own `run_config_path`, `auto_run_single_command`, and `default_executor`.  
-  Built-in run classes: `project`, `file_type`. You can add custom run classes.
-- **RunClass structure:**
-  ```lua
-  {
-      run_config_path = function(): string? | (function(): string?)[], -- required
-      auto_run_single_command = boolean, -- optional
-      default_executor = function(command: string), -- optional
-  }
-  ```
-- **Example:**
-  ```lua
-  run_classes = {
-      project = {
-          run_config_path = "{{cwd_path}}/pilot.json",
-          auto_run_single_command = true,
-          default_executor = pilot.preset_executors.new_tab,
-      },
-      custom = {
-          run_config_path = "{{cwd_path}}/custom.json",
-          auto_run_single_command = false,
-          default_executor = pilot.preset_executors.split,
-      },
-  }
-  ```
+  A table mapping run target names to their configuration. Each run target can have
+  its own `run_file_path`, `auto_run_single_command`, and `default_executor`.  
+  Built-in run targets: `project`, `file_type`. You can add custom run targets.
+- **RunTarget structure:**
 
-### `write_template_to_new_run_config`
+    ```lua
+    {
+        run_file_path = function(): string? | (function(): string?)[], -- required
+        auto_run_single_command = boolean, -- optional
+        default_executor = function(command: string), -- optional
+    }
+    ```
+
+- **Example:**
+
+    ```lua
+    run_targets = {
+        project = {
+            run_file_path = "{{cwd_path}}/pilot.json",
+            auto_run_single_command = true,
+            default_executor = pilot.preset_executors.new_tab,
+        },
+        custom = {
+            run_file_path = "{{cwd_path}}/custom.json",
+            auto_run_single_command = false,
+            default_executor = pilot.preset_executors.split,
+        },
+    }
+    ```
+
+### `write_template_to_new_run_file`
 
 - **Type:** `boolean`
 - **Description:**
-  If true, writes a JSON template when creating a new config file (when editing a config that does not exist).
+  If true, writes a JSON template when creating a new file (when editing a file
+  that does not exist).
 
 ### `executors`
 
 - **Type:** `table<string, function(command: string, args: string[])>`
 - **Description:**
   Table mapping executor names to executor functions.  
-  Used when a run config entry specifies a `"executor"` field.  
+  Used when a run file entry specifies a `"executor"` field.  
   The executor function receives two arguments:
     - `command` (string): The shell command to run (with placeholders already expanded).
-    - `args` (list of strings): The result from splitting the string that was written in the `executor` with whitespaces as the seperator and without the executor name (first argument) inside the list.
+    - `args` (list of strings): The result from splitting the string that was written
+      in the `executor` with whitespaces as the seperator and without the executor name (first argument) inside the list.
 
 ### `placeholders`
 
 - **Type:** `table` with `vars` and `funcs` subtables
 - **Description:**
-- `vars` is a table mapping placeholder names to functions that return strings (e.g. `file_name`).
-- `funcs` is a table mapping placeholder function names to functions that accept an argument and return a string (e.g. `hash_sha256`).
+- `vars` is a table mapping placeholder names to functions that return strings
+  (e.g. `file_name`).
+- `funcs` is a table mapping placeholder function names to functions that accept
+  an argument and return a string (e.g. `hash_sha256`).
 
 ### `display`
 
 - **Type:** `table` with display / UI options
 - **Description:**
 - `numbered` whether to label each entry name with numbers when selecting an entry.
-- `last_entry_new_line` whether to add new line on the last entry name when selecting an entry.
+- `last_entry_new_line` whether to add new line on the last entry name when selecting
+  an entry.
 
 ---
 
@@ -231,9 +244,9 @@ use {
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_classes = {
+    run_targets = {
         project = {
-            run_config_path = {
+            run_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
                 function()
@@ -246,7 +259,7 @@ pilot.setup({
             default_executor = pilot.preset_executors.new_tab,
         },
     },
-    write_template_to_new_run_config = false,
+    write_template_to_new_run_file = false,
     executors = {
         tmux_new_window = function(command, args)
             vim.fn.system("tmux new-window -d")
@@ -270,20 +283,20 @@ pilot.setup({
 vim.keymap.set("n", "<F10>", function() pilot.run("project") end)
 vim.keymap.set("n", "<F12>", function() pilot.run("file_type") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
-vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_run_config("project") end)
-vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_run_config("file_type") end)
+vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_pilot_file("project") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("file_type") end)
 
-vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
-    function() pilot.delete_run_config("project") end, { nargs = 0, bar = false })
-vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
-    function() pilot.delete_run_config("file_type") end, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteProjectPilotFile",
+    function() pilot.delete_pilot_file("project") end, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteFileTypePilotFile",
+    function() pilot.delete_pilot_file("file_type") end, { nargs = 0, bar = false })
 ```
 
 ---
 
-## Run Configuration Format
+## Pilot File Format
 
-Both project and file type run configurations use the same JSON format: an array of entries.
+Both project and file type pilot files use the same JSON format: an array of entries.
 
 Each entry can be:
 
@@ -297,7 +310,7 @@ Each entry can be:
 
 ---
 
-## Example Project Run Config
+## Example Project Pilot File
 
 ```json
 [
@@ -323,9 +336,9 @@ Each entry can be:
 
 ---
 
-## Example File Type Run Config
+## Example File Type Pilot File
 
-Let's say you want to write a file type run configuration for compiling and
+Let's say you want to write a file type pilot file for compiling and
 running C source code files.
 
 ```json
@@ -343,7 +356,7 @@ running C source code files.
 > the same as the raw command string. You can also instead use a string for
 > defining an entry/command.
 
-**Importing/Including Existing Run Configuration:**
+**Importing/Including Existing Pilot Files:**
 
 ```json
 [{ "import": "{{pilot_data_path}}/common_commands.json" }]
@@ -356,7 +369,7 @@ running C source code files.
 All placeholders are expanded in config paths and commands. You can escape a
 placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
 
-**Variables**
+### Variables
 
 Simple placeholders that expand to a string. Define them in
 `placeholders.vars` as functions that return a string, and use them as
@@ -380,7 +393,7 @@ Simple placeholders that expand to a string. Define them in
 | `{{cword}}`                  | Word under the cursor                                                        |
 | `{{cWORD}}`                  | WORD under the cursor                                                        |
 
-**Functions**
+### Functions
 
 Callable placeholders that accept an argument and return a string. Define
 them in `placeholders.funcs` as functions that accept a single argument and
@@ -440,26 +453,29 @@ executors = {
 
 ---
 
-## Functions
+## Plugin Functions
 
 All functions are available via `require("pilot")`.
 
-| Function Name                 | Description                                                                                    |
-| ----------------------------- | ---------------------------------------------------------------------------------------------- |
-| `setup(options)`              | Configure pilot.nvim. See [configuration options](#configuration-options).                    |
-| `run(run_class_name)`         | Run a command from the specified run class. Prompts if multiple commands available.            |
-| `run_previous_task()`         | Re-run the last executed task.                                                                |
-| `edit_run_config(run_class_name)` | Open the run config for the specified run class for editing (creates template if missing).     |
-| `delete_run_config(run_class_name)` | Delete the run config file for the specified run class.                                        |
+| Function Name                    | Description                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `setup(options)`                 | Configure pilot.nvim. See [configuration options](#configuration-options).              |
+| `run_target(target_name)`        | Run a command from the specified target. Prompts if multiple commands available.        |
+| `run_previous_task()`            | Re-run the last executed task.                                                          |
+| `edit_pilot_file(target_name)`   | Open the pilot file for the specified target for editing (creates template if missing). |
+| `delete_pilot_file(target_name)` | Delete the pilot file for the specified target.                                         |
 
 ---
 
 ## Tips & Recommendations
 
-- Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md) for a better `vim.ui.select()` experience.
+- Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
+  or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
+  for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
 - Placeholders can be escaped by using extra braces, e.g. `{{{not_a_placeholder}}}`.
-- To disable template writing for new configs, set `write_template_to_new_run_config = false`.
+- To disable template writing for new files, set
+  `write_template_to_new_pilot_file = false`.
 - All config files are validated on load; errors are shown in the command line.
 
 ---
@@ -467,7 +483,8 @@ All functions are available via `require("pilot")`.
 ## FAQ
 
 **Q: How do I add a new executor?**  
-A: Add a function to `executors` in your config and reference its key in your run config's `"executor"`.
+A: Add a function to `executors` in your config and reference its key in your pilot
+file's `"executor"`.
 
 **Q: How do I use placeholders in config paths?**  
 A: All config paths support placeholders like `{{cwd_path}}`, `{{file_type}}`, etc.

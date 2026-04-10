@@ -3,8 +3,10 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
-**pilot.nvim** is a Neovim plugin that lets you run, build, or test your project or file using a simple, editable JSON configuration.  
-It supports powerful placeholders, custom executors, and lets you edit or reload configs on the fly without needing to reload Neovim everytime.
+**pilot.nvim** is a Neovim plugin that lets you run, build, or test your project
+or file using a simple, editable JSON configuration.  
+It supports powerful placeholders, custom executors, and lets you edit or reload
+configs on the fly without needing to reload Neovim everytime.
 
 _Requirement: Neovim v0.11.x_
 
@@ -16,10 +18,10 @@ _Requirement: Neovim v0.11.x_
 
 - [Installation](#installation)
 - [Default configuration values](#default-configuration-values)
-- [Example customization](#example-configuration)
-- [Run configuration format](#run-configuration-format)
-- [Example project run configuration](#example-project-run-configuration)
-- [Example file type run configuration](#example-file-type-run-configuration)
+- [Example customization](#example-customization)
+- [Pilot file format](#pilot-file-format)
+- [Example project pilot file](#example-project-pilot-file)
+- [Example file type pilot file](#example-file-type-pilot-file)
 - [Placeholders](#placeholders)
 - [Preset executors](#preset-executors)
 
@@ -27,7 +29,9 @@ _Requirement: Neovim v0.11.x_
 
 ## Motivation
 
-I wanted a code runner plugin that supports placeholder interpolation, allowing me to use a single keystroke to compile, build, and run my code at the same time, whilst still having full control over the commands.
+I wanted a code runner plugin that supports placeholder interpolation, allowing
+me to use a single keystroke to compile, build, and run my code at the same time,
+whilst still having full control over the commands.
 
 ---
 
@@ -36,9 +40,10 @@ I wanted a code runner plugin that supports placeholder interpolation, allowing 
 - Run arbitrary commands for any file or project, with full control over execution.
 - Powerful placeholders for file paths, names, directories, and more.
 - Edit configuration files on the fly without needing to reload Neovim everytime.
-- Define multiple possible run config path locations.
-- Customizable run configuration file to define how it will be executed and the execution locations (tabs, splits, background jobs, custom location, etc).
-- Much more other features such as importing/including other run configuration files.
+- Define multiple possible pilot file path locations.
+- Customizable pilot file to define how it will be executed and the execution locations
+  (tabs, splits, background jobs, custom location, etc).
+- Much more other features such as importing/including other pilot files.
 
 ---
 
@@ -75,9 +80,11 @@ use {
 
 ## General Terms
 
-- **Run class**: A category of run configurations (e.g., project, file_type). Each run class has its own config path, auto-run behavior, and default executor.
-- **Project run configuration**: JSON file containing commands to run for the current project.
-- **File type run configuration**: JSON file containing commands to run for the current file type.
+- **Target**: A category of pilot files (e.g., project, file_type). Each target
+  has its own file path, auto-run behavior, and default executor.
+- **Project pilot file**: JSON file containing commands to run for the current project.
+- **File type pilot file**: JSON file containing commands to run for the current
+  file type.
 
 ---
 
@@ -88,23 +95,23 @@ The default values are usually enough unless you want heavy customizations.
 
 ```lua
 {
-    run_classes = {
+    targets = {
         project = {
-            run_config_path = function()
+            pilot_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
             end, -- function(): string? | (function(): string?)[]
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
         file_type = {
-            run_config_path = function()
+            run_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
             end, -- function(): string? | (function(): string?)[]
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
     },
-    write_template_to_new_run_config = true, -- boolean
+    write_template_to_new_pilot_file = true, -- boolean
     executors = {
         -- (filled with all preset executors, e.g. new_tab, split, vsplit)
     }, -- table<string, function(command: string, args: string[])>
@@ -134,10 +141,10 @@ Full example to show how this plugin can be heavily customized.
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_classes = {
-        -- customize the project run class
+    run_targets = {
+        -- customize the project run target
         project = {
-            run_config_path = {
+            run_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
                 function()
@@ -149,14 +156,14 @@ pilot.setup({
             auto_run_single_command = true,
             default_executor = pilot.preset_executors.new_tab,
         },
-        -- customize the file_type run class
+        -- customize the file_type target
         file_type = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
         },
     },
-    write_template_to_new_run_config = false,
-    -- define custom executors that can be used in any pilot run configuration
+    write_template_to_new_pilot_file = false,
+    -- define custom executors that can be used in any pilot file
     executors = {
         -- custom executor that executes the command in a new tmux window
         tmux_new_window = function(command, args)
@@ -183,23 +190,24 @@ pilot.setup({
 vim.keymap.set("n", "<F10>", function() pilot.run("project") end)
 vim.keymap.set("n", "<F12>", function() pilot.run("file_type") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
-vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_run_config("project") end)
-vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_run_config("file_type") end)
+vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_pilot_file("project") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("file_type") end)
 
 -- example of creating vim user commands for pilot functions
-vim.api.nvim_create_user_command("PilotDeleteProjectRunConfig",
-    function() pilot.delete_run_config("project") end, { nargs = 0, bar = false })
-vim.api.nvim_create_user_command("PilotDeleteFileTypeRunConfig",
-    function() pilot.delete_run_config("file_type") end, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteProjectPilotFile",
+    function() pilot.delete_pilot_file("project") end, { nargs = 0, bar = false })
+vim.api.nvim_create_user_command("PilotDeleteFileTypePilotFile",
+    function() pilot.delete_pilot_file("file_type") end, { nargs = 0, bar = false })
 ```
 
-> **See:** [functions documentation](docs/pilot.md#functions) for all available functions.
+> **See:** [functions documentation](docs/pilot.md#functions) for all available
+> functions.
 
 ---
 
-## Run Configuration Format
+## Pilot File Format
 
-Both project and file type run configurations use the same JSON format: an array of entries.
+Both project and file type pilot files use the same JSON format: an array of entries.
 
 Each entry can be:
 
@@ -212,10 +220,10 @@ Each entry can be:
 
 ---
 
-## Example Project Run Configuration
+## Example Project Pilot File
 
-Here is an example list of commands w/ placeholders which can be executed in the current
-working directory.
+Here is an example list of commands w/ placeholders which can be executed in the
+current working directory.
 
 ```json
 [
@@ -241,9 +249,9 @@ working directory.
 
 ---
 
-## Example File Type Run Configuration
+## Example File Type Pilot File
 
-Let's say you want to write a file type run configuration for compiling and
+Let's say you want to write a file type pilot file for compiling and
 running C source code files.
 
 ```json
@@ -261,7 +269,7 @@ running C source code files.
 > the same as the raw command string. You can also instead use a string for
 > defining an entry/command.
 
-**Importing/Including Existing Run Configuration:**
+**Importing/Including Existing Pilot Files:**
 
 ```json
 [{ "import": "{{pilot_data_path}}/common_commands.json" }]
@@ -271,7 +279,7 @@ running C source code files.
 
 ## Placeholders
 
-**Variables**
+### Variables
 
 | Placeholder                  | Resolved value                                                               |
 | ---------------------------- | ---------------------------------------------------------------------------- |
@@ -318,11 +326,15 @@ You can also create your own executor and use it in your config for pilot.nvim.
 
 ## Tips & Recommendations
 
-- Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md) for a better `vim.ui.select()` experience.
+- Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
+  or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
+  for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
 - Placeholders can be escaped by using triple braces, e.g. `{{{not_a_placeholder}}}`.
-- If you want to always use a specific executor, add it to `executors` and reference it by name in your config.
-- To disable template writing for new configs, set `write_template_to_new_run_config = false`.
+- If you want to always use a specific executor, add it to `executors` and reference
+  it by name in your config.
+- To disable template writing for new files, set
+  `write_template_to_new_pilot_file = false`.
 - All config files are validated on load; errors are shown in the command line.
 
 ---
