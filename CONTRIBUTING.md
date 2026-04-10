@@ -31,3 +31,7 @@ Try using the following commit message format if you can:
 - `feat: commit message` for new features.
 - `docs: commit message` for adding or updating the documentation.
 - `chore: commit message` for something else such as removing files.
+
+## Testing
+
+Run `make test` inside project root.
