@@ -37,5 +37,4 @@ Try using the following commit message format if you can:
 
 ## Testing
 
-- Ensure that Lua is added to your PATH (to run `lua` commands during simulations)
 - Run `make test` inside project root.

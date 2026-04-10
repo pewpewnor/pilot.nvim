@@ -21,7 +21,6 @@ describe("simulation", function()
     ---@type Executor
     local function system_output_executor(command)
         local output = vim.fn.system(command)
-
         table.insert(output_files, output)
         table.insert(executed_commands, command)
     end
@@ -226,17 +225,14 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "Project build"))
     end)
 
-    it("runs file_type target with lua filetype", function()
+    it("runs file_type target with bash command", function()
         local dirs = get_pilot_dirs()
-        local lua_json_path = vim.fs.joinpath(dirs.filetypes, "lua.json")
-        local lua_script_file = vim.fs.joinpath(temp_base_dir, "script.lua")
+        local bash_json_path = vim.fs.joinpath(dirs.filetypes, "bash.json")
 
         common.mkdir_with_parents(dirs.filetypes)
 
-        vim.fn.writefile({ "print('Hello World')" }, lua_script_file)
-
-        write_pilot_json(lua_json_path, {
-            { name = "Execute Lua", command = "lua {{file_path}}" },
+        write_pilot_json(bash_json_path, {
+            { name = "Execute Command", command = "echo 'Hello World'" },
         })
 
         pilot.setup({
@@ -250,7 +246,7 @@ describe("simulation", function()
                 },
                 file_type = {
                     pilot_file_path = function()
-                        return lua_json_path
+                        return bash_json_path
                     end,
                     auto_run_single_command = true,
                     default_executor = system_output_executor,
@@ -258,14 +254,12 @@ describe("simulation", function()
             },
         })
 
-        vim.cmd(":e " .. lua_script_file)
-
         executed_commands = {}
         output_files = {}
         pilot.run_target("file_type")
 
         assert.equals(1, #executed_commands)
-        assert.is_truthy(string.find(executed_commands[1], "lua"))
+        assert.is_truthy(string.find(executed_commands[1], "echo"))
         assert.equals(1, #output_files)
         assert.is_truthy(string.find(output_files[1], "Hello World"))
     end)

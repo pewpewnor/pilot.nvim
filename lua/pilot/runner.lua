@@ -94,11 +94,13 @@ function M.select_and_run_entry(target)
             return entry.name
         end,
     }, function(chosen_entry)
-        if not chosen_entry then
-            error("[Pilot] Unexpected: chosen entry is nil.")
+        -- chosen_entry = nil means the user closed the selector ui
+        if chosen_entry then
+            return run_entry(chosen_entry, target.default_executor)
         end
-        return run_entry(chosen_entry, target.default_executor)
     end)
+
+    -- vim.ui.select runs parallel, so this function will immediately return nil??
 end
 
 function M.run_previous_task()
