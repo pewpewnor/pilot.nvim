@@ -57,8 +57,8 @@ function M.preset_executors.background_exit_status(command)
         ---@diagnostic disable-next-line: unused-local
         on_exit = function(job_id, exit_code, event)
             print(
-                exit_code == 0 and "[Pilot] Command job success (exit code 0)"
-                    or "[Pilot] Command job error (exit code 1)"
+                exit_code == 0 and "pilot.nvim: command job success (exit code 0)"
+                    or "pilot.nvim: command job error (exit code 1)"
             )
         end,
     })
@@ -70,6 +70,7 @@ end
 ---@param minimum_target MinimumTarget
 ---@return Target
 function M.fill_target(minimum_target)
+    vim.validate("minimum_target", minimum_target, "table")
     return vim.tbl_deep_extend("force", {
         auto_run_single_command = true,
         default_executor = M.preset_executors.new_tab,

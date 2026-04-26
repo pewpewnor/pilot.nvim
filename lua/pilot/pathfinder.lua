@@ -14,11 +14,7 @@ local function resolve_path(resolver)
     if raw_path == nil then
         return nil
     end
-    if type(raw_path) ~= "string" then
-        error(
-            "[Pilot] Pilot file path function must return a string path or nil."
-        )
-    end
+    vim.validate("pilot_file_path resolver return value", raw_path, "string")
     return interpolation.interpolate(raw_path)
 end
 
@@ -32,7 +28,7 @@ function M.get_true_path(path_resolvers)
         resolvers = path_resolvers
     else
         error(
-            "[Pilot] Pilot file path function must be a function or a list of functions."
+            "pilot.nvim: pilot file path must be a function or a list of functions"
         )
     end
 
@@ -48,7 +44,7 @@ function M.get_true_path(path_resolvers)
     end
 
     if not first_interpolated_path then
-        print("[Pilot] No pilot file exist.")
+        error("pilot.nvim: unexpected: no first interpolated path resolved")
     end
     return first_interpolated_path
 end

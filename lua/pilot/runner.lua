@@ -44,7 +44,7 @@ local function run_entry(entry, default_executor)
         if not executor then
             error(
                 string.format(
-                    "[Pilot] Attempted to retrieve executor '%s' from your configuration, but got nil instead.",
+                    "pilot.nvim: executor '%s' not found in configuration",
                     entry.executor
                 )
             )
@@ -69,7 +69,7 @@ function M.select_and_run_entry(target)
     if #entries == 0 then
         print(
             string.format(
-                "[Pilot] No entries in the pilot file for '%s'.",
+                "pilot.nvim: no entries in the pilot file for '%s'",
                 target.name
             )
         )
@@ -105,7 +105,7 @@ end
 
 function M.run_previous_task()
     if not M.last_executed_task then
-        print("[Pilot] No previously executed task.")
+        print("pilot.nvim: no previously executed task")
         return
     end
     execute_task(M.last_executed_task)

@@ -15,14 +15,12 @@ end
 
 ---@param target_name string
 local function find_target(target_name)
-    if type(target_name) ~= "string" then
-        error("[Pilot] Given target name must be a string.")
-    end
+    vim.validate("target_name", target_name, "string")
     local target = M.config.targets[target_name]
     if not target then
         error(
             string.format(
-                "[Pilot] Chosen target '%s' doesn't exist.",
+                "pilot.nvim: target '%s' does not exist",
                 target_name
             )
         )

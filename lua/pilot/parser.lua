@@ -40,7 +40,7 @@ local function read_and_decode_imported_path(import_path)
     if not file_content then
         error(
             string.format(
-                "[Pilot] Imported file '%s' doesn't exist",
+                "pilot.nvim: imported file '%s' does not exist",
                 import_path
             )
         )
@@ -52,7 +52,7 @@ local function read_and_decode_imported_path(import_path)
     if not imported_list then
         error(
             string.format(
-                "[Pilot] Imported file '%s' has invalid JSON format or is empty.",
+                "pilot.nvim: imported file '%s' has invalid JSON format or is empty",
                 import_path
             )
         )
@@ -60,7 +60,7 @@ local function read_and_decode_imported_path(import_path)
     if type(imported_list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Imported file '%s' should contain JSON array, refer to the documentation for proper pilot file format.",
+                "pilot.nvim: imported file '%s' must contain a JSON array, refer to the documentation for the proper pilot file format",
                 import_path
             )
         )
@@ -75,7 +75,7 @@ local function parse_list_to_entries(list, pilot_file_path)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Pilot file must be a valid JSON array in '%s'.",
+                "pilot.nvim: pilot file must be a valid JSON array in '%s'",
                 pilot_file_path
             )
         )
@@ -88,7 +88,7 @@ local function parse_list_to_entries(list, pilot_file_path)
         if item_type ~= "table" and item_type ~= "string" then
             error(
                 string.format(
-                    "[Pilot] Each entry must be a valid JSON object or string in '%s'.",
+                    "pilot.nvim: each entry must be a valid JSON object or string in '%s'",
                     pilot_file_path
                 )
             )
@@ -100,7 +100,7 @@ local function parse_list_to_entries(list, pilot_file_path)
             if not item.command and not item.import then
                 error(
                     string.format(
-                        "[Pilot] Each entry must either have a 'command' or an 'import' attribute in '%s'.",
+                        "pilot.nvim: each entry must have either a 'command' or an 'import' attribute in '%s'",
                         pilot_file_path
                     )
                 )
@@ -108,7 +108,7 @@ local function parse_list_to_entries(list, pilot_file_path)
             if item.command and item.import then
                 error(
                     string.format(
-                        "[Pilot] Each entry cannot have both the 'command' and 'import' attribute simultaneously in '%s'.",
+                        "pilot.nvim: each entry cannot have both 'command' and 'import' attributes simultaneously in '%s'",
                         pilot_file_path
                     )
                 )
@@ -120,7 +120,7 @@ local function parse_list_to_entries(list, pilot_file_path)
                     item.command = table.concat(item.command, " && ")
                 elseif type(item.command) ~= "string" then
                     error(
-                        "[Pilot] Command must be a string or a list of strings"
+                        "pilot.nvim: command must be a string or a list of strings"
                     )
                 end
                 table.insert(
@@ -134,7 +134,7 @@ local function parse_list_to_entries(list, pilot_file_path)
             else
                 if type(item.import) ~= "string" then
                     error(
-                        "[Pilot] Imported item must be a string that resolves to a path of a file"
+                        "pilot.nvim: import must be a string that resolves to a file path"
                     )
                 end
 
@@ -158,7 +158,7 @@ function M.parse_pilot_file(path, target_name)
     local file_content = common.read_file(path)
     if not file_content then
         print(
-            "[Pilot] No suitable pilot file, all paths don't exist or unreadable."
+            "pilot.nvim: no suitable pilot file found, all paths do not exist or are unreadable"
         )
         return nil
     end
@@ -169,7 +169,7 @@ function M.parse_pilot_file(path, target_name)
     if not list then
         error(
             string.format(
-                "[Pilot] Your pilot file for '%s' has invalid JSON format or is empty.",
+                "pilot.nvim: pilot file for '%s' has invalid JSON format or is empty",
                 target_name
             )
         )
@@ -177,7 +177,7 @@ function M.parse_pilot_file(path, target_name)
     if type(list) ~= "table" then
         error(
             string.format(
-                "[Pilot] Your run file for '%s' should contain JSON array, refer to the documentation for proper run file format.",
+                "pilot.nvim: pilot file for '%s' must contain a JSON array, refer to the documentation for the proper pilot file format",
                 target_name
             )
         )
