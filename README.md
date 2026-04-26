@@ -30,18 +30,21 @@ _Requirement: Neovim v0.11.x_
 ## Motivation
 
 I wanted a code runner plugin that supports placeholder interpolation, allowing
-me to use a single keystroke to compile, build, and run my code at the same time,
-whilst still having full control over the commands.
+me to use a single keystroke to compile, build, and run my code at the same
+time, whilst still having full control over the commands.
 
 ---
 
 ## Features
 
-- Run arbitrary commands for any file or project, with full control over execution.
+- Run arbitrary commands for any file or project, with full control over
+  execution.
 - Powerful placeholders for file paths, names, directories, and more.
-- Edit configuration files on the fly without needing to reload Neovim everytime.
+- Edit configuration files on the fly without needing to reload Neovim
+  everytime.
 - Define multiple possible pilot file path locations.
-- Customizable pilot file to define how it will be executed and the execution locations
+- Customizable pilot file to define how it will be executed and the execution
+  locations
   (tabs, splits, background jobs, custom location, etc).
 - Much more other features such as importing/including other pilot files.
 
@@ -82,7 +85,8 @@ use {
 
 - **Target**: A category of pilot files (e.g., project, file_type). Each target
   has its own file path, auto-run behavior, and default executor.
-- **Project pilot file**: JSON file containing commands to run for the current project.
+- **Project pilot file**: JSON file containing commands to run for the current
+  project.
 - **File type pilot file**: JSON file containing commands to run for the current
   file type.
 
@@ -205,7 +209,8 @@ vim.api.nvim_create_user_command("PilotDeleteFileTypePilotFile",
 
 ## Pilot File Format
 
-Both project and file type pilot files use the same JSON format: an array of entries.
+Both project and file type pilot files use the same JSON format: an array of
+entries.
 
 Each entry can be:
 
@@ -213,7 +218,8 @@ Each entry can be:
 - An **object** with fields:
     - `name` (optional): Display name for the command.
     - `command` (required): String or array of strings.
-    - `executor` (optional): Name of an executor that exists in the `executors` configuration field.
+    - `executor` (optional): Name of an executor that exists in the `executors`
+      configuration field.
     - `import` (optional): Path to another JSON file to import entries from.
 
 ---
@@ -328,8 +334,10 @@ You can also create your own executor and use it in your config for pilot.nvim.
   or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
   for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
-- Placeholders can be escaped by using triple braces, e.g. `{{{not_a_placeholder}}}`.
-- If you want to always use a specific executor, add it to `executors` and reference
+- Placeholders can be escaped by using triple braces, e.g.
+  `{{{not_a_placeholder}}}`.
+- If you want to always use a specific executor, add it to `executors` and
+  reference
   it by name in your config.
 - To disable template writing for new files, set
   `write_template_to_new_pilot_file = false`.

@@ -23,7 +23,7 @@ end
 ---@param placeholder string?
 ---@return string
 local function resolve_placeholder(placeholder)
-    placeholder = vim.fn.trim(placeholder or "")
+    placeholder = vim.trim(placeholder or "")
 
     for var_name, resolve_var in pairs(M.config.placeholders.vars) do
         if placeholder == var_name then

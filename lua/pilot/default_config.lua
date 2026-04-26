@@ -38,30 +38,29 @@ end
 
 ---@type Executor
 function M.preset_executors.silent(command)
-    vim.fn.system(command)
+    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }):wait()
 end
 
 ---@type Executor
 function M.preset_executors.print(command)
-    print(vim.fn.system(command))
+    local result =
+        vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, { text = true }):wait()
+    print(result.stdout)
 end
 
 ---@type Executor
 function M.preset_executors.background_silent(command)
-    vim.fn.jobstart(command)
+    vim.system({ vim.o.shell, vim.o.shellcmdflag, command })
 end
 
 ---@type Executor
 function M.preset_executors.background_exit_status(command)
-    vim.fn.jobstart(command, {
-        ---@diagnostic disable-next-line: unused-local
-        on_exit = function(job_id, exit_code, event)
-            print(
-                exit_code == 0 and "pilot.nvim: command job success (exit code 0)"
-                    or "pilot.nvim: command job error (exit code 1)"
-            )
-        end,
-    })
+    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, {}, function(result)
+        print(
+            result.code == 0 and "pilot.nvim: command job success (exit code 0)"
+                or "pilot.nvim: command job error (exit code 1)"
+        )
+    end)
 end
 
 ---@class MinimumTarget

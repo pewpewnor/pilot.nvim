@@ -18,7 +18,7 @@ end
 ---@param json_string string
 ---@return any?
 function M.json_decode(json_string)
-    local success, result = pcall(vim.fn.json_decode, json_string)
+    local success, result = pcall(vim.json.decode, json_string)
     return success and result or nil
 end
 
@@ -37,7 +37,14 @@ end
 ---@param path string
 ---@return boolean
 function M.mkdir_with_parents(path)
-    return M.is_directory(path) or (vim.fn.mkdir(path, "p") == 1)
+    if M.is_directory(path) then
+        return true
+    end
+    local parent = vim.fs.dirname(path)
+    if parent and parent ~= path then
+        M.mkdir_with_parents(parent)
+    end
+    return vim.uv.fs_mkdir(path, 493) == true
 end
 
 return M

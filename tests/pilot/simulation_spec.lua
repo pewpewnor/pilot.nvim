@@ -20,8 +20,11 @@ describe("simulation", function()
 
     ---@type Executor
     local function system_output_executor(command)
-        local output = vim.fn.system(command)
-        table.insert(output_files, output)
+        local result = vim.system(
+            { vim.o.shell, vim.o.shellcmdflag, command },
+            { text = true }
+        ):wait()
+        table.insert(output_files, result.stdout)
         table.insert(executed_commands, command)
     end
 
@@ -74,8 +77,10 @@ describe("simulation", function()
     end
 
     local function write_pilot_json(file_path, data)
-        local pilot_content = vim.fn.json_encode(data)
-        vim.fn.writefile(vim.fn.split(pilot_content, "\n"), file_path)
+        local pilot_content = vim.json.encode(data)
+        local fd = vim.uv.fs_open(file_path, "w", 420)
+        vim.uv.fs_write(fd, pilot_content)
+        vim.uv.fs_close(fd)
     end
 
     local function setup_pilot_with_paths(
