@@ -9,6 +9,7 @@
 ---@field executor Executor
 ---@field args string[]
 
+local common = require("pilot.common")
 local parser = require("pilot.parser")
 local interpolation = require("pilot.interpolation")
 
@@ -88,7 +89,7 @@ function M.select_and_run_entry(target)
     if M.config.display.last_entry_new_line then
         entries[#entries].name = entries[#entries].name .. "\n"
     end
-    vim.ui.select(entries, {
+    common.ui_select(entries, {
         prompt = string.format("Run a '%s' command", target.name),
         format_item = function(entry)
             return entry.name

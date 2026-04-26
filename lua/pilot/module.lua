@@ -15,7 +15,7 @@ end
 
 ---@param target_name string
 local function find_target(target_name)
-    vim.validate("target_name", target_name, "string")
+    common.validate("target_name", target_name, "string")
     local target = M.config.targets[target_name]
     if not target then
         error(
@@ -59,14 +59,14 @@ function M.edit_pilot_file(target_name)
             "]",
         }, "a")
     end
-    vim.cmd("tabedit " .. path)
+    common.run_cmd("tabedit " .. path)
 end
 
 ---@param target_name string
 function M.delete_pilot_file(target_name)
     local path =
         pathfinder.get_true_path(find_target(target_name).pilot_file_path)
-    vim.fs.rm(path, { force = true })
+    common.path_remove(path)
 end
 
 return M

@@ -14,7 +14,7 @@ local function resolve_path(resolver)
     if raw_path == nil then
         return nil
     end
-    vim.validate("pilot_file_path resolver return value", raw_path, "string")
+    common.validate("pilot_file_path resolver return value", raw_path, "string")
     return interpolation.interpolate(raw_path)
 end
 

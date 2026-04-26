@@ -7,55 +7,53 @@ local M = {
 ---@type Executor
 function M.preset_executors.new_tab(command, args)
     if #args == 0 then
-        vim.cmd("tabnew | terminal " .. command)
+        common.run_cmd("tabnew | terminal " .. command)
     else
-        vim.cmd(args[1] .. "tabnew | terminal " .. command)
+        common.run_cmd(args[1] .. "tabnew | terminal " .. command)
     end
 end
 
 ---@type Executor
 function M.preset_executors.current_buffer(command)
-    vim.cmd("terminal " .. command)
+    common.run_cmd("terminal " .. command)
 end
 
 ---@type Executor
 function M.preset_executors.split(command, args)
     if #args == 0 then
-        vim.cmd("rightbelow split | terminal " .. command)
+        common.run_cmd("rightbelow split | terminal " .. command)
     else
-        vim.cmd(args[1] .. " split | terminal " .. command)
+        common.run_cmd(args[1] .. " split | terminal " .. command)
     end
 end
 
 ---@type Executor
 function M.preset_executors.vsplit(command, args)
     if #args == 0 then
-        vim.cmd("botright vsplit | terminal " .. command)
+        common.run_cmd("botright vsplit | terminal " .. command)
     else
-        vim.cmd(args[1] .. " vsplit | terminal " .. command)
+        common.run_cmd(args[1] .. " vsplit | terminal " .. command)
     end
 end
 
 ---@type Executor
 function M.preset_executors.silent(command)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }):wait()
+    common.run_shell_silent(command)
 end
 
 ---@type Executor
 function M.preset_executors.print(command)
-    local result =
-        vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, { text = true }):wait()
-    print(result.stdout)
+    print(common.run_shell_output(command))
 end
 
 ---@type Executor
 function M.preset_executors.background_silent(command)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command })
+    common.run_shell_async(command)
 end
 
 ---@type Executor
 function M.preset_executors.background_exit_status(command)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, {}, function(result)
+    common.run_shell_async_on_exit(command, function(result)
         print(
             result.code == 0 and "pilot.nvim: command job success (exit code 0)"
                 or "pilot.nvim: command job error (exit code 1)"
@@ -69,8 +67,8 @@ end
 ---@param minimum_target MinimumTarget
 ---@return Target
 function M.fill_target(minimum_target)
-    vim.validate("minimum_target", minimum_target, "table")
-    return vim.tbl_deep_extend("force", {
+    common.validate("minimum_target", minimum_target, "table")
+    return common.tbl_deep_extend("force", {
         auto_run_single_command = true,
         default_executor = M.preset_executors.new_tab,
     }, minimum_target)
@@ -81,7 +79,7 @@ M.default_opts = {
     targets = {
         project = M.fill_target({
             pilot_file_path = function()
-                return vim.fs.joinpath(
+                return common.path_join(
                     "{{pilot_data_path}}",
                     "projects",
                     "{{hash_sha256(cwd_path)}}.json"
@@ -90,7 +88,7 @@ M.default_opts = {
         }),
         file_type = M.fill_target({
             pilot_file_path = function()
-                return vim.fs.joinpath(
+                return common.path_join(
                     "{{pilot_data_path}}",
                     "filetypes",
                     "{{file_type}}.json"
@@ -112,59 +110,59 @@ M.default_opts = {
     placeholders = {
         vars = {
             file_path = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p"))
+                return common.fnameescape(common.expand("%:p"))
             end,
             file_path_relative = function()
-                return vim.fn.fnameescape(vim.fn.expand("%"))
+                return common.fnameescape(common.expand("%"))
             end,
             file_name = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:t"))
+                return common.fnameescape(common.expand("%:t"))
             end,
             file_name_no_extension = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:t:r"))
+                return common.fnameescape(common.expand("%:t:r"))
             end,
             file_type = function()
-                return vim.bo.filetype
+                return common.get_filetype()
             end,
             file_extension = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:e"))
+                return common.fnameescape(common.expand("%:e"))
             end,
             dir_path = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p:h"))
+                return common.fnameescape(common.expand("%:p:h"))
             end,
             dir_name = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p:h:t"))
+                return common.fnameescape(common.expand("%:p:h:t"))
             end,
             cwd_path = function()
-                return vim.fn.fnameescape(vim.fn.getcwd())
+                return common.get_cwd()
             end,
             cwd_name = function()
-                return vim.fn.fnameescape(
-                    vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+                return common.fnameescape(
+                    common.path_modify(common.get_cwd_raw(), ":t")
                 )
             end,
             config_path = function()
-                return vim.fn.fnameescape(vim.fn.stdpath("config"))
+                return common.fnameescape(common.get_stdpath("config"))
             end,
             data_path = function()
-                return vim.fn.fnameescape(vim.fn.stdpath("data"))
+                return common.fnameescape(common.get_stdpath("data"))
             end,
             pilot_data_path = function()
                 local pilot_data_path =
-                    vim.fs.joinpath(vim.fn.stdpath("data"), "pilot")
+                    common.path_join(common.get_stdpath("data"), "pilot")
                 common.mkdir_with_parents(pilot_data_path)
-                return vim.fn.fnameescape(pilot_data_path)
+                return common.fnameescape(pilot_data_path)
             end,
             cword = function()
-                return vim.fn.expand("<cword>")
+                return common.expand("<cword>")
             end,
             cWORD = function()
-                return vim.fn.expand("<cWORD>")
+                return common.expand("<cWORD>")
             end,
         },
         funcs = {
             hash_sha256 = function(arg)
-                return vim.fn.sha256(arg)
+                return common.sha256(arg)
             end,
         },
     },
