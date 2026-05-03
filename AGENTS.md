@@ -7,6 +7,9 @@ files via a JSON configuration file (called a pilot file). It supports
 placeholder interpolation, custom executors, and multiple targets (e.g.
 `project`, `file_type`).
 
+At first, please always check README.md for the required Neovim version.
+Always use the new provided APIs rather than the legacy ones.
+
 ## Testing
 
 ```bash

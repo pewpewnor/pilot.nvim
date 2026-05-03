@@ -17,7 +17,7 @@ end
 
 ---@param json_string string
 ---@return any?
-function M.json_decode(json_string)
+function M.decode_json(json_string)
     local success, result = pcall(vim.json.decode, json_string)
     return success and result or nil
 end
@@ -50,7 +50,7 @@ function M.mkdir_with_parents(path)
 end
 
 ---@param command string
-function M.run_cmd(command)
+function M.cmd(command)
     vim.cmd(command)
 end
 
@@ -62,19 +62,16 @@ end
 ---@param command string
 ---@return string
 function M.run_shell_output(command)
-    local result =
-        vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, { text = true }):wait()
+    local result = vim.system(
+        { vim.o.shell, vim.o.shellcmdflag, command },
+        { text = true }
+    ):wait()
     return result.stdout
 end
 
 ---@param command string
-function M.run_shell_async(command)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command })
-end
-
----@param command string
----@param on_exit fun(result: {code: integer, stdout: string, stderr: string})
-function M.run_shell_async_on_exit(command, on_exit)
+---@param on_exit? fun(result: {code: integer, stdout: string, stderr: string})
+function M.run_shell_async(command, on_exit)
     vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, {}, on_exit)
 end
 
@@ -98,7 +95,7 @@ end
 ---@param path string
 ---@param modifier string
 ---@return string
-function M.path_modify(path, modifier)
+function M.fnamemodify(path, modifier)
     return vim.fn.fnamemodify(path, modifier)
 end
 
@@ -120,7 +117,7 @@ end
 
 ---@param str string
 ---@return string
-function M.sha256(str)
+function M.hash_sha256(str)
     return vim.fn.sha256(str)
 end
 

@@ -7,32 +7,32 @@ local M = {
 ---@type Executor
 function M.preset_executors.new_tab(command, args)
     if #args == 0 then
-        common.run_cmd("tabnew | terminal " .. command)
+        common.cmd("tabnew | terminal " .. command)
     else
-        common.run_cmd(args[1] .. "tabnew | terminal " .. command)
+        common.cmd(args[1] .. "tabnew | terminal " .. command)
     end
 end
 
 ---@type Executor
 function M.preset_executors.current_buffer(command)
-    common.run_cmd("terminal " .. command)
+    common.cmd("terminal " .. command)
 end
 
 ---@type Executor
 function M.preset_executors.split(command, args)
     if #args == 0 then
-        common.run_cmd("rightbelow split | terminal " .. command)
+        common.cmd("rightbelow split | terminal " .. command)
     else
-        common.run_cmd(args[1] .. " split | terminal " .. command)
+        common.cmd(args[1] .. " split | terminal " .. command)
     end
 end
 
 ---@type Executor
 function M.preset_executors.vsplit(command, args)
     if #args == 0 then
-        common.run_cmd("botright vsplit | terminal " .. command)
+        common.cmd("botright vsplit | terminal " .. command)
     else
-        common.run_cmd(args[1] .. " vsplit | terminal " .. command)
+        common.cmd(args[1] .. " vsplit | terminal " .. command)
     end
 end
 
@@ -53,7 +53,7 @@ end
 
 ---@type Executor
 function M.preset_executors.background_exit_status(command)
-    common.run_shell_async_on_exit(command, function(result)
+    common.run_shell_async(command, function(result)
         print(
             result.code == 0 and "pilot.nvim: command job success (exit code 0)"
                 or "pilot.nvim: command job error (exit code 1)"
@@ -138,7 +138,7 @@ M.default_opts = {
             end,
             cwd_name = function()
                 return common.fnameescape(
-                    common.path_modify(common.get_cwd_raw(), ":t")
+                    common.fnamemodify(common.get_cwd_raw(), ":t")
                 )
             end,
             config_path = function()
@@ -162,7 +162,7 @@ M.default_opts = {
         },
         funcs = {
             hash_sha256 = function(arg)
-                return common.sha256(arg)
+                return common.hash_sha256(arg)
             end,
         },
     },

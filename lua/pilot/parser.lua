@@ -47,7 +47,7 @@ local function read_and_decode_imported_path(import_path)
     end
 
     ---@type table?
-    local imported_list = common.json_decode(file_content)
+    local imported_list = common.decode_json(file_content)
 
     if not imported_list then
         error(
@@ -164,7 +164,7 @@ function M.parse_pilot_file(path, target_name)
     end
 
     ---@type table?
-    local list = common.json_decode(file_content)
+    local list = common.decode_json(file_content)
 
     if not list then
         error(

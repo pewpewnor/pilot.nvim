@@ -19,10 +19,7 @@ local function find_target(target_name)
     local target = M.config.targets[target_name]
     if not target then
         error(
-            string.format(
-                "pilot.nvim: target '%s' does not exist",
-                target_name
-            )
+            string.format("pilot.nvim: target '%s' does not exist", target_name)
         )
     end
     return target
@@ -59,7 +56,7 @@ function M.edit_pilot_file(target_name)
             "]",
         }, "a")
     end
-    common.run_cmd("tabedit " .. path)
+    common.cmd("tabedit " .. path)
 end
 
 ---@param target_name string
