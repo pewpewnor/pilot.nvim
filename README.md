@@ -108,7 +108,7 @@ The default values are usually enough unless you want heavy customizations.
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
         file_type = {
-            run_file_path = function()
+            pilot_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
             end, -- function(): string? | (function(): string?)[]
             auto_run_single_command = true, -- boolean
@@ -148,7 +148,7 @@ pilot.setup({
     run_targets = {
         project = {
             -- customize where to find the run file path when running a project
-            run_file_path = {
+            pilot_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
                 function()

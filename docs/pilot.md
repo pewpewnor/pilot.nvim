@@ -84,14 +84,14 @@ use {
 {
     run_targets = {
         project = {
-            run_file_path = function()
+            pilot_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
             end, -- function(): string? | (function(): string?)[]
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
     },
-    write_template_to_new_run_file = true, -- boolean
+    write_template_to_new_pilot_file = true, -- boolean
     executors = {
         new_tab = pilot.preset_executors.new_tab,
         current_buffer = pilot.preset_executors.current_buffer,
@@ -173,13 +173,13 @@ use {
 - **Type:** `table<string, RunTarget>`
 - **Description:**
   A table mapping run target names to their configuration. Each run target can have
-  its own `run_file_path`, `auto_run_single_command`, and `default_executor`.  
+  its own `pilot_file_path`, `auto_run_single_command`, and `default_executor`.  
   Built-in run targets: `project`, `file_type`. You can add custom run targets.
 - **RunTarget structure:**
 
     ```lua
     {
-        run_file_path = function(): string? | (function(): string?)[], -- required
+        pilot_file_path = function(): string? | (function(): string?)[], -- required
         auto_run_single_command = boolean, -- optional
         default_executor = function(command: string), -- optional
     }
@@ -190,19 +190,19 @@ use {
     ```lua
     run_targets = {
         project = {
-            run_file_path = "{{cwd_path}}/pilot.json",
+            pilot_file_path = "{{cwd_path}}/pilot.json",
             auto_run_single_command = true,
             default_executor = pilot.preset_executors.new_tab,
         },
         custom = {
-            run_file_path = "{{cwd_path}}/custom.json",
+            pilot_file_path = "{{cwd_path}}/custom.json",
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
         },
     }
     ```
 
-### `write_template_to_new_run_file`
+### `write_template_to_new_pilot_file`
 
 - **Type:** `boolean`
 - **Description:**
@@ -247,7 +247,7 @@ pilot.setup({
     run_targets = {
         project = {
             -- customize where to find the run file path when running a project
-            run_file_path = {
+            pilot_file_path = {
                 function() return "{{cwd_path}}/pilot.json" end,
                 function() return "{{cwd_path}}/.vscode/pilot.json" end,
                 function()
