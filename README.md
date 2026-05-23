@@ -145,7 +145,7 @@ Full example to show how this plugin can be heavily customized.
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_targets = {
+    targets = {
         project = {
             -- customize where to find the run file path when running a project
             pilot_file_path = {

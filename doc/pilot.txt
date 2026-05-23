@@ -102,7 +102,7 @@ DEFAULT CONFIGURATION VALUES              *pilot-default-configuration-values*
 
 >lua
     {
-        run_targets = {
+        targets = {
             project = {
                 pilot_file_path = function()
                     return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
@@ -189,7 +189,7 @@ DEFAULT CONFIGURATION VALUES              *pilot-default-configuration-values*
 CONFIGURATION OPTIONS                            *pilot-configuration-options*
 
 
-RUN_TARGETS ~
+TARGETS ~
 
 - **Type:** `table<string, RunTarget>`
 - **Description:** A table mapping run target names to their configuration. Each
@@ -206,7 +206,7 @@ RUN_TARGETS ~
     <
 - **Example:**
     >lua
-        run_targets = {
+        targets = {
             project = {
                 pilot_file_path = "{{cwd_path}}/pilot.json",
                 auto_run_single_command = true,
@@ -266,7 +266,7 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
 >lua
     local pilot = require("pilot")
     pilot.setup({
-        run_targets = {
+        targets = {
             project = {
                 -- customize where to find the run file path when running a project
                 pilot_file_path = {

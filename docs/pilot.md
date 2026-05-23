@@ -82,7 +82,7 @@ use {
 
 ```lua
 {
-    run_targets = {
+    targets = {
         project = {
             pilot_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "projects", "{{hash_sha256(cwd_path)}}.json")
@@ -168,7 +168,7 @@ use {
 
 ## Configuration Options
 
-### `run_targets`
+### `targets`
 
 - **Type:** `table<string, RunTarget>`
 - **Description:**
@@ -188,7 +188,7 @@ use {
 - **Example:**
 
     ```lua
-    run_targets = {
+    targets = {
         project = {
             pilot_file_path = "{{cwd_path}}/pilot.json",
             auto_run_single_command = true,
@@ -244,7 +244,7 @@ use {
 ```lua
 local pilot = require("pilot")
 pilot.setup({
-    run_targets = {
+    targets = {
         project = {
             -- customize where to find the run file path when running a project
             pilot_file_path = {
