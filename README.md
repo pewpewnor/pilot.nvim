@@ -114,7 +114,7 @@ The default values are usually enough unless you want heavy customizations.
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
-    },
+    }, -- table<string, Target>
     write_template_to_new_pilot_file = true, -- boolean
     executors = {
         -- (filled with all preset executors, e.g. new_tab, split, vsplit)
@@ -162,6 +162,10 @@ pilot.setup({
         file_type = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
+        },
+        -- create a custom target that you can run
+        globals = {
+            pilot_file_path = function() return "/home/user/globals_pilot.json" end,
         },
     },
     write_template_to_new_pilot_file = false,
@@ -332,7 +336,8 @@ You can also create your own executor and use it in your config for pilot.nvim.
 
 - Use [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
   or [mini.nvim's mini-pick](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md)
-  for a better `vim.ui.select()` experience.
+  which overrides `vim.ui.select()`, resulting in a better experience with this
+  plugin.
 - You can import common commands into multiple configs using the `"import"` key.
 - Placeholders can be escaped by using triple braces, e.g.
   `{{{not_a_placeholder}}}`.
@@ -360,5 +365,7 @@ You can also create your own executor and use it in your config for pilot.nvim.
 
 - Create a new [issue](https://github.com/pewpewnor/pilot.nvim/issues)
 - See the [contribution guidelines](CONTRIBUTING.md) for creating pull requests
-- Open a [discussion](https://github.com/pewpewnor/pilot.nvim/discussions)
 - See the [FAQ](docs/pilot.md#faq)
+
+Feel free to star this repo to let me know that more people are using this
+plugin!
