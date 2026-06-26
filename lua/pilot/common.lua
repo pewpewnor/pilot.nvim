@@ -106,7 +106,7 @@ end
 
 ---@return string
 function M.get_cwd()
-    return vim.fn.fnameescape(vim.fn.getcwd())
+    return vim.fn.getcwd()
 end
 
 ---@param what string
@@ -125,11 +125,6 @@ end
 ---@return string
 function M.fnameescape(path)
     return vim.fn.fnameescape(path)
-end
-
----@return string
-function M.get_cwd_raw()
-    return vim.fn.getcwd()
 end
 
 ---@param str string

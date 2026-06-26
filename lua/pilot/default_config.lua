@@ -39,67 +39,11 @@
 ---@field display Display
 
 local common = require("pilot.common")
+local preset_executors = require("pilot.preset_executors")
 
 local M = {
-    preset_executors = {},
+    preset_executors = preset_executors,
 }
-
----@type Executor
-function M.preset_executors.new_tab(command, args)
-    if #args == 0 then
-        common.cmd("tabnew | terminal " .. command)
-    else
-        common.cmd(args[1] .. "tabnew | terminal " .. command)
-    end
-end
-
----@type Executor
-function M.preset_executors.current_buffer(command)
-    common.cmd("terminal " .. command)
-end
-
----@type Executor
-function M.preset_executors.split(command, args)
-    if #args == 0 then
-        common.cmd("rightbelow split | terminal " .. command)
-    else
-        common.cmd(args[1] .. " split | terminal " .. command)
-    end
-end
-
----@type Executor
-function M.preset_executors.vsplit(command, args)
-    if #args == 0 then
-        common.cmd("botright vsplit | terminal " .. command)
-    else
-        common.cmd(args[1] .. " vsplit | terminal " .. command)
-    end
-end
-
----@type Executor
-function M.preset_executors.silent(command)
-    common.run_shell_silent(command)
-end
-
----@type Executor
-function M.preset_executors.print(command)
-    print(common.run_shell_output(command))
-end
-
----@type Executor
-function M.preset_executors.background_silent(command)
-    common.run_shell_async(command)
-end
-
----@type Executor
-function M.preset_executors.background_exit_status(command)
-    common.run_shell_async(command, function(result)
-        print(
-            result.code == 0 and "pilot.nvim: command job success (exit code 0)"
-                or "pilot.nvim: command job error (exit code 1)"
-        )
-    end)
-end
 
 ---@class MinimumTarget
 ---@field pilot_file_path PilotFilepathResolver|PilotFilepathResolver[]
@@ -174,11 +118,11 @@ M.default_opts = {
                 return common.fnameescape(common.expand("%:p:h:t"))
             end,
             cwd_path = function()
-                return common.get_cwd()
+                return common.fnameescape(common.get_cwd())
             end,
             cwd_name = function()
                 return common.fnameescape(
-                    common.fnamemodify(common.get_cwd_raw(), ":t")
+                    common.fnamemodify(common.get_cwd(), ":t")
                 )
             end,
             config_path = function()
