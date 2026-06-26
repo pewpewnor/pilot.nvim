@@ -24,8 +24,8 @@ A Neovim plugin that allows you to **run** your **project or file** based on a
 can edit files on the fly, and the plugin supports advanced features like
 checks for possible file paths, custom executors, and more.
 
-This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the
-latest Neovim major release version.
+This plugin is tested mainly on Neovim v0.12.x at the minimum. We always strive
+to use the latest Neovim major release version.
 
 The source code for this plugin is available in the GitHub repository
 <https://github.com/pewpewnor/pilot.nvim>.
@@ -283,6 +283,10 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
             file_type = {
                 auto_run_single_command = false,
                 default_executor = pilot.preset_executors.split,
+            },
+            -- create a custom target that you can run
+            globals = {
+                pilot_file_path = function() return "/home/user/globals_pilot.json" end,
             },
         },
         write_template_to_new_pilot_file = false,

@@ -5,8 +5,8 @@ A Neovim plugin that allows you to **run** your **project or file** based on a
 edit files on the fly, and the plugin supports advanced features like checks for
 possible file paths, custom executors, and more.
 
-This plugin requires Neovim v0.11.0 at the minimum. We always strive to use the
-latest Neovim major release version.
+This plugin is tested mainly on Neovim v0.12.x at the minimum. We always strive
+to use the latest Neovim major release version.
 
 The source code for this plugin is available in the [GitHub repository](https://github.com/pewpewnor/pilot.nvim).
 

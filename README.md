@@ -8,7 +8,7 @@ or file using a simple, editable JSON configuration.
 It supports powerful placeholders, custom executors, and lets you edit or reload
 configs on the fly without needing to reload Neovim everytime.
 
-_Requirement: Neovim v0.11.x_
+_Requirement: Neovim v0.12.x_
 
 ![preview](https://github.com/user-attachments/assets/51c88f07-a551-4ae8-a49f-5c25bc42251e)
 
