@@ -164,8 +164,8 @@ pilot.setup({
             default_executor = pilot.preset_executors.split,
         },
         -- create a custom target that you can run
-        globals = {
-            pilot_file_path = function() return "/home/user/globals_pilot.json" end,
+        universal = {
+            pilot_file_path = function() return "/home/user/universal_pilot.json" end,
         },
     },
     write_template_to_new_pilot_file = false,
