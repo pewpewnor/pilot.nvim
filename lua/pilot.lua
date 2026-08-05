@@ -13,7 +13,7 @@ local M = {
 
 ---@param options table?
 function M.setup(options)
-    config = common.tbl_deep_extend(
+    local config = common.tbl_deep_extend(
         "force",
         default_config.default_opts,
         options or {}
