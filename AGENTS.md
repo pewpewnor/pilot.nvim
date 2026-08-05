@@ -10,6 +10,18 @@ placeholder interpolation, custom executors, and multiple targets (e.g.
 At first, please always check README.md for the required Neovim version.
 Always use the newly provided APIs rather than the legacy ones.
 
+## Changing the Required Neovim Version
+
+The version is stated in several places that must be updated together:
+
+- `README.md`: the `_Requirement: Neovim vX.Y.x_` line.
+- `docs/pilot.md`: the "tested mainly on Neovim vX.Y.x at the minimum" line.
+- `scripts/generate-vimdoc.sh`: the `--vim-version 'NVIM vX.Y.0'` flag.
+- `lua/pilot/health.lua`: the `vim.fn.has("nvim-X.Y")` check and both of its
+  messages.
+- `.github/workflows/makefile.yml` installs Neovim unpinned, so CI needs no
+  change unless a specific version has to be pinned.
+
 ## Testing
 
 ```bash
