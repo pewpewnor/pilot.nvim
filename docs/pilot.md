@@ -314,7 +314,7 @@ Each entry can be:
 - A **string** (the command to run)
 - An **object** with fields:
     - `name` (optional): Display name for the command.
-    - `command`: String or array of strings (joined with `&&`).
+    - `cmd`: String or array of strings (joined with `&&`).
     - `executor` (optional): Name of an executor that exists in [executors](#executors).
     - `import` (optional): Path to another JSON file to import entries from.  
       Imported entries are merged in place.
@@ -327,14 +327,14 @@ Each entry can be:
 [
     {
         "name": "build & run project",
-        "command": "make build && make run"
+        "cmd": "make build && make run"
     },
     {
         "name": "run hovered test function name",
-        "command": "go test -v --run {{cword}}"
+        "cmd": "go test -v --run {{cword}}"
     },
     {
-        "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
+        "cmd": ["ls {{dir_path}}", "touch 'hello world.txt'"],
         "executor": "tmux_new_window"
     },
     "echo Hello, World!"
@@ -356,7 +356,7 @@ running C source code files.
 [
     {
         "name": "clang",
-        "command": "clang {{file_path_relative}} && ./a.out"
+        "cmd": "clang {{file_path_relative}} && ./a.out"
     },
     "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}"
 ]
@@ -500,7 +500,7 @@ file's `"executor"`.
 **Q: How do I use placeholders in config paths?**  
 A: All config paths support placeholders like `{{cwd_path}}`, `{{file_type}}`, etc.
 
-**Q: Can I use arrays for the `command` field?**  
+**Q: Can I use arrays for the `cmd` field?**  
 A: Yes, arrays are joined with `&&` to form a single shell command.
 
 **Q: What is passed to custom executors?**  

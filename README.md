@@ -221,7 +221,7 @@ Each entry can be:
 - A **string** (the command to run)
 - An **object** with fields:
     - `name` (optional): Display name for the command.
-    - `command` (required): String or array of strings.
+    - `cmd` (required): String or array of strings.
     - `executor` (optional): Name of an executor that exists in the `executors`
       configuration field.
     - `import` (optional): Path to another JSON file to import entries from.
@@ -237,15 +237,15 @@ current working directory.
 [
     {
         "name": "build & run project",
-        "command": "make build && make run"
+        "cmd": "make build && make run"
     },
     {
         "name": "run hovered test function name",
-        "command": "go test -v --run {{cword}}"
+        "cmd": "go test -v --run {{cword}}"
     },
     "echo Hello, World!",
     {
-        "command": ["ls {{dir_path}}", "touch 'hello world.txt'"],
+        "cmd": ["ls {{dir_path}}", "touch 'hello world.txt'"],
         "executor": "tmux_new_window"
     }
 ]
@@ -267,7 +267,7 @@ running C source code files.
     "gcc {{file_path}} -o {{file_name_no_extension}} ; ./{{file_name_no_extension}}",
     {
         "name": "clang",
-        "command": "clang {{file_path_relative}} && ./a.out"
+        "cmd": "clang {{file_path_relative}} && ./a.out"
     }
 ]
 ```
