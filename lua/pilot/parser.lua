@@ -82,6 +82,7 @@ local function parse_list_to_entries(list, pilot_file_path)
         )
     end
 
+    ---@type ProcessedEntry[]
     local processed_entries = {}
 
     for _, item in ipairs(list) do

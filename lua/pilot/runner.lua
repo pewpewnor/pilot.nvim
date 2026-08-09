@@ -32,6 +32,7 @@ end
 ---@param default_executor Executor
 local function run_entry(entry, default_executor)
     local executor
+    ---@type string[]
     local args = {}
     if not entry.executor then
         executor = default_executor
@@ -40,6 +41,7 @@ local function run_entry(entry, default_executor)
             table.insert(args, arg)
         end
 
+        ---@type string
         local executor_name = table.remove(args, 1)
         executor = M.config.executors[executor_name]
         if not executor then

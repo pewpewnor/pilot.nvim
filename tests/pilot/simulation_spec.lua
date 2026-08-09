@@ -4,6 +4,7 @@ local pilot = require("pilot")
 local common = require("pilot.common")
 
 describe("simulation", function()
+    ---@type string[]
     local executed_commands = {}
     local temp_base_dir
     local original_ui_select
@@ -26,10 +27,12 @@ describe("simulation", function()
         original_ui_select = common.ui_select
         original_cmd = common.cmd
 
+        ---@diagnostic disable-next-line: duplicate-set-field
         common.ui_select = function(items, _, on_choice)
             on_choice(items[1], 1)
         end
 
+        ---@diagnostic disable-next-line: duplicate-set-field
         common.cmd = function(cmd)
             if
                 not string.find(cmd, "tabnew")

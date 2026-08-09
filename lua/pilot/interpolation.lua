@@ -29,9 +29,17 @@ local function resolve_placeholder(placeholder)
 
     for var_name, resolve_var in pairs(M.config.placeholders.vars) do
         if placeholder == var_name then
-            common.validate("placeholders.vars." .. var_name, resolve_var, "function")
+            common.validate(
+                "placeholders.vars." .. var_name,
+                resolve_var,
+                "function"
+            )
             local resolved = resolve_var()
-            common.validate("placeholders.vars." .. var_name .. " return value", resolved, "string")
+            common.validate(
+                "placeholders.vars." .. var_name .. " return value",
+                resolved,
+                "string"
+            )
             return resolved
         end
     end
@@ -41,11 +49,19 @@ local function resolve_placeholder(placeholder)
     if extracted_func_name and extracted_func_arg then
         for func_name, resolve_func in pairs(M.config.placeholders.funcs) do
             if extracted_func_name == func_name then
-                common.validate("placeholders.funcs." .. func_name, resolve_func, "function")
+                common.validate(
+                    "placeholders.funcs." .. func_name,
+                    resolve_func,
+                    "function"
+                )
                 local resolved_func_arg =
                     resolve_placeholder(extracted_func_arg)
                 local resolved = resolve_func(resolved_func_arg)
-                common.validate("placeholders.funcs." .. func_name .. " return value", resolved, "string")
+                common.validate(
+                    "placeholders.funcs." .. func_name .. " return value",
+                    resolved,
+                    "string"
+                )
                 return resolved
             end
         end
@@ -69,6 +85,7 @@ end
 ---@param no_escape boolean?
 ---@return string
 function M.interpolate(command, no_escape)
+    ---@type string[]
     local result = {}
     local cursor = 1
     local pattern = "({+)([^}]+)(}+)"
