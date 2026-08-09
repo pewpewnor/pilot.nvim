@@ -51,7 +51,7 @@ function M.edit_pilot_file(target_name)
             "[",
             "    {",
             '        "name": "put name of command here",',
-            '        "command": "echo \'Hello, World!\'"',
+            '        "cmd": "echo \'Hello, World!\'"',
             "    }",
             "]",
         }, "a")

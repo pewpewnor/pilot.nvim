@@ -156,8 +156,8 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.projects)
 
         write_pilot_json(pilot_json_path, {
-            { name = "Run Project Build", command = "echo 'Building project'" },
-            { name = "Run Project Tests", command = "echo 'Running tests'" },
+            { name = "Run Project Build", cmd = "echo 'Building project'" },
+            { name = "Run Project Tests", cmd = "echo 'Running tests'" },
         })
 
         assert.is_truthy(common.is_file_and_readable(pilot_json_path))
@@ -175,8 +175,8 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.filetypes)
 
         write_pilot_json(lua_json_path, {
-            { name = "Run Lua File", command = "lua {{file_path}}" },
-            { name = "Format Lua", command = "stylua {{file_path}}" },
+            { name = "Run Lua File", cmd = "lua {{file_path}}" },
+            { name = "Format Lua", cmd = "stylua {{file_path}}" },
         })
 
         assert.is_truthy(common.is_file_and_readable(lua_json_path))
@@ -197,7 +197,7 @@ describe("simulation", function()
         write_pilot_json(custom_pilot_path, {
             {
                 name = "Build Project",
-                command = "echo 'Project build command'",
+                cmd = "echo 'Project build command'",
             },
         })
 
@@ -216,7 +216,7 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.filetypes)
 
         write_pilot_json(bash_json_path, {
-            { name = "Execute Command", command = "echo 'Hello World'" },
+            { name = "Execute Command", cmd = "echo 'Hello World'" },
         })
 
         pilot.setup({
@@ -258,11 +258,11 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.filetypes)
 
         write_pilot_json(project_pilot_path, {
-            { name = "Project Command", command = "echo 'project task'" },
+            { name = "Project Command", cmd = "echo 'project task'" },
         })
 
         write_pilot_json(lua_json_path, {
-            { name = "Lua Command", command = "echo 'lua task'" },
+            { name = "Lua Command", cmd = "echo 'lua task'" },
         })
 
         setup_pilot_with_paths(project_pilot_path, lua_json_path, true)
@@ -285,7 +285,7 @@ describe("simulation", function()
         local project_pilot_path = common.path_join(dirs.projects, "test.json")
 
         write_pilot_json(project_pilot_path, {
-            { command = "echo 'test'" },
+            { cmd = "echo 'test'" },
         })
 
         assert.is_truthy(common.is_directory(dirs.projects))
@@ -306,11 +306,11 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.filetypes)
 
         write_pilot_json(project_pilot_path, {
-            { name = "Build", command = "make build" },
+            { name = "Build", cmd = "make build" },
         })
 
         write_pilot_json(lua_json_path, {
-            { name = "Run", command = "lua {{file_name}}" },
+            { name = "Run", cmd = "lua {{file_name}}" },
         })
 
         setup_pilot_with_paths(project_pilot_path, lua_json_path, true)
@@ -333,9 +333,9 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.projects)
 
         write_pilot_json(project_pilot_path, {
-            { name = "Option 1", command = "echo 'first'" },
-            { name = "Option 2", command = "echo 'second'" },
-            { name = "Option 3", command = "echo 'third'" },
+            { name = "Option 1", cmd = "echo 'first'" },
+            { name = "Option 2", cmd = "echo 'second'" },
+            { name = "Option 3", cmd = "echo 'third'" },
         })
 
         setup_pilot_with_paths(project_pilot_path, nil, false)
@@ -356,7 +356,7 @@ describe("simulation", function()
         write_pilot_json(project_pilot_path, {
             {
                 name = "With Custom Executor",
-                command = "echo 'custom'",
+                cmd = "echo 'custom'",
                 executor = "test_exec",
             },
         })
@@ -382,7 +382,7 @@ describe("simulation", function()
         write_pilot_json(project_pilot_path, {
             {
                 name = "With Placeholders",
-                command = "echo {{cwd_name}} {{file_extension}}",
+                cmd = "echo {{cwd_name}} {{file_extension}}",
             },
         })
 
@@ -396,7 +396,7 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "echo"))
     end)
 
-    it("handles pilot file with only command property", function()
+    it("handles pilot file with only cmd property", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =
             common.path_join(dirs.projects, "minimal.json")
@@ -405,7 +405,7 @@ describe("simulation", function()
 
         write_pilot_json(project_pilot_path, {
             "echo 'string entry'",
-            { command = "echo 'object entry'" },
+            { cmd = "echo 'object entry'" },
         })
 
         setup_pilot_with_paths(project_pilot_path, nil, true)
@@ -425,11 +425,11 @@ describe("simulation", function()
         local project2 = common.path_join(dirs.projects, "proj2.json")
 
         write_pilot_json(project1, {
-            { name = "First Project", command = "echo 'proj1'" },
+            { name = "First Project", cmd = "echo 'proj1'" },
         })
 
         write_pilot_json(project2, {
-            { name = "Second Project", command = "echo 'proj2'" },
+            { name = "Second Project", cmd = "echo 'proj2'" },
         })
 
         setup_pilot_with_paths(project2, nil, true)
@@ -450,11 +450,11 @@ describe("simulation", function()
         local python_path = common.path_join(dirs.filetypes, "python.json")
 
         write_pilot_json(lua_path, {
-            { name = "Lua Run", command = "lua script.lua" },
+            { name = "Lua Run", cmd = "lua script.lua" },
         })
 
         write_pilot_json(python_path, {
-            { name = "Python Run", command = "python script.py" },
+            { name = "Python Run", cmd = "python script.py" },
         })
 
         setup_pilot_with_paths(nil, python_path, true)
@@ -477,7 +477,7 @@ describe("simulation", function()
         write_pilot_json(project_pilot_path, {
             {
                 name = "Special Chars",
-                command = "echo 'test | grep pattern & bg'",
+                cmd = "echo 'test | grep pattern & bg'",
             },
         })
 
@@ -500,11 +500,11 @@ describe("simulation", function()
             common.path_join(dirs.filetypes, "javascript.json")
 
         write_pilot_json(project_path, {
-            { name = "Project Run", command = "npm start" },
+            { name = "Project Run", cmd = "npm start" },
         })
 
         write_pilot_json(filetype_path, {
-            { name = "File Run", command = "node {{file_path}}" },
+            { name = "File Run", cmd = "node {{file_path}}" },
         })
 
         setup_pilot_with_paths(project_path, filetype_path, true)

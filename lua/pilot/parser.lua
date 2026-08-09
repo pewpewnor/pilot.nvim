@@ -1,6 +1,7 @@
 ---@class RawEntryTable
 ---@field name string?
----@field command string?
+---@field cmd string|string[]|nil
+---@field command string|string[]|nil
 ---@field import string?
 ---@field executor string?
 
@@ -97,39 +98,45 @@ local function parse_list_to_entries(list, pilot_file_path)
         if item_type == "string" then
             table.insert(processed_entries, create_processed_entry(item))
         else
-            if not item.command and not item.import then
+            if item.cmd and item.command then
                 error(
                     string.format(
-                        "pilot.nvim: each entry must have either a 'command' or an 'import' attribute in '%s'",
-                        pilot_file_path
-                    )
-                )
-            end
-            if item.command and item.import then
-                error(
-                    string.format(
-                        "pilot.nvim: each entry cannot have both 'command' and 'import' attributes simultaneously in '%s'",
+                        "pilot.nvim: each entry cannot have both 'cmd' and 'command' attributes simultaneously in '%s'",
                         pilot_file_path
                     )
                 )
             end
 
-            if item.command then
-                if type(item.command) == "table" then
-                    ---@diagnostic disable-next-line: param-type-mismatch
-                    item.command = table.concat(item.command, " && ")
-                elseif type(item.command) ~= "string" then
+            local cmd = item.cmd or item.command
+
+            if not cmd and not item.import then
+                error(
+                    string.format(
+                        "pilot.nvim: each entry must have either a 'cmd' or an 'import' attribute in '%s'",
+                        pilot_file_path
+                    )
+                )
+            end
+            if cmd and item.import then
+                error(
+                    string.format(
+                        "pilot.nvim: each entry cannot have both 'cmd' and 'import' attributes simultaneously in '%s'",
+                        pilot_file_path
+                    )
+                )
+            end
+
+            if cmd then
+                if type(cmd) == "table" then
+                    cmd = table.concat(cmd, " && ")
+                elseif type(cmd) ~= "string" then
                     error(
-                        "pilot.nvim: command must be a string or a list of strings"
+                        "pilot.nvim: cmd must be a string or a list of strings"
                     )
                 end
                 table.insert(
                     processed_entries,
-                    create_processed_entry(
-                        item.command,
-                        item.name,
-                        item.executor
-                    )
+                    create_processed_entry(cmd, item.name, item.executor)
                 )
             else
                 if type(item.import) ~= "string" then
