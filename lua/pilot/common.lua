@@ -140,11 +140,6 @@ function M.validate(name, val, expected_type)
     vim.validate(name, val, expected_type)
 end
 
----@param t table
-function M.iter(t)
-    return vim.iter(t)
-end
-
 ---@param ... any
 ---@return table
 function M.tbl_deep_extend(...)

@@ -3,8 +3,7 @@ local default_config = require("pilot.default_config")
 
 ---@param targets Targets
 local function fill_and_validate_targets(targets)
-    ---@diagnostic disable-next-line: undefined-field
-    common.iter(targets):each(function(target_name, target_config)
+    for target_name, target_config in pairs(targets) do
         targets[target_name] = default_config.fill_target(target_config)
         target_config = targets[target_name]
 
@@ -24,7 +23,7 @@ local function fill_and_validate_targets(targets)
             target_config.default_executor,
             "function"
         )
-    end)
+    end
 end
 
 ---@param options Config

@@ -37,23 +37,18 @@ local function check_shell()
 end
 
 local function check_target_paths()
-    ---@diagnostic disable-next-line: undefined-field
-    require("pilot.common")
-        .iter(module.config.targets)
-        :each(function(target_name, target)
-            local success, path =
-                pcall(pathfinder.get_true_path, target.pilot_file_path)
-            if not success then
-                vim.health.error(
-                    string.format(
-                        "target '%s' cannot resolve a pilot file path: %s",
-                        target_name,
-                        path
-                    )
+    for target_name, target in pairs(module.config.targets) do
+        local success, path =
+            pcall(pathfinder.get_true_path, target.pilot_file_path)
+        if not success then
+            vim.health.error(
+                string.format(
+                    "target '%s' cannot resolve a pilot file path: %s",
+                    target_name,
+                    path
                 )
-                return
-            end
-
+            )
+        else
             local directory = vim.fs.dirname(path)
             if vim.fn.filewritable(directory) == 2 then
                 vim.health.ok(
@@ -73,7 +68,8 @@ local function check_target_paths()
                     "the directory is missing or not writable, creating or editing a pilot file for this target will fail"
                 )
             end
-        end)
+        end
+    end
 end
 
 function M.check()
