@@ -11,24 +11,18 @@ describe("interpolation", function()
         local test_dir_name = "test dir"
         local test_file_name = "file name.txt"
         local test_relative_path =
-            vim.fs.joinpath(test_dir_name, test_file_name)
-        local test_path = vim.fs.joinpath(vim.fn.getcwd(), test_relative_path)
-        local escaped_test_path = vim.fn.fnameescape(test_path)
+            common.path_join(test_dir_name, test_file_name)
+        local test_path = common.path_join(common.get_cwd(), test_relative_path)
+        local escaped_test_path = common.fnameescape(test_path)
 
-        vim.api.nvim_buf_set_name(0, test_path)
-        vim.bo.filetype = "text"
-        vim.api.nvim_buf_set_lines(
-            0,
-            0,
-            -1,
-            false,
-            { "begin hello world-over" }
-        )
-        vim.fn.search("world")
+        common.set_current_buffer_name(test_path)
+        common.set_filetype("text")
+        common.set_current_buffer_lines({ "begin hello world-over" })
+        common.search("world")
 
         local got_file_path = interpolation.interpolate("{{file_path}}")
         assert.equals(
-            vim.fn.fnamemodify(got_file_path, ":p"),
+            common.fnamemodify(got_file_path, ":p"),
             escaped_test_path
         )
 
@@ -41,19 +35,19 @@ describe("interpolation", function()
 
         assert.equals(
             interpolation.interpolate("{{file_name}}"),
-            vim.fn.fnameescape(test_file_name)
+            common.fnameescape(test_file_name)
         )
         assert.equals(
             interpolation.interpolate("{{dir_name}}"),
-            vim.fn.fnameescape(test_dir_name)
+            common.fnameescape(test_dir_name)
         )
         assert.equals(
             interpolation.interpolate("{{cwd_path}}"),
-            vim.fn.fnameescape(vim.fn.getcwd())
+            common.fnameescape(common.get_cwd())
         )
         assert.equals(
             interpolation.interpolate("{{cwd_name}}"),
-            vim.fn.fnameescape(vim.fn.fnamemodify(vim.fn.getcwd(), ":t"))
+            common.fnameescape(common.fnamemodify(common.get_cwd(), ":t"))
         )
 
         local pd = interpolation.interpolate("{{pilot_data_path}}")
@@ -65,11 +59,11 @@ describe("interpolation", function()
 
         assert.equals(
             interpolation.interpolate("{{hash_sha256(cwd_path)}}"),
-            vim.fn.sha256(vim.fn.fnameescape(vim.fn.getcwd()))
+            common.hash_sha256(common.fnameescape(common.get_cwd()))
         )
         assert.equals(
             interpolation.interpolate("{{hash_sha256(file_path)}}"),
-            vim.fn.sha256(escaped_test_path)
+            common.hash_sha256(escaped_test_path)
         )
     end)
 

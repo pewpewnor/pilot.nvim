@@ -17,7 +17,7 @@ The version is stated in several places that must be updated together:
 - `README.md`: the `_Requirement: Neovim vX.Y.x_` line.
 - `docs/pilot.md`: the "tested mainly on Neovim vX.Y.x at the minimum" line.
 - `scripts/generate-vimdoc.sh`: the `--vim-version 'NVIM vX.Y.0'` flag.
-- `lua/pilot/health.lua`: the `vim.fn.has("nvim-X.Y")` check and both of its
+- `lua/pilot/health.lua`: the `common.has("nvim-X.Y")` check and both of its
   messages.
 - `.github/workflows/makefile.yml` installs Neovim unpinned, so CI needs no
   change unless a specific version has to be pinned.
@@ -31,8 +31,10 @@ make test
 ## Code Style
 
 - No code comments unless required by a linter.
-- Use `vim.validate` for type checks on config/argument values.
-- Use `vim.iter` instead of plain `for` loops over tables where appropriate.
+- Never call the Neovim API directly, not even in test files. Every `vim.*`
+  call lives in `lua/pilot/common.lua`; everything else goes through it. Add a
+  wrapper there when one is missing.
+- Use `common.validate` for type checks on config/argument values.
 - Error messages format:
   `"pilot.nvim: <lowercase message without trailing period>"`
 - `print()` messages follow the same prefix format.

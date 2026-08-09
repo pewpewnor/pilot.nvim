@@ -1,7 +1,10 @@
+package.path = "./lua/?.lua;./lua/?/init.lua;" .. package.path
+
+local common = require("pilot.common")
+
 local plenary_dir = os.getenv("PLENARY_DIR") or "/tmp/plenary.nvim"
-local is_not_a_directory = vim.fn.isdirectory(plenary_dir) == 0
-if is_not_a_directory then
-    vim.fn.system({
+if not common.is_directory(plenary_dir) then
+    common.run_process_silent({
         "git",
         "clone",
         "https://github.com/nvim-lua/plenary.nvim",
@@ -9,8 +12,8 @@ if is_not_a_directory then
     })
 end
 
-vim.opt.rtp:append(".")
-vim.opt.rtp:append(plenary_dir)
+common.rtp_append(".")
+common.rtp_append(plenary_dir)
 
-vim.cmd("runtime " .. vim.fs.joinpath("plugin", "plenary.vim"))
+common.cmd("runtime " .. common.path_join("plugin", "plenary.vim"))
 require("plenary.busted")

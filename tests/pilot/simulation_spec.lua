@@ -7,9 +7,7 @@ describe("simulation", function()
     local executed_commands = {}
     local temp_base_dir
     local original_ui_select
-    local original_inputlist
-    local original_input
-    local original_vim_cmd
+    local original_cmd
 
     ---@type Executor
     local function test_executor(command)
@@ -20,55 +18,38 @@ describe("simulation", function()
 
     ---@type Executor
     local function system_output_executor(command)
-        local result = vim.system(
-            { vim.o.shell, vim.o.shellcmdflag, command },
-            { text = true }
-        ):wait()
-        table.insert(output_files, result.stdout)
+        table.insert(output_files, common.run_shell_output(command))
         table.insert(executed_commands, command)
     end
 
     local function setup_mock_ui()
-        original_ui_select = vim.ui.select
-        original_inputlist = vim.fn.inputlist
-        original_input = vim.fn.input
-        original_vim_cmd = vim.cmd
+        original_ui_select = common.ui_select
+        original_cmd = common.cmd
 
-        vim.ui.select = function(items, _, on_choice)
+        common.ui_select = function(items, _, on_choice)
             on_choice(items[1], 1)
         end
 
-        vim.fn.inputlist = function(_)
-            return 1
-        end
-
-        vim.fn.input = function(_)
-            return "1"
-        end
-
-        vim.cmd = function(cmd)
+        common.cmd = function(cmd)
             if
-                type(cmd) == "string"
-                and not string.find(cmd, "tabnew")
+                not string.find(cmd, "tabnew")
                 and not string.find(cmd, "split")
                 and not string.find(cmd, "terminal")
             then
-                original_vim_cmd(cmd)
+                original_cmd(cmd)
             end
         end
     end
 
     local function restore_ui()
-        vim.ui.select = original_ui_select
-        vim.fn.inputlist = original_inputlist
-        vim.fn.input = original_input
-        vim.cmd = original_vim_cmd
+        common.ui_select = original_ui_select
+        common.cmd = original_cmd
     end
 
     local function get_pilot_dirs()
-        local pilot_data_dir = vim.fs.joinpath(temp_base_dir, "pilot_data")
-        local projects_dir = vim.fs.joinpath(pilot_data_dir, "projects")
-        local filetypes_dir = vim.fs.joinpath(pilot_data_dir, "filetypes")
+        local pilot_data_dir = common.path_join(temp_base_dir, "pilot_data")
+        local projects_dir = common.path_join(pilot_data_dir, "projects")
+        local filetypes_dir = common.path_join(pilot_data_dir, "filetypes")
         return {
             pilot_data = pilot_data_dir,
             projects = projects_dir,
@@ -77,10 +58,7 @@ describe("simulation", function()
     end
 
     local function write_pilot_json(file_path, data)
-        local pilot_content = vim.json.encode(data)
-        local fd = vim.uv.fs_open(file_path, "w", 420)
-        vim.uv.fs_write(fd, pilot_content)
-        vim.uv.fs_close(fd)
+        common.write_file(file_path, { common.encode_json(data) })
     end
 
     local function setup_pilot_with_paths(
@@ -94,7 +72,7 @@ describe("simulation", function()
                 project = {
                     pilot_file_path = function()
                         return project_path
-                            or vim.fs.joinpath(temp_base_dir, "dummy.json")
+                            or common.path_join(temp_base_dir, "dummy.json")
                     end,
                     auto_run_single_command = use_auto_run,
                     default_executor = test_executor,
@@ -102,7 +80,7 @@ describe("simulation", function()
                 file_type = {
                     pilot_file_path = function()
                         return filetype_path
-                            or vim.fs.joinpath(temp_base_dir, "dummy.json")
+                            or common.path_join(temp_base_dir, "dummy.json")
                     end,
                     auto_run_single_command = use_auto_run,
                     default_executor = test_executor,
@@ -121,7 +99,7 @@ describe("simulation", function()
                 project = {
                     pilot_file_path = function()
                         return project_path
-                            or vim.fs.joinpath(temp_base_dir, "dummy.json")
+                            or common.path_join(temp_base_dir, "dummy.json")
                     end,
                     auto_run_single_command = true,
                     default_executor = test_executor,
@@ -129,7 +107,7 @@ describe("simulation", function()
                 file_type = {
                     pilot_file_path = function()
                         return filetype_path
-                            or vim.fs.joinpath(temp_base_dir, "dummy.json")
+                            or common.path_join(temp_base_dir, "dummy.json")
                     end,
                     auto_run_single_command = true,
                     default_executor = test_executor,
@@ -141,7 +119,7 @@ describe("simulation", function()
 
     local function cleanup_temp_dir()
         if temp_base_dir and common.is_directory(temp_base_dir) then
-            vim.fn.system({ "rm", "-rf", temp_base_dir })
+            common.path_remove_recursive(temp_base_dir)
         end
     end
 
@@ -149,8 +127,8 @@ describe("simulation", function()
         executed_commands = {}
         output_files = {}
         setup_mock_ui()
-        temp_base_dir = vim.fs.joinpath(
-            vim.fn.tempname(),
+        temp_base_dir = common.path_join(
+            common.get_tempname(),
             "pilot_test_" .. tostring(math.random(100000))
         )
     end)
@@ -173,7 +151,7 @@ describe("simulation", function()
 
     it("can create and parse project pilot file", function()
         local dirs = get_pilot_dirs()
-        local pilot_json_path = vim.fs.joinpath(dirs.projects, "pilot.json")
+        local pilot_json_path = common.path_join(dirs.projects, "pilot.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -192,7 +170,7 @@ describe("simulation", function()
 
     it("can create and parse lua filetype pilot file", function()
         local dirs = get_pilot_dirs()
-        local lua_json_path = vim.fs.joinpath(dirs.filetypes, "lua.json")
+        local lua_json_path = common.path_join(dirs.filetypes, "lua.json")
 
         common.mkdir_with_parents(dirs.filetypes)
 
@@ -211,7 +189,8 @@ describe("simulation", function()
 
     it("runs project target with custom config", function()
         local dirs = get_pilot_dirs()
-        local custom_pilot_path = vim.fs.joinpath(dirs.projects, "project.json")
+        local custom_pilot_path =
+            common.path_join(dirs.projects, "project.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -232,7 +211,7 @@ describe("simulation", function()
 
     it("runs file_type target with bash command", function()
         local dirs = get_pilot_dirs()
-        local bash_json_path = vim.fs.joinpath(dirs.filetypes, "bash.json")
+        local bash_json_path = common.path_join(dirs.filetypes, "bash.json")
 
         common.mkdir_with_parents(dirs.filetypes)
 
@@ -244,7 +223,7 @@ describe("simulation", function()
             targets = {
                 project = {
                     pilot_file_path = function()
-                        return vim.fs.joinpath(temp_base_dir, "dummy.json")
+                        return common.path_join(temp_base_dir, "dummy.json")
                     end,
                     auto_run_single_command = true,
                     default_executor = test_executor,
@@ -272,8 +251,8 @@ describe("simulation", function()
     it("runs both targets sequentially", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =
-            vim.fs.joinpath(dirs.projects, "project.json")
-        local lua_json_path = vim.fs.joinpath(dirs.filetypes, "lua.json")
+            common.path_join(dirs.projects, "project.json")
+        local lua_json_path = common.path_join(dirs.filetypes, "lua.json")
 
         common.mkdir_with_parents(dirs.projects)
         common.mkdir_with_parents(dirs.filetypes)
@@ -303,7 +282,7 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.projects)
         common.mkdir_with_parents(dirs.filetypes)
 
-        local project_pilot_path = vim.fs.joinpath(dirs.projects, "test.json")
+        local project_pilot_path = common.path_join(dirs.projects, "test.json")
 
         write_pilot_json(project_pilot_path, {
             { command = "echo 'test'" },
@@ -313,14 +292,15 @@ describe("simulation", function()
         assert.is_truthy(common.is_directory(dirs.filetypes))
         assert.is_truthy(common.is_file_and_readable(project_pilot_path))
 
-        local joined_path = vim.fs.joinpath(temp_base_dir, "subdir", "file.txt")
+        local joined_path =
+            common.path_join(temp_base_dir, "subdir", "file.txt")
         assert.is_truthy(string.find(joined_path, temp_base_dir))
     end)
 
     it("integration: setup, create, and run targets", function()
         local dirs = get_pilot_dirs()
-        local project_pilot_path = vim.fs.joinpath(dirs.projects, "main.json")
-        local lua_json_path = vim.fs.joinpath(dirs.filetypes, "lua.json")
+        local project_pilot_path = common.path_join(dirs.projects, "main.json")
+        local lua_json_path = common.path_join(dirs.filetypes, "lua.json")
 
         common.mkdir_with_parents(dirs.projects)
         common.mkdir_with_parents(dirs.filetypes)
@@ -348,7 +328,7 @@ describe("simulation", function()
 
     it("handles multiple entries with auto_run disabled", function()
         local dirs = get_pilot_dirs()
-        local project_pilot_path = vim.fs.joinpath(dirs.projects, "multi.json")
+        local project_pilot_path = common.path_join(dirs.projects, "multi.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -368,7 +348,8 @@ describe("simulation", function()
 
     it("supports custom executor in pilot file", function()
         local dirs = get_pilot_dirs()
-        local project_pilot_path = vim.fs.joinpath(dirs.projects, "custom.json")
+        local project_pilot_path =
+            common.path_join(dirs.projects, "custom.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -394,7 +375,7 @@ describe("simulation", function()
     it("handles placeholder interpolation in commands", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =
-            vim.fs.joinpath(dirs.projects, "placeholders.json")
+            common.path_join(dirs.projects, "placeholders.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -418,7 +399,7 @@ describe("simulation", function()
     it("handles pilot file with only command property", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =
-            vim.fs.joinpath(dirs.projects, "minimal.json")
+            common.path_join(dirs.projects, "minimal.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -440,8 +421,8 @@ describe("simulation", function()
         local dirs = get_pilot_dirs()
         common.mkdir_with_parents(dirs.projects)
 
-        local project1 = vim.fs.joinpath(dirs.projects, "proj1.json")
-        local project2 = vim.fs.joinpath(dirs.projects, "proj2.json")
+        local project1 = common.path_join(dirs.projects, "proj1.json")
+        local project2 = common.path_join(dirs.projects, "proj2.json")
 
         write_pilot_json(project1, {
             { name = "First Project", command = "echo 'proj1'" },
@@ -465,8 +446,8 @@ describe("simulation", function()
         local dirs = get_pilot_dirs()
         common.mkdir_with_parents(dirs.filetypes)
 
-        local lua_path = vim.fs.joinpath(dirs.filetypes, "lua.json")
-        local python_path = vim.fs.joinpath(dirs.filetypes, "python.json")
+        local lua_path = common.path_join(dirs.filetypes, "lua.json")
+        local python_path = common.path_join(dirs.filetypes, "python.json")
 
         write_pilot_json(lua_path, {
             { name = "Lua Run", command = "lua script.lua" },
@@ -489,7 +470,7 @@ describe("simulation", function()
     it("handles special characters in commands and paths", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =
-            vim.fs.joinpath(dirs.projects, "special.json")
+            common.path_join(dirs.projects, "special.json")
 
         common.mkdir_with_parents(dirs.projects)
 
@@ -514,8 +495,9 @@ describe("simulation", function()
         common.mkdir_with_parents(dirs.projects)
         common.mkdir_with_parents(dirs.filetypes)
 
-        local project_path = vim.fs.joinpath(dirs.projects, "consistent.json")
-        local filetype_path = vim.fs.joinpath(dirs.filetypes, "javascript.json")
+        local project_path = common.path_join(dirs.projects, "consistent.json")
+        local filetype_path =
+            common.path_join(dirs.filetypes, "javascript.json")
 
         write_pilot_json(project_path, {
             { name = "Project Run", command = "npm start" },

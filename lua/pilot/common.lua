@@ -12,7 +12,7 @@ end
 ---@param mode nil|"a"
 ---@return boolean
 function M.write_file(path, lines, mode)
-    return vim.fn.writefile(lines, path, mode) == 0
+    return vim.fn.writefile(lines, path, mode or "") == 0
 end
 
 ---@param json_string string
@@ -20,6 +20,12 @@ end
 function M.decode_json(json_string)
     local success, result = pcall(vim.json.decode, json_string)
     return success and result or nil
+end
+
+---@param value any
+---@return string
+function M.encode_json(value)
+    return vim.json.encode(value)
 end
 
 ---@param path string
@@ -38,11 +44,17 @@ end
 
 ---@param path string
 ---@return boolean
+function M.is_directory_writable(path)
+    return vim.fn.filewritable(path) == 2
+end
+
+---@param path string
+---@return boolean
 function M.mkdir_with_parents(path)
     if M.is_directory(path) then
         return true
     end
-    local parent = vim.fs.dirname(path)
+    local parent = M.dirname(path)
     if parent and parent ~= path then
         M.mkdir_with_parents(parent)
     end
@@ -52,6 +64,16 @@ end
 ---@param command string
 function M.cmd(command)
     vim.cmd(command)
+end
+
+---@param path string
+function M.rtp_append(path)
+    vim.opt.rtp:append(path)
+end
+
+---@return string
+function M.get_shell()
+    return vim.o.shell
 end
 
 ---@param command string
@@ -75,6 +97,11 @@ function M.run_shell_async(command, on_exit)
     vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, {}, on_exit)
 end
 
+---@param args string[]
+function M.run_process_silent(args)
+    vim.system(args):wait()
+end
+
 ---@param ... string
 ---@return string
 function M.path_join(...)
@@ -84,6 +111,17 @@ end
 ---@param path string
 function M.path_remove(path)
     vim.fs.rm(path, { force = true })
+end
+
+---@param path string
+function M.path_remove_recursive(path)
+    vim.fs.rm(path, { force = true, recursive = true })
+end
+
+---@param path string
+---@return string
+function M.dirname(path)
+    return vim.fs.dirname(path)
 end
 
 ---@param expr string
@@ -104,6 +142,27 @@ function M.get_filetype()
     return vim.bo.filetype
 end
 
+---@param filetype string
+function M.set_filetype(filetype)
+    vim.bo.filetype = filetype
+end
+
+---@param name string
+function M.set_current_buffer_name(name)
+    vim.api.nvim_buf_set_name(0, name)
+end
+
+---@param lines string[]
+function M.set_current_buffer_lines(lines)
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+end
+
+---@param pattern string
+---@return integer
+function M.search(pattern)
+    return vim.fn.search(pattern)
+end
+
 ---@return string
 function M.get_cwd()
     return vim.fn.getcwd()
@@ -113,6 +172,23 @@ end
 ---@return string
 function M.get_stdpath(what)
     return vim.fn.stdpath(what)
+end
+
+---@return string
+function M.get_tempname()
+    return vim.fn.tempname()
+end
+
+---@param feature string
+---@return boolean
+function M.has(feature)
+    return vim.fn.has(feature) == 1
+end
+
+---@param name string
+---@return boolean
+function M.is_executable(name)
+    return vim.fn.executable(name) == 1
 end
 
 ---@param str string
@@ -151,6 +227,28 @@ end
 ---@param on_choice fun(item: any?)
 function M.ui_select(items, opts, on_choice)
     vim.ui.select(items, opts, on_choice)
+end
+
+---@param name string
+function M.health_start(name)
+    vim.health.start(name)
+end
+
+---@param message string
+function M.health_ok(message)
+    vim.health.ok(message)
+end
+
+---@param message string
+---@param advice string?
+function M.health_warn(message, advice)
+    vim.health.warn(message, advice)
+end
+
+---@param message string
+---@param advice string?
+function M.health_error(message, advice)
+    vim.health.error(message, advice)
 end
 
 return M

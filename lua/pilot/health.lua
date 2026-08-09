@@ -1,13 +1,14 @@
+local common = require("pilot.common")
 local module = require("pilot.module")
 local pathfinder = require("pilot.pathfinder")
 
 local M = {}
 
 local function check_neovim_version()
-    if vim.fn.has("nvim-0.12") == 1 then
-        vim.health.ok("neovim version is v0.12.0 or newer")
+    if common.has("nvim-0.12") then
+        common.health_ok("neovim version is v0.12.0 or newer")
     else
-        vim.health.error(
+        common.health_error(
             "neovim v0.12.0 or newer is required",
             "upgrade your neovim installation"
         )
@@ -16,21 +17,22 @@ end
 
 local function check_setup_called()
     if not module.config then
-        vim.health.error(
+        common.health_error(
             "setup() has not been called",
             "call require('pilot').setup({}) in your configuration"
         )
         return
     end
-    vim.health.ok("setup() has been called")
+    common.health_ok("setup() has been called")
 end
 
 local function check_shell()
-    if vim.fn.executable(vim.o.shell) == 1 then
-        vim.health.ok(string.format("shell '%s' is executable", vim.o.shell))
+    local shell = common.get_shell()
+    if common.is_executable(shell) then
+        common.health_ok(string.format("shell '%s' is executable", shell))
     else
-        vim.health.error(
-            string.format("shell '%s' is not executable", vim.o.shell),
+        common.health_error(
+            string.format("shell '%s' is not executable", shell),
             "every executor runs commands through 'shell', set it to an installed shell"
         )
     end
@@ -41,7 +43,7 @@ local function check_target_paths()
         local success, path =
             pcall(pathfinder.get_true_path, target.pilot_file_path)
         if not success then
-            vim.health.error(
+            common.health_error(
                 string.format(
                     "target '%s' cannot resolve a pilot file path: %s",
                     target_name,
@@ -49,9 +51,9 @@ local function check_target_paths()
                 )
             )
         else
-            local directory = vim.fs.dirname(path)
-            if vim.fn.filewritable(directory) == 2 then
-                vim.health.ok(
+            local directory = common.dirname(path)
+            if common.is_directory_writable(directory) then
+                common.health_ok(
                     string.format(
                         "target '%s' can write pilot files into '%s'",
                         target_name,
@@ -59,7 +61,7 @@ local function check_target_paths()
                     )
                 )
             else
-                vim.health.warn(
+                common.health_warn(
                     string.format(
                         "target '%s' cannot write pilot files into '%s'",
                         target_name,
@@ -73,7 +75,7 @@ local function check_target_paths()
 end
 
 function M.check()
-    vim.health.start("pilot.nvim")
+    common.health_start("pilot.nvim")
 
     check_neovim_version()
     check_setup_called()
