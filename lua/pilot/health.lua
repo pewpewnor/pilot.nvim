@@ -14,6 +14,17 @@ local function check_neovim_version()
     end
 end
 
+local function check_setup_called()
+    if not module.config then
+        vim.health.error(
+            "setup() has not been called",
+            "call require('pilot').setup({}) in your configuration"
+        )
+        return
+    end
+    vim.health.ok("setup() has been called")
+end
+
 local function check_shell()
     if vim.fn.executable(vim.o.shell) == 1 then
         vim.health.ok(string.format("shell '%s' is executable", vim.o.shell))
@@ -27,8 +38,9 @@ end
 
 local function check_target_paths()
     ---@diagnostic disable-next-line: undefined-field
-    require("pilot.common").iter(module.config.targets):each(
-        function(target_name, target)
+    require("pilot.common")
+        .iter(module.config.targets)
+        :each(function(target_name, target)
             local success, path =
                 pcall(pathfinder.get_true_path, target.pilot_file_path)
             if not success then
@@ -61,24 +73,14 @@ local function check_target_paths()
                     "the directory is missing or not writable, creating or editing a pilot file for this target will fail"
                 )
             end
-        end
-    )
+        end)
 end
 
 function M.check()
     vim.health.start("pilot.nvim")
 
     check_neovim_version()
-
-    if not module.config then
-        vim.health.error(
-            "setup() has not been called",
-            "call require('pilot').setup({}) in your configuration"
-        )
-        return
-    end
-    vim.health.ok("setup() has been called")
-
+    check_setup_called()
     check_shell()
     check_target_paths()
 end
