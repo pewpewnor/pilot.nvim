@@ -17,7 +17,7 @@ _Requirement: Neovim v0.12.x_
 ## Table of Important Contents
 
 - [Installation](#installation)
-- [User commands](#user-commands)
+- [Commands](#commands)
 - [Default configuration values](#default-configuration-values)
 - [Example customization](#example-customization)
 - [Pilot file format](#pilot-file-format)
@@ -82,26 +82,6 @@ use {
 
 ---
 
-## User Commands
-
-pilot.nvim registers a single `:Pilot` command, which completes both its
-subcommand and the available target names.
-
-| Command                  | Description                                          |
-| ------------------------ | ---------------------------------------------------- |
-| `:Pilot run {target}`    | Run a command from the given target                  |
-| `:Pilot prev`            | Re-run the last executed task                        |
-| `:Pilot edit {target}`   | Open the pilot file of the given target for editing  |
-| `:Pilot delete {target}` | Delete the pilot file of the given target            |
-
-`{target}` is any key of the `targets` configuration field, so with the default
-configuration `:Pilot run project` and `:Pilot edit file_type` are available.
-
-> **Note:** if you lazy-load the plugin, add `cmd = "Pilot"` to your plugin spec
-> so the command exists before the plugin is loaded.
-
----
-
 ## General Terms
 
 - **Target**: A category of pilot files (e.g., project, file_type). Each target
@@ -110,6 +90,20 @@ configuration `:Pilot run project` and `:Pilot edit file_type` are available.
   project.
 - **File type pilot file**: JSON file containing commands to run for the current
   file type.
+
+---
+
+## Commands
+
+Automatically registered commands ready for use, e.g. `Pilot run project` or
+`Pilot run file_type`.
+
+| Command                  | Description                                         |
+| ------------------------ | --------------------------------------------------- |
+| `:Pilot run {target}`    | Run a command from the given target                 |
+| `:Pilot prev`            | Re-run the last executed task                       |
+| `:Pilot edit {target}`   | Open the pilot file of the given target for editing |
+| `:Pilot delete {target}` | Delete the pilot file of the given target           |
 
 ---
 
