@@ -17,6 +17,7 @@ _Requirement: Neovim v0.12.x_
 ## Table of Important Contents
 
 - [Installation](#installation)
+- [User commands](#user-commands)
 - [Default configuration values](#default-configuration-values)
 - [Example customization](#example-customization)
 - [Pilot file format](#pilot-file-format)
@@ -78,6 +79,26 @@ use {
     end
 }
 ```
+
+---
+
+## User Commands
+
+pilot.nvim registers a single `:Pilot` command, which completes both its
+subcommand and the available target names.
+
+| Command                  | Description                                          |
+| ------------------------ | ---------------------------------------------------- |
+| `:Pilot run {target}`    | Run a command from the given target                  |
+| `:Pilot prev`            | Re-run the last executed task                        |
+| `:Pilot edit {target}`   | Open the pilot file of the given target for editing  |
+| `:Pilot delete {target}` | Delete the pilot file of the given target            |
+
+`{target}` is any key of the `targets` configuration field, so with the default
+configuration `:Pilot run project` and `:Pilot edit file_type` are available.
+
+> **Note:** if you lazy-load the plugin, add `cmd = "Pilot"` to your plugin spec
+> so the command exists before the plugin is loaded.
 
 ---
 
@@ -193,20 +214,14 @@ pilot.setup({
 })
 
 -- customize these keybindings to your liking
-vim.keymap.set("n", "<F10>", function() pilot.run("project") end)
-vim.keymap.set("n", "<F12>", function() pilot.run("file_type") end)
+vim.keymap.set("n", "<F10>", function() pilot.run_target("project") end)
+vim.keymap.set("n", "<F12>", function() pilot.run_target("file_type") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
 vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_pilot_file("project") end)
 vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("file_type") end)
-
--- example of creating vim user commands for pilot functions
-vim.api.nvim_create_user_command("PilotDeleteProjectPilotFile",
-    function() pilot.delete_pilot_file("project") end, { nargs = 0, bar = false })
-vim.api.nvim_create_user_command("PilotDeleteFileTypePilotFile",
-    function() pilot.delete_pilot_file("file_type") end, { nargs = 0, bar = false })
 ```
 
-> **See:** [functions documentation](docs/pilot.md#functions) for all available
+> **See:** [functions documentation](docs/pilot.md#plugin-functions) for all available
 > functions.
 
 ---

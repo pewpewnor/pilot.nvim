@@ -1,0 +1,17 @@
+pilot-configuration-options	pilot.txt	/*pilot-configuration-options*
+pilot-default-configuration-values	pilot.txt	/*pilot-default-configuration-values*
+pilot-example-customization	pilot.txt	/*pilot-example-customization*
+pilot-example-file-type-pilot-file	pilot.txt	/*pilot-example-file-type-pilot-file*
+pilot-example-project-pilot-file	pilot.txt	/*pilot-example-project-pilot-file*
+pilot-faq	pilot.txt	/*pilot-faq*
+pilot-features	pilot.txt	/*pilot-features*
+pilot-general-terms	pilot.txt	/*pilot-general-terms*
+pilot-installation	pilot.txt	/*pilot-installation*
+pilot-pilot-file-format	pilot.txt	/*pilot-pilot-file-format*
+pilot-placeholders	pilot.txt	/*pilot-placeholders*
+pilot-plugin-functions	pilot.txt	/*pilot-plugin-functions*
+pilot-preset-executors	pilot.txt	/*pilot-preset-executors*
+pilot-table-of-contents	pilot.txt	/*pilot-table-of-contents*
+pilot-tips-&-recommendations	pilot.txt	/*pilot-tips-&-recommendations*
+pilot-user-commands	pilot.txt	/*pilot-user-commands*
+pilot.txt	pilot.txt	/*pilot.txt*
