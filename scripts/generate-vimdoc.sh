@@ -5,3 +5,5 @@ panvimdoc.sh \
 	--description 'Run your projects and files with powerful command placeholders' \
 	--toc 'true' \
 	--treesitter 'true'
+
+nvim --headless -u NONE -c 'helptags doc' -c 'qa'
