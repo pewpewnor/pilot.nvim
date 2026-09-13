@@ -334,7 +334,7 @@ Each entry can be:
 - An **object** with fields:
     - `name` (optional): Display name for the command.
     - `cmd`: String or array of strings (joined with `&&`).
-    - `executor` (optional): Name of an executor that exists in [executors](#executors).
+    - `executor` (optional): Name of an executor that exists in `executors`.
     - `import` (optional): Path to another JSON file to import entries from.  
       Imported entries are merged in place.
 
@@ -443,7 +443,7 @@ Executors are functions that run the command in a specific way.
 All executors receive two arguments:
 
 - `command` (string): The shell command to run (with placeholders already expanded).
-- `args` (table): List of arguments (see [executors](#executors)).
+- `args` (table): List of arguments (see `executors`).
 
 ### Built-in Executors
 

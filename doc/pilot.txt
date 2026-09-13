@@ -1,4 +1,5 @@
 *pilot.txt*     Run your projects and files with powerful command placeholders
+                            For NVIM v0.12.0    Last change: 2026 September 14
 
 ==============================================================================
 Table of Contents                                    *pilot-table-of-contents*
@@ -227,15 +228,17 @@ TARGETS ~
     `default_executor`. Built-in run targets: `project`, `file_type`. You can add
     custom run targets.
 - **RunTarget structure:**
-    >lua
+
+>lua
         {
             pilot_file_path = function(): string? | (function(): string?)[], -- required
             auto_run_single_command = boolean, -- optional
             default_executor = function(command: string), -- optional
         }
-    <
+<
 - **Example:**
-    >lua
+
+>lua
         targets = {
             project = {
                 pilot_file_path = "{{cwd_path}}/pilot.json",
@@ -248,7 +251,7 @@ TARGETS ~
                 default_executor = pilot.preset_executors.split,
             },
         }
-    <
+<
 
 
 WRITE_TEMPLATE_TO_NEW_PILOT_FILE ~
@@ -276,9 +279,9 @@ PLACEHOLDERS ~
 - **Type:** `table` with `vars` and `funcs` subtables
 - **Description:**
 - `vars` is a table mapping placeholder names to functions that return strings
-    (e.g. `file_name`).
+    (e.g. `file_name`).
 - `funcs` is a table mapping placeholder function names to functions that accept
-    an argument and return a string (e.g. `hash_sha256`).
+    an argument and return a string (e.g. `hash_sha256`).
 
 
 DISPLAY ~
@@ -363,7 +366,7 @@ Each entry can be:
 - An **object** with fields:
     - `name` (optional): Display name for the command.
     - `cmd`: String or array of strings (joined with `&&`).
-    - `executor` (optional): Name of an executor that exists in |pilot-executors|.
+    - `executor` (optional): Name of an executor that exists in `executors`.
     - `import` (optional): Path to another JSON file to import entries from.
         Imported entries are merged in place.
 
@@ -424,7 +427,7 @@ C source code files.
 PLACEHOLDERS                                              *pilot-placeholders*
 
 All placeholders are expanded in config paths and commands. You can escape a
-placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
+placeholder by using triple braces, e.g. `{{{not_a_placeholder}}}`.
 
 
 VARIABLES ~
@@ -493,36 +496,36 @@ Executors are functions that run the command in a specific way. All executors
 receive two arguments:
 
 - `command` (string): The shell command to run (with placeholders already expanded).
-- `args` (table): List of arguments (see |pilot-executors|).
+- `args` (table): List of arguments (see `executors`).
 
 
 BUILT-IN EXECUTORS ~
 
-  --------------------------------------------------------------------------------------------------------------
-  Executor                                        Description                                             
-  ----------------------------------------------- ------------------------------------------------------- ------
-  pilot.preset_executors.new_tab (default)        Run the command in a new Neovim tab. Uses               
-                                                  :tabnew                              | term <cmd>.      
+  ------------------------------------------------------------------------------------------------------
+  Executor                                Description                                             
+  --------------------------------------- ------------------------------------------------------- ------
+  pilot.preset_executors.new_tab          Run the command in a new Neovim tab. Uses               
+  (default)                               :tabnew                              | term <cmd>.      
 
-  pilot.preset_executors.current_buffer           Run the command in the current buffer (replaces buffer  
-                                                  with terminal).                                         
+  pilot.preset_executors.current_buffer   Run the command in the current buffer (replaces buffer  
+                                          with terminal).                                         
 
-  pilot.preset_executors.split                    Run the command in a new horizontal split               
-                                                  (:split                              | term <cmd>).     
+  pilot.preset_executors.split            Run the command in a new horizontal split               
+                                          (:split                              | term <cmd>).     
 
-  pilot.preset_executors.vsplit                   Run the command in a new vertical split                 
-                                                  (:vsplit                               | term <cmd>).   
+  pilot.preset_executors.vsplit           Run the command in a new vertical split                 
+                                          (:vsplit                               | term <cmd>).   
 
-  pilot.preset_executors.print                    Run the command and print output to a message           
-                                                  (blocking, uses vim.fn.system).                         
+  pilot.preset_executors.print            Run the command and print output to a message           
+                                          (blocking, uses vim.fn.system).                         
 
-  pilot.preset_executors.silent                   Run the command silently (blocking, no output shown).   
+  pilot.preset_executors.silent           Run the command silently (blocking, no output shown).   
 
   pilot.preset_executors.bg_silent        Run the command as a background job (no output, uses    
-                                                  vim.fn.jobstart).                                       
+                                          vim.fn.jobstart).                                       
 
   pilot.preset_executors.bg_exit_status   Run as background job, print exit status on completion. 
-  --------------------------------------------------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------------------
 
 CUSTOM EXECUTORS ~
 
@@ -576,7 +579,7 @@ TIPS & RECOMMENDATIONS                          *pilot-tips-&-recommendations*
     or mini.nvim’s mini-pick <https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-pick.md>
     for a better `vim.ui.select()` experience.
 - You can import common commands into multiple configs using the `"import"` key.
-- Placeholders can be escaped by using extra braces, e.g. `{{{not_a_placeholder}}}`.
+- Placeholders can be escaped by using extra braces, e.g. `{{{not_a_placeholder}}}`.
 - To disable template writing for new files, set
     `write_template_to_new_pilot_file = false`.
 - All config files are validated on load; errors are shown in the command line.
