@@ -70,7 +70,7 @@ M.default_opts = {
                 )
             end,
         }),
-        file_type = M.fill_target({
+        filetype = M.fill_target({
             pilot_file_path = function()
                 return common.path_join(
                     "{{pilot_data_path}}",

@@ -83,7 +83,7 @@ and the available target names.
 | `:Pilot delete {target}` | Delete the pilot file of the given target           |
 
 `{target}` is any key of the `targets` field in [configuration options](#configuration-options),
-so with the default configuration `:Pilot run project` and `:Pilot edit file_type`
+so with the default configuration `:Pilot run project` and `:Pilot edit filetype`
 are available.
 
 Every command maps directly onto one of the [plugin functions](#plugin-functions),
@@ -198,7 +198,7 @@ so anything reachable through `:Pilot` can also be bound to a keymap.
 - **Description:**
   A table mapping run target names to their configuration. Each run target can have
   its own `pilot_file_path`, `auto_run_single_command`, and `default_executor`.  
-  Built-in run targets: `project`, `file_type`. You can add custom run targets.
+  Built-in run targets: `project`, `filetype`. You can add custom run targets.
 - **RunTarget structure:**
 
     ```lua
@@ -282,7 +282,7 @@ pilot.setup({
             },
         },
         -- customize what happens when attempting to run a file type
-        file_type = {
+        filetype = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
         },
@@ -316,10 +316,10 @@ pilot.setup({
 })
 
 vim.keymap.set("n", "<F10>", function() pilot.run_target("project") end)
-vim.keymap.set("n", "<F12>", function() pilot.run_target("file_type") end)
+vim.keymap.set("n", "<F12>", function() pilot.run_target("filetype") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
 vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_pilot_file("project") end)
-vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("file_type") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("filetype") end)
 ```
 
 ---

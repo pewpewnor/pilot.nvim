@@ -84,7 +84,7 @@ use {
 
 ## General Terms
 
-- **Target**: A category of pilot files (e.g., project, file_type). Each target
+- **Target**: A category of pilot files (e.g., project, filetype). Each target
   has its own file path, auto-run behavior, and default executor.
 - **Project pilot file**: JSON file containing commands to run for the current
   project.
@@ -96,7 +96,7 @@ use {
 ## Commands
 
 Automatically registered commands ready for use, e.g. `Pilot run project` or
-`Pilot run file_type`.
+`Pilot run filetype`.
 
 | Command                  | Description                                         |
 | ------------------------ | --------------------------------------------------- |
@@ -122,7 +122,7 @@ The default values are usually enough unless you want heavy customizations.
             auto_run_single_command = true, -- boolean
             default_executor = pilot.preset_executors.new_tab, -- function(command: string)
         },
-        file_type = {
+        filetype = {
             pilot_file_path = function()
                 return vim.fs.joinpath("{{pilot_data_path}}", "filetypes", "{{file_type}}.json")
             end, -- function(): string? | (function(): string?)[]
@@ -174,7 +174,7 @@ pilot.setup({
             },
         },
         -- customize what happens when attempting to run a file type
-        file_type = {
+        filetype = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
         },
@@ -209,10 +209,10 @@ pilot.setup({
 
 -- customize these keybindings to your liking
 vim.keymap.set("n", "<F10>", function() pilot.run_target("project") end)
-vim.keymap.set("n", "<F12>", function() pilot.run_target("file_type") end)
+vim.keymap.set("n", "<F12>", function() pilot.run_target("filetype") end)
 vim.keymap.set("n", "<F11>", pilot.run_previous_task)
 vim.keymap.set("n", "<Leader><F10>", function() pilot.edit_pilot_file("project") end)
-vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("file_type") end)
+vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("filetype") end)
 ```
 
 > **See:** [functions documentation](docs/pilot.md#plugin-functions) for all available

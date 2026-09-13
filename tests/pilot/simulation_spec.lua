@@ -80,7 +80,7 @@ describe("simulation", function()
                     auto_run_single_command = use_auto_run,
                     default_executor = test_executor,
                 },
-                file_type = {
+                filetype = {
                     pilot_file_path = function()
                         return filetype_path
                             or common.path_join(temp_base_dir, "dummy.json")
@@ -107,7 +107,7 @@ describe("simulation", function()
                     auto_run_single_command = true,
                     default_executor = test_executor,
                 },
-                file_type = {
+                filetype = {
                     pilot_file_path = function()
                         return filetype_path
                             or common.path_join(temp_base_dir, "dummy.json")
@@ -228,7 +228,7 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "Project build"))
     end)
 
-    it("runs file_type target with bash command", function()
+    it("runs filetype target with bash command", function()
         local dirs = get_pilot_dirs()
         local bash_json_path = common.path_join(dirs.filetypes, "bash.json")
 
@@ -247,7 +247,7 @@ describe("simulation", function()
                     auto_run_single_command = true,
                     default_executor = test_executor,
                 },
-                file_type = {
+                filetype = {
                     pilot_file_path = function()
                         return bash_json_path
                     end,
@@ -259,7 +259,7 @@ describe("simulation", function()
 
         executed_commands = {}
         output_files = {}
-        pilot.run_target("file_type")
+        pilot.run_target("filetype")
 
         assert.equals(1, #executed_commands)
         assert.is_truthy(string.find(executed_commands[1], "echo"))
@@ -290,7 +290,7 @@ describe("simulation", function()
         assert.equals(1, #executed_commands)
 
         executed_commands = {}
-        pilot.run_target("file_type")
+        pilot.run_target("filetype")
         assert.equals(1, #executed_commands)
 
         assert.is_truthy(string.find(executed_commands[1], "lua task"))
@@ -340,7 +340,7 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "make build"))
 
         executed_commands = {}
-        pilot.run_target("file_type")
+        pilot.run_target("filetype")
         assert.equals(1, #executed_commands)
         assert.is_truthy(string.find(executed_commands[1], "lua"))
     end)
@@ -479,7 +479,7 @@ describe("simulation", function()
         setup_pilot_with_paths(nil, python_path, true)
 
         executed_commands = {}
-        pilot.run_target("file_type")
+        pilot.run_target("filetype")
 
         assert.equals(1, #executed_commands)
         assert.is_truthy(string.find(executed_commands[1], "python"))
@@ -540,7 +540,7 @@ describe("simulation", function()
 
         for i = 1, 3 do
             executed_commands = {}
-            pilot.run_target("file_type")
+            pilot.run_target("filetype")
             assert.equals(1, #executed_commands)
             assert.is_truthy(
                 string.find(executed_commands[1], "node"),

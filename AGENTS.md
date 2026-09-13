@@ -5,7 +5,7 @@
 pilot.nvim is a Neovim plugin that lets users run, build, or test projects and
 files via a JSON configuration file (called a pilot file). It supports
 placeholder interpolation, custom executors, and multiple targets (e.g.
-`project`, `file_type`).
+`project`, `filetype`).
 
 At first, please always check README.md for the required Neovim version.
 Always use the newly provided APIs rather than the legacy ones.
