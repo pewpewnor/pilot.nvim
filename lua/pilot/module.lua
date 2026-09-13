@@ -53,6 +53,7 @@ M.run_previous_task = runner.run_previous_task
 function M.edit_pilot_file(target_name)
     local path =
         pathfinder.get_true_path(find_target(target_name).pilot_file_path)
+    common.mkdir_with_parents(common.dirname(path))
     if
         M.config.write_template_to_new_pilot_file
         and not common.is_file_and_readable(path)

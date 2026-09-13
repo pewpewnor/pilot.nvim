@@ -152,6 +152,22 @@ describe("simulation", function()
         assert.is_truthy(common.is_directory(dirs.filetypes))
     end)
 
+    it("creates missing parent directories when editing a target", function()
+        local pilot_json_path = common.path_join(
+            temp_base_dir,
+            "missing",
+            "nested",
+            "project.json"
+        )
+        setup_pilot_with_paths(pilot_json_path)
+        common.cmd = function() end
+
+        pilot.edit_pilot_file("project")
+
+        assert.is_truthy(common.is_directory(common.dirname(pilot_json_path)))
+        assert.is_truthy(common.is_file_and_readable(pilot_json_path))
+    end)
+
     it("can create and parse project pilot file", function()
         local dirs = get_pilot_dirs()
         local pilot_json_path = common.path_join(dirs.projects, "pilot.json")
