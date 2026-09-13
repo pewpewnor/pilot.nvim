@@ -13,7 +13,7 @@ Table of Contents                                    *pilot-table-of-contents*
   - Example Customization                        |pilot-example-customization|
   - Pilot File Format                                |pilot-pilot-file-format|
   - Example Project Pilot File              |pilot-example-project-pilot-file|
-  - Example File Type Pilot File          |pilot-example-file-type-pilot-file|
+  - Example Filetype Pilot File            |pilot-example-filetype-pilot-file|
   - Placeholders                                          |pilot-placeholders|
   - Preset Executors                                  |pilot-preset-executors|
   - Plugin Functions                                  |pilot-plugin-functions|
@@ -124,7 +124,7 @@ anything reachable through `:Pilot` can also be bound to a keymap.
 GENERAL TERMS                                            *pilot-general-terms*
 
 - **Project pilot file**: JSON file containing commands to run for the current project.
-- **File type pilot file**: JSON file containing commands to run for the current
+- **Filetype pilot file**: JSON file containing commands to run for the current
     file type.
 
 ------------------------------------------------------------------------------
@@ -312,7 +312,7 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
                     end,
                 },
             },
-            -- customize what happens when attempting to run a file type
+            -- customize what happens when attempting to run the filetype target
             filetype = {
                 auto_run_single_command = false,
                 default_executor = pilot.preset_executors.split,
@@ -357,7 +357,7 @@ EXAMPLE CUSTOMIZATION                            *pilot-example-customization*
 
 PILOT FILE FORMAT                                    *pilot-pilot-file-format*
 
-Both project and file type pilot files use the same JSON format: an array of
+Both project and filetype pilot files use the same JSON format: an array of
 entries.
 
 Each entry can be:
@@ -397,10 +397,10 @@ EXAMPLE PROJECT PILOT FILE                  *pilot-example-project-pilot-file*
   will automatically be replaced by pilot.nvim on the fly!
 ------------------------------------------------------------------------------
 
-EXAMPLE FILE TYPE PILOT FILE              *pilot-example-file-type-pilot-file*
+EXAMPLE FILETYPE PILOT FILE                *pilot-example-filetype-pilot-file*
 
-Let’s say you want to write a file type pilot file for compiling and running
-C source code files.
+Let’s say you want to write a filetype pilot file for compiling and running C
+source code files.
 
 >json
     [

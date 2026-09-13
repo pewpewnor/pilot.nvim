@@ -22,7 +22,7 @@ _Requirement: Neovim v0.12.x_
 - [Example customization](#example-customization)
 - [Pilot file format](#pilot-file-format)
 - [Example project pilot file](#example-project-pilot-file)
-- [Example file type pilot file](#example-file-type-pilot-file)
+- [Example filetype pilot file](#example-filetype-pilot-file)
 - [Placeholders](#placeholders)
 - [Preset executors](#preset-executors)
 
@@ -88,7 +88,7 @@ use {
   has its own file path, auto-run behavior, and default executor.
 - **Project pilot file**: JSON file containing commands to run for the current
   project.
-- **File type pilot file**: JSON file containing commands to run for the current
+- **Filetype pilot file**: JSON file containing commands to run for the current
   file type.
 
 ---
@@ -173,7 +173,7 @@ pilot.setup({
                 end,
             },
         },
-        -- customize what happens when attempting to run a file type
+        -- customize what happens when attempting to run the filetype target
         filetype = {
             auto_run_single_command = false,
             default_executor = pilot.preset_executors.split,
@@ -222,7 +222,7 @@ vim.keymap.set("n", "<Leader><F12>", function() pilot.edit_pilot_file("filetype"
 
 ## Pilot File Format
 
-Both project and file type pilot files use the same JSON format: an array of
+Both project and filetype pilot files use the same JSON format: an array of
 entries.
 
 Each entry can be:
@@ -266,9 +266,9 @@ current working directory.
 
 ---
 
-## Example File Type Pilot File
+## Example Filetype Pilot File
 
-Let's say you want to write a file type pilot file for compiling and
+Let's say you want to write a filetype pilot file for compiling and
 running C source code files.
 
 ```json

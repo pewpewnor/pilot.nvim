@@ -1,7 +1,7 @@
 pilot-configuration-options	pilot.txt	/*pilot-configuration-options*
 pilot-default-configuration-values	pilot.txt	/*pilot-default-configuration-values*
 pilot-example-customization	pilot.txt	/*pilot-example-customization*
-pilot-example-file-type-pilot-file	pilot.txt	/*pilot-example-file-type-pilot-file*
+pilot-example-filetype-pilot-file	pilot.txt	/*pilot-example-filetype-pilot-file*
 pilot-example-project-pilot-file	pilot.txt	/*pilot-example-project-pilot-file*
 pilot-faq	pilot.txt	/*pilot-faq*
 pilot-features	pilot.txt	/*pilot-features*
