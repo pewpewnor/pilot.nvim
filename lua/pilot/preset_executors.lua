@@ -45,12 +45,12 @@ function M.print(command)
 end
 
 ---@type Executor
-function M.background_silent(command)
+function M.bg_silent(command)
     common.run_shell_async(command)
 end
 
 ---@type Executor
-function M.background_exit_status(command)
+function M.bg_exit_status(command)
     common.run_shell_async(command, function(result)
         print(
             result.code == 0 and "pilot.nvim: command job success (exit code 0)"

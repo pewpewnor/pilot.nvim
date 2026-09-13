@@ -191,7 +191,7 @@ pilot.setup({
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
-        background = pilot.preset_executors.background_exit_status,
+        background = pilot.preset_executors.bg_exit_status,
     },
     placeholders = {
         vars = {
@@ -334,8 +334,8 @@ running C source code files.
 | `pilot.preset_executors.vsplit`                 | Run the command in a new vertical split                                   |
 | `pilot.preset_executors.print`                  | Run the command and print output (blocking)                               |
 | `pilot.preset_executors.silent`                 | Run the command silently with no output (blocking)                        |
-| `pilot.preset_executors.background_silent`      | Run the command as a background job silently                              |
-| `pilot.preset_executors.background_exit_status` | Run the command as a background job and print exit status upon completion |
+| `pilot.preset_executors.bg_silent`      | Run the command as a background job silently                              |
+| `pilot.preset_executors.bg_exit_status` | Run the command as a background job and print exit status upon completion |
 
 You can also create your own executor and use it in your config for pilot.nvim.
 

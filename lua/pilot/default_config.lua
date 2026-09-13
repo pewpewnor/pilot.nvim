@@ -88,8 +88,8 @@ M.default_opts = {
         vsplit = M.preset_executors.vsplit,
         print = M.preset_executors.print,
         silent = M.preset_executors.silent,
-        background_silent = M.preset_executors.background_silent,
-        background_exit_status = M.preset_executors.background_exit_status,
+        bg_silent = M.preset_executors.bg_silent,
+        bg_exit_status = M.preset_executors.bg_exit_status,
     },
     placeholders = {
         vars = {

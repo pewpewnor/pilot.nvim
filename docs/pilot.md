@@ -123,8 +123,8 @@ so anything reachable through `:Pilot` can also be bound to a keymap.
         vsplit = pilot.preset_executors.vsplit,
         print = pilot.preset_executors.print,
         silent = pilot.preset_executors.silent,
-        background_silent = pilot.preset_executors.background_silent,
-        background_exit_status = pilot.preset_executors.background_exit_status,
+        bg_silent = pilot.preset_executors.bg_silent,
+        bg_exit_status = pilot.preset_executors.bg_exit_status,
     }, -- table<string, function(command: string, args: string[])>
     placeholders = {
         vars = {
@@ -299,7 +299,7 @@ pilot.setup({
             vim.fn.system("tmux new-window -d")
             vim.fn.system("tmux send-keys -t +. '" .. command .. "' Enter")
         end,
-        background = pilot.preset_executors.background_exit_status,
+        background = pilot.preset_executors.bg_exit_status,
     },
     placeholders = {
         vars = {
@@ -455,8 +455,8 @@ All executors receive two arguments:
 | `pilot.preset_executors.vsplit`                 | Run the command in a new vertical split (`:vsplit                               | term <cmd>`). |
 | `pilot.preset_executors.print`                  | Run the command and print output to a message (blocking, uses `vim.fn.system`). |
 | `pilot.preset_executors.silent`                 | Run the command silently (blocking, no output shown).                           |
-| `pilot.preset_executors.background_silent`      | Run the command as a background job (no output, uses `vim.fn.jobstart`).        |
-| `pilot.preset_executors.background_exit_status` | Run as background job, print exit status on completion.                         |
+| `pilot.preset_executors.bg_silent`      | Run the command as a background job (no output, uses `vim.fn.jobstart`).        |
+| `pilot.preset_executors.bg_exit_status` | Run as background job, print exit status on completion.                         |
 
 ### Custom Executors
 
