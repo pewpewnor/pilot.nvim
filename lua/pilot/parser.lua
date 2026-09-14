@@ -166,7 +166,7 @@ function M.parse_pilot_file(path, target_name)
     local file_content = common.read_file(path)
     if not file_content then
         print(
-            "pilot.nvim: no suitable pilot file found, all paths do not exist or are unreadable"
+            "pilot.nvim: no pilot file found, all paths do not exist or unreadable"
         )
         return nil
     end
