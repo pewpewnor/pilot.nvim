@@ -202,7 +202,8 @@ end
 ---@param command string
 ---@return string
 function M.run_shell_output(command)
-    local result = vim.system(get_shell_command(command), { text = true }):wait()
+    local result = vim.system(get_shell_command(command), { text = true })
+        :wait()
     return result.stdout
 end
 

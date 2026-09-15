@@ -153,12 +153,8 @@ describe("simulation", function()
     end)
 
     it("creates missing parent directories when editing a target", function()
-        local pilot_json_path = common.path_join(
-            temp_base_dir,
-            "missing",
-            "nested",
-            "project.json"
-        )
+        local pilot_json_path =
+            common.path_join(temp_base_dir, "missing", "nested", "project.json")
         setup_pilot_with_paths(pilot_json_path)
         common.cmd = function() end
 
@@ -182,7 +178,10 @@ describe("simulation", function()
 
         pilot.edit_pilot_file("project")
 
-        assert.equals("tabedit " .. common.fnameescape(pilot_json_path), command)
+        assert.equals(
+            "tabedit " .. common.fnameescape(pilot_json_path),
+            command
+        )
     end)
 
     it("keeps special characters in resolved pilot file paths", function()

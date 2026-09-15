@@ -69,4 +69,3 @@
 ---@class pilot.PilotSubcommand
 ---@field func fun(target_name: string?)
 ---@field takes_target boolean
-
