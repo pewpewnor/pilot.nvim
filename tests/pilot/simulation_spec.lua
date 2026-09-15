@@ -156,6 +156,7 @@ describe("simulation", function()
         local pilot_json_path =
             common.path_join(temp_base_dir, "missing", "nested", "project.json")
         setup_pilot_with_paths(pilot_json_path)
+        ---@diagnostic disable-next-line: duplicate-set-field
         common.cmd = function() end
 
         pilot.edit_pilot_file("project")
@@ -172,6 +173,7 @@ describe("simulation", function()
         )
         setup_pilot_with_paths(pilot_json_path)
         local command
+        ---@diagnostic disable-next-line: duplicate-set-field
         common.cmd = function(value)
             command = value
         end
@@ -510,6 +512,7 @@ describe("simulation", function()
             "echo second",
         })
         setup_pilot_with_paths(project_pilot_path, nil, false)
+        ---@diagnostic disable-next-line: duplicate-set-field
         common.ui_select = function(_, _, on_choice)
             on_choice(nil)
         end

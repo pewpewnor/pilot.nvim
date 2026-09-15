@@ -38,6 +38,26 @@
 ---@field placeholders pilot.Placeholders
 ---@field display pilot.Display
 
+---@class pilot.TargetOptions
+---@field pilot_file_path? pilot.PilotFilepathResolver|pilot.PilotFilepathResolver[]
+---@field auto_run_single_command? boolean
+---@field default_executor? pilot.Executor
+
+---@class pilot.PlaceholderOptions
+---@field vars? pilot.PlaceholderVars
+---@field funcs? pilot.PlaceholderFuncs
+
+---@class pilot.DisplayOptions
+---@field numbered? boolean
+---@field last_entry_new_line? boolean
+
+---@class pilot.ConfigOptions
+---@field targets? table<string, pilot.TargetOptions>
+---@field write_template_to_new_pilot_file? boolean
+---@field executors? pilot.Executors
+---@field placeholders? pilot.PlaceholderOptions
+---@field display? pilot.DisplayOptions
+
 ---@class pilot.MinimumTarget
 ---@field pilot_file_path pilot.PilotFilepathResolver|pilot.PilotFilepathResolver[]
 

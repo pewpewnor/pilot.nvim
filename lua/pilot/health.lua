@@ -21,9 +21,10 @@ local function check_setup_called()
             "setup() has not been called",
             "call require('pilot').setup({}) in your configuration"
         )
-        return
+        return false
     end
     common.health_ok("setup() has been called")
+    return true
 end
 
 local function check_shell()
@@ -78,9 +79,11 @@ function M.check()
     common.health_start("pilot.nvim")
 
     check_neovim_version()
-    check_setup_called()
+    local setup_called = check_setup_called()
     check_shell()
-    check_target_paths()
+    if setup_called then
+        check_target_paths()
+    end
 end
 
 return M

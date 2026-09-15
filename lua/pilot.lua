@@ -11,7 +11,7 @@ local M = {
     },
 }
 
----@param options pilot.Config?
+---@param options? pilot.ConfigOptions
 function M.setup(options)
     local config = common.tbl_deep_extend(
         "force",
