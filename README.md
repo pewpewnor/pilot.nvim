@@ -3,6 +3,13 @@
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?logo=neovim&logoColor=white&style=for-the-badge)
 ![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
 
+> [!IMPORTANT]
+> [dove.nvim](https://github.com/pewpewnor/dove.nvim) is WIP as a natural evolution of this plugin.
+> I will divert more time to work on that plugin at this moment.
+
+> [!CAUTION]
+> This plugin will still be maintained, but expect less feature additions going forward.
+
 **pilot.nvim** is a Neovim plugin that lets you run, build, or test your project
 or file using a simple, editable JSON configuration.  
 It supports powerful placeholders, custom executors, and lets you edit or reload
