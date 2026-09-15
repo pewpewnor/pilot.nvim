@@ -4,7 +4,7 @@ local common = require("pilot.common")
 
 local M = {}
 
----@param config Config
+---@param config pilot.Config
 function M.init(config)
     M.config = config
     pathfinder.init(config)
@@ -67,7 +67,7 @@ function M.edit_pilot_file(target_name)
             "]",
         }, "a")
     end
-    common.cmd("tabedit " .. path)
+    common.cmd("tabedit " .. common.fnameescape(path))
 end
 
 ---@param target_name string

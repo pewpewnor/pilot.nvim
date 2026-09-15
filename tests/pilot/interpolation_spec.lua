@@ -13,18 +13,16 @@ describe("interpolation", function()
         local test_relative_path =
             common.path_join(test_dir_name, test_file_name)
         local test_path = common.path_join(common.get_cwd(), test_relative_path)
-        local escaped_test_path = common.fnameescape(test_path)
+        local escaped_test_path = common.shellescape(test_path)
 
+        common.mkdir_with_parents(test_dir_name)
         common.set_current_buffer_name(test_path)
         common.set_filetype("text")
         common.set_current_buffer_lines({ "begin hello world-over" })
         common.search("world")
 
         local got_file_path = interpolation.interpolate("{{file_path}}")
-        assert.equals(
-            common.fnamemodify(got_file_path, ":p"),
-            escaped_test_path
-        )
+        assert.equals(got_file_path, escaped_test_path)
 
         local got_file_path_relative =
             interpolation.interpolate("{{file_path_relative}}")
@@ -35,36 +33,45 @@ describe("interpolation", function()
 
         assert.equals(
             interpolation.interpolate("{{file_name}}"),
-            common.fnameescape(test_file_name)
+            common.shellescape(test_file_name)
         )
         assert.equals(
             interpolation.interpolate("{{dir_name}}"),
-            common.fnameescape(test_dir_name)
+            common.shellescape(test_dir_name)
         )
         assert.equals(
             interpolation.interpolate("{{cwd_path}}"),
-            common.fnameescape(common.get_cwd())
+            common.shellescape(common.get_cwd())
         )
         assert.equals(
             interpolation.interpolate("{{cwd_name}}"),
-            common.fnameescape(common.fnamemodify(common.get_cwd(), ":t"))
+            common.shellescape(common.fnamemodify(common.get_cwd(), ":t"))
         )
 
-        local pd = interpolation.interpolate("{{pilot_data_path}}")
+        local pd = interpolation.interpolate("{{pilot_data_path}}", true)
         assert.is_string(pd)
         assert.is_truthy(common.is_directory(pd))
 
-        assert.equals(interpolation.interpolate("{{cword}}"), "world")
-        assert.equals(interpolation.interpolate("{{cWORD}}"), "world-over")
+        assert.equals(
+            interpolation.interpolate("{{cword}}"),
+            common.shellescape("world")
+        )
+        assert.equals(
+            interpolation.interpolate("{{cWORD}}"),
+            common.shellescape("world-over")
+        )
 
         assert.equals(
             interpolation.interpolate("{{hash_sha256(cwd_path)}}"),
-            common.hash_sha256(common.fnameescape(common.get_cwd()))
+            common.shellescape(common.hash_sha256(common.get_cwd()))
         )
         assert.equals(
             interpolation.interpolate("{{hash_sha256(file_path)}}"),
-            common.hash_sha256(escaped_test_path)
+            common.shellescape(common.hash_sha256(test_path))
         )
+
+        common.cmd("enew!")
+        common.path_remove_recursive(test_dir_name)
     end)
 
     it(

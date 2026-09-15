@@ -1,12 +1,8 @@
----@class PilotSubcommand
----@field func fun(target_name: string?)
----@field takes_target boolean
-
 local common = require("pilot.common")
 local module = require("pilot.module")
 local pilot = require("pilot")
 
----@type table<string, PilotSubcommand>
+---@type table<string, pilot.PilotSubcommand>
 local subcommands = {
     run = { func = pilot.run_target, takes_target = true },
     prev = { func = pilot.run_previous_task, takes_target = false },

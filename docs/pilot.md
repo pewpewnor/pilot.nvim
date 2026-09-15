@@ -129,36 +129,34 @@ so anything reachable through `:Pilot` can also be bound to a keymap.
     placeholders = {
         vars = {
             file_path = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p"))
+                return vim.fn.expand("%:p")
             end,
             file_path_relative = function()
-                return vim.fn.fnameescape(vim.fn.expand("%"))
+                return vim.fn.expand("%")
             end,
             file_name = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:t"))
+                return vim.fn.expand("%:t")
             end,
             file_name_no_extension = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:t:r"))
+                return vim.fn.expand("%:t:r")
             end,
             file_type = function()
                 return vim.bo.filetype
             end,
             file_extension = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:e"))
+                return vim.fn.expand("%:e")
             end,
             dir_path = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p:h"))
+                return vim.fn.expand("%:p:h")
             end,
             dir_name = function()
-                return vim.fn.fnameescape(vim.fn.expand("%:p:h:t"))
+                return vim.fn.expand("%:p:h:t")
             end,
             cwd_path = function()
-                return vim.fn.fnameescape(vim.fn.getcwd())
+                return vim.fn.getcwd()
             end,
             cwd_name = function()
-                return vim.fn.fnameescape(
-                    vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-                )
+                return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
             end,
             pilot_data_path = function()
                 local pilot_data_path =
@@ -166,7 +164,7 @@ so anything reachable through `:Pilot` can also be bound to a keymap.
                 if vim.fn.isdirectory(pilot_data_path) == 0 then
                     vim.fn.mkdir(pilot_data_path, "p")
                 end
-                return vim.fn.fnameescape(pilot_data_path)
+                return pilot_data_path
             end,
             cword = function()
                 return vim.fn.expand("<cword>")

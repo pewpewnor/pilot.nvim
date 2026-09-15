@@ -1,43 +1,3 @@
----@alias PilotFilepathResolver fun(): string?
-
----@alias Executor fun(command: string, args: string[]?)
-
----@class Executors
----@field [string] Executor
-
----@class Target
----@field pilot_file_path PilotFilepathResolver|PilotFilepathResolver[]
----@field auto_run_single_command boolean
----@field default_executor Executor
-
----@class Targets
----@field [string] Target
-
----@alias PlaceholderVar fun(): string
-
----@alias PlaceholderFunc fun(arg: string): string
-
----@class PlaceholderVars
----@field [string] PlaceholderVar
-
----@class PlaceholderFuncs
----@field [string] PlaceholderFunc
-
----@class Placeholders
----@field vars PlaceholderVars
----@field funcs PlaceholderFuncs
-
----@class Display
----@field numbered boolean
----@field last_entry_new_line boolean
-
----@class Config
----@field targets Targets
----@field write_template_to_new_pilot_file boolean
----@field executors Executors
----@field placeholders Placeholders
----@field display Display
-
 local common = require("pilot.common")
 local preset_executors = require("pilot.preset_executors")
 
@@ -45,11 +5,8 @@ local M = {
     preset_executors = preset_executors,
 }
 
----@class MinimumTarget
----@field pilot_file_path PilotFilepathResolver|PilotFilepathResolver[]
-
----@param minimum_target MinimumTarget
----@return Target
+---@param minimum_target pilot.MinimumTarget
+---@return pilot.Target
 function M.fill_target(minimum_target)
     common.validate("minimum_target", minimum_target, "table")
     return common.tbl_deep_extend("force", {
@@ -58,7 +15,7 @@ function M.fill_target(minimum_target)
     }, minimum_target)
 end
 
----@type Config
+---@type pilot.Config
 M.default_opts = {
     targets = {
         project = M.fill_target({
@@ -94,48 +51,46 @@ M.default_opts = {
     placeholders = {
         vars = {
             file_path = function()
-                return common.fnameescape(common.expand("%:p"))
+                return common.expand("%:p")
             end,
             file_path_relative = function()
-                return common.fnameescape(common.expand("%"))
+                return common.expand("%")
             end,
             file_name = function()
-                return common.fnameescape(common.expand("%:t"))
+                return common.expand("%:t")
             end,
             file_name_no_extension = function()
-                return common.fnameescape(common.expand("%:t:r"))
+                return common.expand("%:t:r")
             end,
             file_type = function()
                 return common.get_filetype()
             end,
             file_extension = function()
-                return common.fnameescape(common.expand("%:e"))
+                return common.expand("%:e")
             end,
             dir_path = function()
-                return common.fnameescape(common.expand("%:p:h"))
+                return common.expand("%:p:h")
             end,
             dir_name = function()
-                return common.fnameescape(common.expand("%:p:h:t"))
+                return common.expand("%:p:h:t")
             end,
             cwd_path = function()
-                return common.fnameescape(common.get_cwd())
+                return common.get_cwd()
             end,
             cwd_name = function()
-                return common.fnameescape(
-                    common.fnamemodify(common.get_cwd(), ":t")
-                )
+                return common.fnamemodify(common.get_cwd(), ":t")
             end,
             config_path = function()
-                return common.fnameescape(common.get_stdpath("config"))
+                return common.get_stdpath("config")
             end,
             data_path = function()
-                return common.fnameescape(common.get_stdpath("data"))
+                return common.get_stdpath("data")
             end,
             pilot_data_path = function()
                 local pilot_data_path =
                     common.path_join(common.get_stdpath("data"), "pilot")
                 common.mkdir_with_parents(pilot_data_path)
-                return common.fnameescape(pilot_data_path)
+                return pilot_data_path
             end,
             cword = function()
                 return common.expand("<cword>")

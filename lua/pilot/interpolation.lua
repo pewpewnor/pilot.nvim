@@ -2,7 +2,7 @@ local common = require("pilot.common")
 
 local M = {}
 
----@param config Config
+---@param config pilot.Config
 function M.init(config)
     M.config = config
 end
@@ -139,7 +139,9 @@ function M.interpolate(command, no_escape)
                     and close_braces:sub(1, close_len - required_braces)
                 or ""
 
-            local interpolated_segment = prefix .. resolved .. suffix
+            local interpolated_segment = prefix
+                .. (no_escape and resolved or common.shellescape(resolved))
+                .. suffix
             insert_result_for_joining(interpolated_segment)
         end
 

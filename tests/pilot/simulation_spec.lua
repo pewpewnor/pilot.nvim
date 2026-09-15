@@ -10,14 +10,14 @@ describe("simulation", function()
     local original_ui_select
     local original_cmd
 
-    ---@type Executor
+    ---@type pilot.Executor
     local function test_executor(command)
         table.insert(executed_commands, command)
     end
 
     local output_files = {}
 
-    ---@type Executor
+    ---@type pilot.Executor
     local function system_output_executor(command)
         table.insert(output_files, common.run_shell_output(command))
         table.insert(executed_commands, command)
@@ -168,6 +168,33 @@ describe("simulation", function()
         assert.is_truthy(common.is_file_and_readable(pilot_json_path))
     end)
 
+    it("escapes a pilot file path when editing a target", function()
+        local pilot_json_path = common.path_join(
+            temp_base_dir,
+            "directory with spaces",
+            "project file.json"
+        )
+        setup_pilot_with_paths(pilot_json_path)
+        local command
+        common.cmd = function(value)
+            command = value
+        end
+
+        pilot.edit_pilot_file("project")
+
+        assert.equals("tabedit " .. common.fnameescape(pilot_json_path), command)
+    end)
+
+    it("keeps special characters in resolved pilot file paths", function()
+        local pilot_json_path =
+            common.path_join(temp_base_dir, "project%backup#1.json")
+        setup_pilot_with_paths(pilot_json_path)
+
+        pilot.edit_pilot_file("project")
+
+        assert.is_truthy(common.is_file_and_readable(pilot_json_path))
+    end)
+
     it("can create and parse project pilot file", function()
         local dirs = get_pilot_dirs()
         local pilot_json_path = common.path_join(dirs.projects, "pilot.json")
@@ -228,14 +255,14 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "Project build"))
     end)
 
-    it("runs filetype target with bash command", function()
+    it("runs a filetype target through the configured shell", function()
         local dirs = get_pilot_dirs()
-        local bash_json_path = common.path_join(dirs.filetypes, "bash.json")
+        local shell_json_path = common.path_join(dirs.filetypes, "shell.json")
 
         common.mkdir_with_parents(dirs.filetypes)
 
-        write_pilot_json(bash_json_path, {
-            { name = "Execute Command", cmd = "echo 'Hello World'" },
+        write_pilot_json(shell_json_path, {
+            { name = "Execute Command", cmd = "echo Hello World" },
         })
 
         pilot.setup({
@@ -249,7 +276,7 @@ describe("simulation", function()
                 },
                 filetype = {
                     pilot_file_path = function()
-                        return bash_json_path
+                        return shell_json_path
                     end,
                     auto_run_single_command = true,
                     default_executor = system_output_executor,

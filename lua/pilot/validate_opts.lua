@@ -1,7 +1,7 @@
 local common = require("pilot.common")
 local default_config = require("pilot.default_config")
 
----@param targets Targets
+---@param targets pilot.Targets
 local function fill_and_validate_targets(targets)
     for target_name, target_config in pairs(targets) do
         targets[target_name] = default_config.fill_target(target_config)
@@ -26,7 +26,7 @@ local function fill_and_validate_targets(targets)
     end
 end
 
----@param options Config
+---@param options pilot.Config
 local function validate_opts(options)
     common.validate("options", options, "table")
     common.validate("options.executors", options.executors, "table")

@@ -2,12 +2,12 @@ local interpolation = require("pilot.interpolation")
 local common = require("pilot.common")
 local M = {}
 
----@param config Config
+---@param config pilot.Config
 function M.init(config)
     M.config = config
 end
 
----@param resolver PilotFilepathResolver
+---@param resolver pilot.PilotFilepathResolver
 ---@return string|nil
 local function resolve_path(resolver)
     local raw_path = resolver()
@@ -15,10 +15,10 @@ local function resolve_path(resolver)
         return nil
     end
     common.validate("pilot_file_path resolver return value", raw_path, "string")
-    return interpolation.interpolate(raw_path)
+    return interpolation.interpolate(raw_path, true)
 end
 
----@param path_resolvers PilotFilepathResolver|PilotFilepathResolver[]
+---@param path_resolvers pilot.PilotFilepathResolver|pilot.PilotFilepathResolver[]
 ---@return string
 function M.get_true_path(path_resolvers)
     local resolvers

@@ -1,23 +1,9 @@
----@class RawEntryTable
----@field name string?
----@field cmd string|string[]|nil
----@field command string|string[]|nil
----@field import string?
----@field executor string?
-
----@alias RawEntry RawEntryTable|string
-
----@class ProcessedEntry
----@field name string
----@field command string
----@field executor string?
-
 local interpolation = require("pilot.interpolation")
 local common = require("pilot.common")
 
 local M = {}
 
----@param config Config
+---@param config pilot.Config
 function M.init(config)
     M.config = config
 end
@@ -25,7 +11,7 @@ end
 ---@param command string
 ---@param name string?
 ---@param executor string?
----@return ProcessedEntry
+---@return pilot.ProcessedEntry
 local function create_processed_entry(command, name, executor)
     return {
         name = name or command,
@@ -35,7 +21,7 @@ local function create_processed_entry(command, name, executor)
 end
 
 ---@param import_path string
----@return RawEntry[]
+---@return pilot.RawEntry[]
 local function read_and_decode_imported_path(import_path)
     local file_content = common.read_file(import_path)
     if not file_content then
@@ -69,9 +55,9 @@ local function read_and_decode_imported_path(import_path)
     return imported_list
 end
 
----@param list RawEntry[]
+---@param list pilot.RawEntry[]
 ---@param pilot_file_path string
----@return ProcessedEntry[]
+---@return pilot.ProcessedEntry[]
 local function parse_list_to_entries(list, pilot_file_path)
     if type(list) ~= "table" then
         error(
@@ -82,7 +68,7 @@ local function parse_list_to_entries(list, pilot_file_path)
         )
     end
 
-    ---@type ProcessedEntry[]
+    ---@type pilot.ProcessedEntry[]
     local processed_entries = {}
 
     for _, item in ipairs(list) do
@@ -161,7 +147,7 @@ end
 
 ---@param path string
 ---@param target_name string
----@return ProcessedEntry[]?
+---@return pilot.ProcessedEntry[]?
 function M.parse_pilot_file(path, target_name)
     local file_content = common.read_file(path)
     if not file_content then

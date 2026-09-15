@@ -1,6 +1,7 @@
 package.path = "./lua/?.lua;./lua/?/init.lua;" .. package.path
 
 local common = require("pilot.common")
+common.cmd("set noswapfile")
 
 local plenary_dir = os.getenv("PLENARY_DIR") or "/tmp/plenary.nvim"
 if not common.is_directory(plenary_dir) then

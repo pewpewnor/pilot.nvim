@@ -183,24 +183,38 @@ function M.run_process_silent(args)
 end
 
 ---@param command string
+---@return string[]
+local function get_shell_command(command)
+    local args = { vim.o.shell }
+    for flag in vim.o.shellcmdflag:gmatch("%S+") do
+        args[#args + 1] = flag
+    end
+    args[#args + 1] = command
+    return args
+end
+
+---@param command string
 ---@param on_exit? fun(result: {code: integer, stdout: string, stderr: string})
 function M.run_shell_async(command, on_exit)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }, {}, on_exit)
+    vim.system(get_shell_command(command), {}, on_exit)
 end
 
 ---@param command string
 ---@return string
 function M.run_shell_output(command)
-    local result = vim.system(
-        { vim.o.shell, vim.o.shellcmdflag, command },
-        { text = true }
-    ):wait()
+    local result = vim.system(get_shell_command(command), { text = true }):wait()
     return result.stdout
 end
 
 ---@param command string
 function M.run_shell_silent(command)
-    vim.system({ vim.o.shell, vim.o.shellcmdflag, command }):wait()
+    vim.system(get_shell_command(command)):wait()
+end
+
+---@param value string
+---@return string
+function M.shellescape(value)
+    return vim.fn.shellescape(value)
 end
 
 ---@param pattern string
