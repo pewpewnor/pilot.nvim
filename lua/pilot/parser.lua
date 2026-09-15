@@ -132,7 +132,7 @@ local function parse_list_to_entries(list, pilot_file_path)
                     )
                 end
 
-                local import_path = interpolation.interpolate(item.import)
+                local import_path = interpolation.interpolate(item.import, true)
                 local imported_list = read_and_decode_imported_path(import_path)
                 local imported_entries =
                     parse_list_to_entries(imported_list, import_path)

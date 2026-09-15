@@ -417,6 +417,122 @@ describe("simulation", function()
         assert.is_truthy(string.find(executed_commands[1], "custom"))
     end)
 
+    it("passes executor arguments and replays the previous task", function()
+        local dirs = get_pilot_dirs()
+        local project_pilot_path =
+            common.path_join(dirs.projects, "executor-args.json")
+        local received_args = {}
+        local function executor(command, args)
+            executed_commands[#executed_commands + 1] = command
+            received_args[#received_args + 1] = args
+        end
+
+        common.mkdir_with_parents(dirs.projects)
+        write_pilot_json(project_pilot_path, {
+            {
+                cmd = "echo replayed",
+                executor = "capture below 12",
+            },
+        })
+        setup_pilot_with_custom_executors(project_pilot_path, nil, {
+            capture = executor,
+        })
+
+        pilot.run_target("project")
+        pilot.run_previous_task()
+
+        assert.same({ "echo replayed", "echo replayed" }, executed_commands)
+        assert.same({ "below", "12" }, received_args[1])
+        assert.same(received_args[1], received_args[2])
+    end)
+
+    it("uses the first existing path from a target's resolvers", function()
+        local dirs = get_pilot_dirs()
+        local missing_path = common.path_join(dirs.projects, "missing.json")
+        local existing_path = common.path_join(dirs.projects, "existing.json")
+
+        common.mkdir_with_parents(dirs.projects)
+        write_pilot_json(existing_path, { "echo fallback" })
+        pilot.setup({
+            targets = {
+                project = {
+                    pilot_file_path = {
+                        function()
+                            return missing_path
+                        end,
+                        function()
+                            return existing_path
+                        end,
+                    },
+                    auto_run_single_command = true,
+                    default_executor = test_executor,
+                },
+            },
+        })
+
+        pilot.run_target("project")
+
+        assert.same({ "echo fallback" }, executed_commands)
+    end)
+
+    it(
+        "runs imported command arrays from paths with special characters",
+        function()
+            local dirs = get_pilot_dirs()
+            local imported_path =
+                common.path_join(dirs.projects, "imported commands %23.json")
+            local project_pilot_path =
+                common.path_join(dirs.projects, "project.json")
+
+            common.mkdir_with_parents(dirs.projects)
+            write_pilot_json(imported_path, {
+                { cmd = { "echo first", "echo second" } },
+            })
+            write_pilot_json(project_pilot_path, {
+                { import = imported_path },
+            })
+            setup_pilot_with_paths(project_pilot_path)
+
+            pilot.run_target("project")
+
+            assert.same({ "echo first && echo second" }, executed_commands)
+        end
+    )
+
+    it("does not run a command when selection is cancelled", function()
+        local dirs = get_pilot_dirs()
+        local project_pilot_path =
+            common.path_join(dirs.projects, "cancelled.json")
+
+        common.mkdir_with_parents(dirs.projects)
+        write_pilot_json(project_pilot_path, {
+            "echo first",
+            "echo second",
+        })
+        setup_pilot_with_paths(project_pilot_path, nil, false)
+        common.ui_select = function(_, _, on_choice)
+            on_choice(nil)
+        end
+
+        pilot.run_target("project")
+
+        assert.same({}, executed_commands)
+    end)
+
+    it("deletes the resolved pilot file", function()
+        local dirs = get_pilot_dirs()
+        local project_pilot_path =
+            common.path_join(dirs.projects, "delete me.json")
+
+        common.mkdir_with_parents(dirs.projects)
+        write_pilot_json(project_pilot_path, { "echo delete" })
+        setup_pilot_with_paths(project_pilot_path)
+
+        pilot.delete_pilot_file("project")
+
+        assert.is_falsy(common.is_file_and_readable(project_pilot_path))
+    end)
+
     it("handles placeholder interpolation in commands", function()
         local dirs = get_pilot_dirs()
         local project_pilot_path =

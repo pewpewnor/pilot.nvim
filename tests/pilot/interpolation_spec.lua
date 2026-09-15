@@ -91,4 +91,21 @@ describe("interpolation", function()
             assert.equals(interpolation.interpolate(cmd), expected)
         end
     )
+
+    it("shell-escapes custom placeholder values in commands", function()
+        pilot.setup({
+            placeholders = {
+                vars = {
+                    custom = function()
+                        return "value with spaces & operators"
+                    end,
+                },
+            },
+        })
+
+        assert.equals(
+            "echo " .. common.shellescape("value with spaces & operators"),
+            pilot.utils.interpolate("echo {{custom}}")
+        )
+    end)
 end)
