@@ -1,4 +1,4 @@
-name: Makefile CI
+name: pilot.nvim CI
 
 on:
     push:
@@ -7,24 +7,6 @@ on:
         branches: ["main"]
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Check formatting
-              uses: JohnnyMorganz/stylua-action@v5
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  version: 2.5.0
-                  args: --check .
-
-            - name: Run LuaLS diagnostics
-              uses: mrcjkb/lua-typecheck-action@v1
-              with:
-                  checklevel: Warning
-
     build:
         strategy:
             fail-fast: false
